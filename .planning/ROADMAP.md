@@ -29,14 +29,15 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Success Criteria** (what must be TRUE):
   1. Application loads in browser with THEME.md colors applied (forest green background, white cards, emerald accents)
   2. All reusable components render correctly: Button, Card, KPICard, Badge, Table, Input, Skeleton, StatusBadge, TrendIndicator, CurrencyDisplay
-  3. Layout shell displays three-column structure on desktop (sidebar, notification panel placeholder, main content)
-  4. Layout adapts responsively: two-column on tablet, bottom tab bar with stacked cards on mobile
+  3. Layout shell displays two-column structure on desktop (sidebar + main content) — notification column deferred to Phase 7
+  4. Layout adapts responsively: floating bottom tab bar with stacked cards on mobile
   5. Typography uses Plus Jakarta Sans for headings and Geist for body text
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md — Scaffold Next.js project, configure Tailwind v4 theme with THEME.md tokens, set up fonts, build responsive layout shell
+- [ ] 01-02-PLAN.md — Build all 10 reusable UI components (Button, Card, KPICard, Badge, Table, Input, Skeleton, StatusBadge, TrendIndicator, CurrencyDisplay)
+- [ ] 01-03-PLAN.md — Create component demo page, set up test infrastructure, run unit tests, visual verification checkpoint
 
 ### Phase 2: Authentication and Property Scoping
 **Goal**: Users can securely log in and are routed to their role-appropriate dashboard, seeing only data for their assigned properties
@@ -139,7 +140,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Scaffolding and Design System | 0/TBD | Not started | - |
+| 1. Scaffolding and Design System | 0/3 | Not started | - |
 | 2. Authentication and Property Scoping | 0/TBD | Not started | - |
 | 3. Airtable Data Layer | 0/TBD | Not started | - |
 | 4. Executive Dashboard | 0/TBD | Not started | - |
