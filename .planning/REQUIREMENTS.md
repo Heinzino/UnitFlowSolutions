@@ -1,0 +1,134 @@
+# Requirements: UnitFlowSolutions (ScheduleSimple)
+
+**Defined:** 2026-03-08
+**Core Value:** Property Managers can instantly see which turns are overdue, which jobs are stuck, and take action without hunting through Airtable — fewer clicks to the information that matters.
+
+## v1 Requirements
+
+### Authentication
+
+- [ ] **AUTH-01**: User can log in with email and password via Supabase
+- [ ] **AUTH-02**: User is redirected to their role-appropriate dashboard after login (PM → /property, DM → /district, Exec → /executive)
+- [ ] **AUTH-03**: Unauthenticated users are redirected to login page
+- [ ] **AUTH-04**: User session persists across browser refresh
+- [ ] **AUTH-05**: User can log out from any page
+- [ ] **AUTH-06**: Users can only access routes matching their role (PM cannot access /executive)
+
+### Property Scoping
+
+- [ ] **SCOPE-01**: Property Managers see only turns/jobs for their assigned properties
+- [ ] **SCOPE-02**: District Managers see data for their assigned property set
+- [ ] **SCOPE-03**: Executives see data across all properties with no filter
+- [ ] **SCOPE-04**: Property name matching between Supabase and Airtable is normalized to handle inconsistencies
+
+### Design System
+
+- [ ] **UI-01**: THEME.md color palette applied (forest green background, white cards, emerald accents)
+- [ ] **UI-02**: Plus Jakarta Sans for headings, Geist for body text, tabular-nums for statistics
+- [ ] **UI-03**: Reusable component library: Button, Card, KPICard, Badge, Table, Input, Skeleton, StatusBadge, TrendIndicator, CurrencyDisplay
+- [ ] **UI-04**: Three-column layout shell: narrow icon sidebar, notification panel, main content area
+- [ ] **UI-05**: Responsive layout — desktop (1280px+) three-column, tablet (768-1279px) sidebar + main, mobile (<768px) bottom tab bar + stacked cards
+
+### Airtable Integration
+
+- [ ] **DATA-01**: All Airtable access is server-side only (API key never exposed to browser)
+- [ ] **DATA-02**: Read data from all 9 Airtable tables with correct TypeScript type mappings
+- [ ] **DATA-03**: Cache responses with 60s TTL using Next.js caching with tag-based revalidation
+- [ ] **DATA-04**: Rate limiter prevents exceeding Airtable's 5 req/sec limit
+- [ ] **DATA-05**: Linked record IDs are resolved via batch fetches (no N+1 queries)
+- [ ] **DATA-06**: Write operations (status updates) bust relevant cache tags immediately
+
+### Property Manager View
+
+- [ ] **PM-01**: Turn request list with "Make Readys Past Target Time" section displayed first (overdue-first)
+- [ ] **PM-02**: Turn request list with "Active Make Readys (On Schedule)" section below
+- [ ] **PM-03**: Turn list columns: Property Name (badge), Unit Number, Status (pill), Ready To Lease Date, Vacant Date, Jobs (linked IDs), Price
+- [ ] **PM-04**: Property filter dropdown when PM has multiple assigned properties
+- [ ] **PM-05**: KPI cards: Number of Active Make Readys, Make Readys Completed (30 days), Make Readys Completed (7 days)
+- [ ] **PM-06**: KPI cards: Average Make Ready Time, Projected Spend (MTD), Make Readys Past Target Time (pink alert card)
+- [ ] **PM-07**: Turn detail page showing all linked jobs with: Job ID, Vendor Name, Vendor Type, Status badge, Start/End dates, Price
+- [ ] **PM-08**: Inline job status update — PM can change job status (NEEDS ATTENTION / Blocked / In Progress / Completed / Ready) from turn detail without navigating away
+- [ ] **PM-09**: Loading skeleton states matching card and table layouts
+
+### Executive View
+
+- [ ] **EXEC-01**: KPI cards row 1: Active Jobs Open, Jobs Trending Past Target (2 days from completion)
+- [ ] **EXEC-02**: KPI cards row 2: Jobs Completed (30 days), Backlog Delta (opened minus completed)
+- [ ] **EXEC-03**: KPI cards row 3: Average Time To Complete a Job, Projected Cost Exposure (MTD)
+- [ ] **EXEC-04**: Make Ready Overview section: Active Make Readys Open
+- [ ] **EXEC-05**: Alert cards: Make Readys Past Target Time (pink, NEEDS ATTENTION), Make Readys Trending Past Target Date (yellow, 2 days warning)
+- [ ] **EXEC-06**: All KPI data computed across all properties (no filter)
+- [ ] **EXEC-07**: Loading skeleton states
+
+### District Manager View
+
+- [ ] **DM-01**: Portfolio overview with one card per assigned property showing: property name, active turns, completion rate, pending approvals
+- [ ] **DM-02**: KPI row: Turn completion rate (gauge), Jobs pending approval, Overdue items (alert styling if > 0)
+- [ ] **DM-03**: Click property card to drill-down into that property's data (reuses PM turn list and KPI components)
+- [ ] **DM-04**: Loading skeleton states
+
+### Vendor Metrics
+
+- [ ] **VEND-01**: Vendor table showing: Vendor Name, Num Jobs Completed, Average Completion Time (Days), Num Jobs Assigned, Jobs (linked ID badges)
+
+### Notification Panel
+
+- [ ] **NOTIF-01**: Middle column displays auto-derived notifications from Airtable data
+- [ ] **NOTIF-02**: Alert types: Job status "NEEDS ATTENTION" (red), Counter Quote pending (dollar icon), Job approaching deadline within 2 days (clock), Turn past target time (warning)
+- [ ] **NOTIF-03**: Each notification shows icon, description text, and timestamp or amount
+- [ ] **NOTIF-04**: Clicking a notification navigates to the relevant turn/job detail page
+
+### Charts & Visualization
+
+- [ ] **VIZ-01**: Vendor performance bar chart (rounded-top bars, green fill, diagonal hatch for non-highlighted)
+- [ ] **VIZ-02**: Completion gauge (semi-circular arc, dark-to-light green gradient, centered number)
+- [ ] **VIZ-03**: Trend indicators on KPI cards (arrow up/down + percentage + color)
+- [ ] **VIZ-04**: Color-coded alert cards: pink for past target, yellow for trending past target
+
+## v2 Requirements
+
+### Pricing & Notes
+
+- **PRICE-01**: Inline pricing approval — PM can accept or flag vendor quotes from turn detail
+- **PRICE-02**: Display current price from Vendor_Pricing alongside any counter quote
+- **NOTE-01**: Add notes to turn requests via text area in turn detail
+- **NOTE-02**: View existing notes on turn requests
+
+### Photos
+
+- **PHOTO-01**: Display existing Airtable attachment photos on turn detail (read-only)
+
+### Admin
+
+- **ADMIN-01**: Admin panel for creating/managing Supabase user accounts and role assignments
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Real-time chat/messaging | Massive complexity, communication happens via phone/email and is fine |
+| Video/photo uploads | Storage complexity, field staff upload directly to Airtable |
+| OAuth/social login | 6-15 internal users, email/password sufficient |
+| Mobile native app | Responsive web covers mobile use cases |
+| Custom report builder | Undermines the "opinionated views per role" value proposition |
+| Airtable schema changes | Dashboard works with existing schema, changes would break other workflows |
+| Real-time sync (WebSocket) | Airtable has no WebSocket API, 60s cache is sufficient for daily/weekly check cadence |
+| Vendor self-service portal | Different user base and auth model, separate product |
+| Offline mode | Read-heavy tool, connectivity not a reported issue |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| (populated during roadmap creation) | | |
+
+**Coverage:**
+- v1 requirements: 42 total
+- Mapped to phases: 0
+- Unmapped: 42
+
+---
+*Requirements defined: 2026-03-08*
+*Last updated: 2026-03-08 after initial definition*
