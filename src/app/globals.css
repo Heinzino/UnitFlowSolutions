@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors from THEME.md */
+  --color-forest: #0F4A2A;
+  --color-forest-light: #1a6b3d;
+  --color-emerald: #22C55E;
+  --color-emerald-dark: #16A34A;
+  --color-chartreuse: #CAEF45;
+  --color-card: #FFFFFF;
+  --color-text-primary: #111827;
+  --color-text-secondary: #6B7280;
+  --color-positive: #22C55E;
+  --color-negative: #EF4444;
+  --color-link: #14B8A6;
+  --color-status-ready: #22C55E;
+  --color-status-attention: #EF4444;
+  --color-status-blocked: #EAB308;
+  --color-status-progress: #3B82F6;
+  --color-alert-past-target: #FDE2E7;
+  --color-alert-trending: #FEF3C7;
+
+  /* Typography -- font families set via CSS variables from next/font */
+  --font-heading: var(--font-plus-jakarta-sans);
+  --font-body: var(--font-geist-sans);
+
+  /* Spacing / Radius */
+  --radius-card: 16px;
+  --radius-pill: 9999px;
+  --radius-badge: 8px;
+}
