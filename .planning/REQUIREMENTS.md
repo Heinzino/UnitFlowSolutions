@@ -25,7 +25,7 @@
 
 - [x] **UI-01**: THEME.md color palette applied (forest green background, white cards, emerald accents)
 - [x] **UI-02**: Plus Jakarta Sans for headings, Geist for body text, tabular-nums for statistics
-- [ ] **UI-03**: Reusable component library: Button, Card, KPICard, Badge, Table, Input, Skeleton, StatusBadge, TrendIndicator, CurrencyDisplay
+- [x] **UI-03**: Reusable component library: Button, Card, KPICard, Badge, Table, Input, Skeleton, StatusBadge, TrendIndicator, CurrencyDisplay
 - [x] **UI-04**: Three-column layout shell: narrow icon sidebar, notification panel, main content area
 - [x] **UI-05**: Responsive layout — desktop (1280px+) three-column, tablet (768-1279px) sidebar + main, mobile (<768px) bottom tab bar + stacked cards
 
@@ -124,7 +124,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | UI-01 | Phase 1 | Complete |
 | UI-02 | Phase 1 | Complete |
-| UI-03 | Phase 1 | Pending |
+| UI-03 | Phase 1 | Complete |
 | UI-04 | Phase 1 | Complete |
 | UI-05 | Phase 1 | Complete |
 | AUTH-01 | Phase 2 | Pending |
