@@ -1,6 +1,6 @@
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-[calc(100vh-6rem)] items-center justify-center">
       <div className="bg-card rounded-card p-8 shadow-lg max-w-md w-full text-center">
         <h1 className="text-3xl font-heading font-bold text-text-primary mb-2">
           ScheduleSimple

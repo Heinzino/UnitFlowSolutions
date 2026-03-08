@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
+import { AppShell } from "@/components/layout/app-shell";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -24,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${plusJakarta.variable} ${GeistSans.variable}`}>
       <body className="bg-forest text-text-primary font-body antialiased">
-        {children}
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
