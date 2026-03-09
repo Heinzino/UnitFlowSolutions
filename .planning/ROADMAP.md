@@ -12,7 +12,7 @@ This roadmap delivers a role-based property management dashboard that replaces A
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Scaffolding and Design System** - Next.js project setup, Tailwind theme from THEME.md, reusable UI component library, responsive layout shell
+- [x] **Phase 1: Scaffolding and Design System** - Next.js project setup, Tailwind theme from THEME.md, reusable UI component library, responsive layout shell (completed 2026-03-09)
 - [ ] **Phase 2: Authentication and Property Scoping** - Supabase login/logout, role-based route protection, property-scoped data access per user role
 - [ ] **Phase 3: Airtable Data Layer** - Server-side Airtable integration with typed interfaces, caching, rate limiting, linked record resolution, and property scoping
 - [ ] **Phase 4: Executive Dashboard** - Read-only KPI dashboard with alert cards, validating data layer aggregations across all properties
@@ -140,7 +140,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Scaffolding and Design System | 1/3 | In Progress|  |
+| 1. Scaffolding and Design System | 3/3 | Complete   | 2026-03-09 |
 | 2. Authentication and Property Scoping | 0/TBD | Not started | - |
 | 3. Airtable Data Layer | 0/TBD | Not started | - |
 | 4. Executive Dashboard | 0/TBD | Not started | - |
