@@ -8,6 +8,8 @@
   --color-emerald-dark: #16A34A;
   --color-chartreuse: #CAEF45;
   --color-card: #FFFFFF;
+  --color-card-border: #e0eed8;
+  --color-surface: #f8faf6;
   --color-text-primary: #111827;
   --color-text-secondary: #6B7280;
   --color-positive: #22C55E;
@@ -19,6 +21,8 @@
   --color-status-progress: #3B82F6;
   --color-alert-past-target: #FDE2E7;
   --color-alert-trending: #FEF3C7;
+  --color-sidebar-bg: #FFFFFF;
+  --color-sidebar-border: #e8f0e4;
 
   /* Typography -- font families set via CSS variables from next/font */
   --font-heading: var(--font-plus-jakarta-sans);
@@ -28,4 +32,53 @@
   --radius-card: 16px;
   --radius-pill: 9999px;
   --radius-badge: 8px;
+}
+
+/* Silk curtain green background — Dribbble-inspired */
+body {
+  background-color: #0a3a1f;
+  background-image:
+    /* Bright center glow */
+    radial-gradient(ellipse at 50% 40%, rgba(30, 120, 60, 0.25) 0%, transparent 55%),
+    /* Left curtain fold — bright streak */
+    linear-gradient(90deg,
+      rgba(0, 0, 0, 0.3) 0%,
+      rgba(20, 80, 40, 0.2) 8%,
+      rgba(40, 140, 70, 0.15) 14%,
+      rgba(0, 0, 0, 0.05) 20%,
+      transparent 28%
+    ),
+    /* Center curtain folds */
+    linear-gradient(90deg,
+      transparent 30%,
+      rgba(40, 140, 70, 0.1) 38%,
+      rgba(60, 160, 90, 0.12) 42%,
+      rgba(0, 0, 0, 0.06) 48%,
+      rgba(40, 140, 70, 0.08) 55%,
+      rgba(60, 170, 90, 0.1) 60%,
+      transparent 68%
+    ),
+    /* Right curtain fold */
+    linear-gradient(90deg,
+      transparent 72%,
+      rgba(40, 140, 70, 0.1) 78%,
+      rgba(60, 160, 90, 0.14) 84%,
+      rgba(20, 80, 40, 0.15) 90%,
+      rgba(0, 0, 0, 0.25) 100%
+    ),
+    /* Subtle vertical stripe texture */
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.012) 0px,
+      transparent 1px,
+      transparent 6px
+    ),
+    /* Base gradient */
+    linear-gradient(180deg, #0c4225 0%, #0F4A2A 30%, #0e4628 70%, #0a3a1f 100%);
+  background-attachment: fixed;
+}
+
+/* Prevent horizontal overflow */
+html, body {
+  overflow-x: hidden;
 }

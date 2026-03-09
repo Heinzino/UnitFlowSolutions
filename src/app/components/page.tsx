@@ -41,7 +41,7 @@ const mockTurnData: {
 export default function ComponentsPage() {
   return (
     <div className="max-w-5xl mx-auto py-8 px-4">
-      <h1 className="font-heading text-3xl text-white mb-8">Component Library</h1>
+      <h1 className="font-heading text-3xl text-text-primary mb-8">Component Library</h1>
 
       {/* Buttons */}
       <Section title="Buttons">
@@ -174,11 +174,11 @@ export default function ComponentsPage() {
       <Section title="Trend Indicator">
         <div className="flex gap-6 items-center">
           <div className="flex items-center gap-2">
-            <span className="text-white text-sm">Up:</span>
+            <span className="text-text-primary text-sm">Up:</span>
             <TrendIndicator direction="up" percentage={8.5} />
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-white text-sm">Down:</span>
+            <span className="text-text-primary text-sm">Down:</span>
             <TrendIndicator direction="down" percentage={3.1} />
           </div>
         </div>
@@ -189,8 +189,8 @@ export default function ComponentsPage() {
         <div className="flex gap-6 items-center">
           {[0, 1500, 25000, 1234567].map((amount) => (
             <div key={amount} className="text-center">
-              <CurrencyDisplay amount={amount} className="text-white text-lg font-semibold" />
-              <p className="text-white/50 text-xs mt-1">({amount})</p>
+              <CurrencyDisplay amount={amount} className="text-text-primary text-lg font-semibold" />
+              <p className="text-text-secondary text-xs mt-1">({amount})</p>
             </div>
           ))}
         </div>
@@ -212,7 +212,7 @@ export default function ComponentsPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-10">
-      <h2 className="font-heading text-xl text-white/80 mb-4 border-b border-white/10 pb-2">{title}</h2>
+      <h2 className="font-heading text-xl text-text-primary mb-4 border-b border-card-border pb-2">{title}</h2>
       {children}
     </section>
   );

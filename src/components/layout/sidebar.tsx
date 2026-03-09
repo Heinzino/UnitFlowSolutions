@@ -9,7 +9,6 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-import { Tooltip } from "radix-ui";
 import { clsx } from "clsx";
 import type { LucideIcon } from "lucide-react";
 
@@ -31,87 +30,52 @@ interface SidebarProps {
   activePath: string;
 }
 
-function SidebarIcon({
-  icon: Icon,
-  label,
-  href,
-  isActive,
-}: {
-  icon: LucideIcon;
-  label: string;
-  href: string;
-  isActive: boolean;
-}) {
-  return (
-    <Tooltip.Root>
-      <Tooltip.Trigger asChild>
-        <Link
-          href={href}
-          className={clsx(
-            "flex items-center justify-center w-10 h-10 rounded-full transition-colors",
-            isActive
-              ? "bg-emerald text-white"
-              : "text-white/60 hover:text-white hover:bg-white/10"
-          )}
-        >
-          <Icon size={20} />
-        </Link>
-      </Tooltip.Trigger>
-      <Tooltip.Portal>
-        <Tooltip.Content
-          side="right"
-          sideOffset={8}
-          className="bg-text-primary text-white text-sm px-3 py-1.5 rounded-badge shadow-lg z-[100]"
-        >
-          {label}
-          <Tooltip.Arrow className="fill-text-primary" />
-        </Tooltip.Content>
-      </Tooltip.Portal>
-    </Tooltip.Root>
-  );
-}
-
 export function Sidebar({ activePath }: SidebarProps) {
   return (
-    <Tooltip.Provider delayDuration={200}>
-      <aside className="hidden md:flex fixed left-0 top-0 bottom-0 w-16 flex-col items-center py-6 gap-2 bg-forest border-r border-white/10 z-50">
-        <nav className="flex flex-col items-center gap-2">
-          {navItems.map((item) => (
-            <SidebarIcon
-              key={item.href}
-              icon={item.icon}
-              label={item.label}
-              href={item.href}
-              isActive={activePath === item.href}
-            />
-          ))}
-        </nav>
-
-        <div className="mt-auto">
-          <Tooltip.Root>
-            <Tooltip.Trigger asChild>
-              <button
-                className="flex items-center justify-center w-10 h-10 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors"
-                onClick={() => {
-                  /* Logout handler -- to be implemented */
-                }}
-              >
-                <LogOut size={20} />
-              </button>
-            </Tooltip.Trigger>
-            <Tooltip.Portal>
-              <Tooltip.Content
-                side="right"
-                sideOffset={8}
-                className="bg-text-primary text-white text-sm px-3 py-1.5 rounded-badge shadow-lg z-[100]"
-              >
-                Logout
-                <Tooltip.Arrow className="fill-text-primary" />
-              </Tooltip.Content>
-            </Tooltip.Portal>
-          </Tooltip.Root>
+    <aside className="flex flex-col w-[220px] h-[calc(100vh-1.5rem)] bg-white rounded-[20px] shadow-lg border border-white/30">
+      {/* Logo */}
+      <div className="px-5 pt-6 pb-6">
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 bg-forest rounded-badge flex items-center justify-center">
+            <span className="text-chartreuse font-heading font-bold text-sm">UF</span>
+          </div>
+          <span className="font-heading font-bold text-lg text-text-primary">UnitFlow</span>
         </div>
-      </aside>
-    </Tooltip.Provider>
+      </div>
+
+      {/* Nav */}
+      <nav className="px-3 flex flex-col gap-1 flex-1">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = activePath === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={clsx(
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors",
+                isActive
+                  ? "bg-emerald text-white"
+                  : "text-text-secondary hover:text-text-primary hover:bg-surface"
+              )}
+            >
+              <Icon size={18} />
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Bottom */}
+      <div className="px-3 pb-6">
+        <button
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface transition-colors w-full"
+          onClick={() => {/* logout */}}
+        >
+          <LogOut size={18} />
+          <span>Logout</span>
+        </button>
+      </div>
+    </aside>
   );
 }
