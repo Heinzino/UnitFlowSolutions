@@ -49,11 +49,12 @@ Plans:
   3. User can log out from any page and is returned to login
   4. Unauthenticated users are redirected to login; users cannot access routes outside their role
   5. Property assignment is resolved from Supabase and normalized for Airtable name matching
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md — Install Supabase, create client factories, middleware with role-based routing, auth server actions, property normalization
+- [ ] 02-02-PLAN.md — Login page UI, route group restructure (dashboard layout vs standalone login), placeholder dashboard pages
+- [ ] 02-03-PLAN.md — Sidebar logout wiring, UserHeader with name/role badge, PropertySelector dropdown, AppShell integration
 
 ### Phase 3: Airtable Data Layer
 **Goal**: All Airtable data is accessible through typed, cached, rate-limited server-side functions that handle property scoping and linked record resolution
@@ -141,7 +142,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Scaffolding and Design System | 3/3 | Complete   | 2026-03-09 |
-| 2. Authentication and Property Scoping | 0/TBD | Not started | - |
+| 2. Authentication and Property Scoping | 0/3 | Not started | - |
 | 3. Airtable Data Layer | 0/TBD | Not started | - |
 | 4. Executive Dashboard | 0/TBD | Not started | - |
 | 5. Property Manager View | 0/TBD | Not started | - |
