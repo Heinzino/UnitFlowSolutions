@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-03-12T03:50:47.306Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-03-12T03:56:43.023Z"
 last_activity: 2026-03-12 -- Plan 02-01 executed (Supabase auth infrastructure)
 progress:
   total_phases: 7
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 9
-  completed_plans: 8
+  completed_plans: 9
   percent: 57
 ---
 
@@ -55,6 +55,7 @@ Progress: [████████░░] 57%
 | Phase 02-authentication-and-property-scoping P03 | 2min | 2 tasks | 6 files |
 | Phase 03-airtable-data-layer P01 | 5 | 2 tasks | 10 files |
 | Phase 03-airtable-data-layer P03 | 4 | 2 tasks | 4 files |
+| Phase 03-airtable-data-layer P02 | 9 | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,8 @@ Recent decisions affecting current work:
 - [Phase 03-01]: TurnRequest includes quotePrice as string | null field from price rollup in Airtable
 - [Phase 03-03]: revalidateTag uses two-argument form revalidateTag(tag, { expire: 0 }) per Next.js 16 requirement
 - [Phase 03-03]: updateJobStatus returns structured { success, error } objects — never throws, always safe to await in client
+- [Phase 03-airtable-data-layer]: Mappers extracted to mappers.ts (no client dep) so tests import pure functions without env var guards firing
+- [Phase 03-airtable-data-layer]: base<FieldSet>('Table') pattern: FieldSet generic on base() not select() per airtable SDK AirtableBase interface
 
 ### Pending Todos
 
@@ -99,6 +102,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T03:50:47.299Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-03-12T03:56:43.017Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
