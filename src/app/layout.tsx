@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -25,6 +26,7 @@ export default function RootLayout({
     <html lang="en" className={`${plusJakarta.variable} ${GeistSans.variable}`}>
       <body className="bg-forest text-text-primary font-body antialiased">
         {children}
+        <Toaster />
       </body>
     </html>
   );
