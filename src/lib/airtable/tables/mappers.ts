@@ -1,0 +1,121 @@
+// Pure field mapping functions — no external dependencies.
+// Extracted here so they can be imported and tested without triggering
+// the Airtable client env var guards.
+
+import type { Record as AirtableRecord } from 'airtable'
+import type { Job, TurnRequest, JobStatus } from '@/lib/types/airtable'
+
+// ---------------------------------------------------------------------------
+// Job mapper
+// ---------------------------------------------------------------------------
+
+export function mapJob(record: AirtableRecord<Record<string, unknown>>): Job {
+  const f = record.fields
+  return {
+    jobId: Number(f['Job ID']),
+    requestType: f['Request Type'] ? String(f['Request Type']) : null,
+    status: (f['Status'] as JobStatus) ?? 'NEEDS ATTENTION',
+    statusMessage: f['Status Message'] ? String(f['Status Message']) : null,
+    startDate: f['Start Date'] ? String(f['Start Date']) : null,
+    endDate: f['End Date'] ? String(f['End Date']) : null,
+    vendorName: f['Vendor Name'] ? String(f['Vendor Name']) : null,
+    vendorType: f['Vendor Type'] ? String(f['Vendor Type']) : null,
+    contactName: f['Contact Name (from Vendor)']
+      ? String(f['Contact Name (from Vendor)'])
+      : null,
+    email: f['Email (from Vendor)'] ? String(f['Email (from Vendor)']) : null,
+    phone: f['Phone (from Vendor)'] ? String(f['Phone (from Vendor)']) : null,
+    quotePrice:
+      f['Quote Price'] != null ? Number(f['Quote Price']) || null : null,
+    turnRequestId:
+      f['Request ID (from Turn Requests)'] != null
+        ? Number(f['Request ID (from Turn Requests)']) || null
+        : null,
+    propertyName: f['Property Name'] ? String(f['Property Name']) : null,
+    durationDays:
+      f['Duration (Days, If Completed)'] != null
+        ? Number(f['Duration (Days, If Completed)']) || null
+        : null,
+    isCompleted: Boolean(f['Is Completed']),
+    created: String(f['Created'] ?? ''),
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Turn Request mapper
+// ---------------------------------------------------------------------------
+
+export function mapTurnRequest(
+  record: AirtableRecord<Record<string, unknown>>
+): TurnRequest {
+  const f = record.fields
+
+  // Parse Jobs field: "51,52,53" string → number[]
+  let jobIds: number[] = []
+  const rawJobs = f['Jobs']
+  if (typeof rawJobs === 'string' && rawJobs.trim() !== '') {
+    jobIds = rawJobs
+      .split(',')
+      .map((s) => Number(s.trim()))
+      .filter((n) => !isNaN(n) && n > 0)
+  } else if (Array.isArray(rawJobs)) {
+    jobIds = rawJobs.map(Number).filter((n) => !isNaN(n) && n > 0)
+  }
+
+  return {
+    requestId: Number(f['Request ID']),
+    readyToLeaseDate: f['Ready To Lease Date']
+      ? String(f['Ready To Lease Date'])
+      : null,
+    vacantDate: f['Vacant Date'] ? String(f['Vacant Date']) : null,
+    targetDate: f['Target Date'] ? String(f['Target Date']) : null,
+    status: String(f['Status'] ?? ''),
+    jobIds,
+    // jobs will be populated by resolveLinkedJobs
+    timeToCompleteUnit:
+      f['Time to Complete Unit (Days)'] != null
+        ? Number(f['Time to Complete Unit (Days)']) || null
+        : null,
+    notes: f['Notes'] ? String(f['Notes']) : null,
+    quotePrice: f['Price (from Quote Price) (from Jobs)']
+      ? String(f['Price (from Quote Price) (from Jobs)'])
+      : null,
+    totalCost: f['Total Cost'] ? String(f['Total Cost']) : null,
+    value: f['Value'] ? String(f['Value']) : null,
+    propertyName: String(f['Property Name'] ?? ''),
+    streetAddress: String(f['Street Address (from Properties)'] ?? ''),
+    unitNumber: String(f['Unit Number (from Properties)'] ?? ''),
+    floorPlan: f['Floor Plan (from Properties)']
+      ? String(f['Floor Plan (from Properties)'])
+      : null,
+    city: f['City (from Properties)']
+      ? String(f['City (from Properties)'])
+      : null,
+    state: f['State (from Properties)']
+      ? String(f['State (from Properties)'])
+      : null,
+    bedrooms:
+      f['Bedrooms (from Properties)'] != null
+        ? Number(f['Bedrooms (from Properties)']) || null
+        : null,
+    bathrooms:
+      f['Bathrooms (from Properties)'] != null
+        ? Number(f['Bathrooms (from Properties)']) || null
+        : null,
+    daysVacantUntilReady:
+      f['Days Vacant Until Ready'] != null
+        ? Number(f['Days Vacant Until Ready']) || null
+        : null,
+    created: String(f['Created'] ?? ''),
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Formula builder
+// ---------------------------------------------------------------------------
+
+export function buildJobFilterFormula(jobIds: number[]): string {
+  if (jobIds.length === 0) return ''
+  if (jobIds.length === 1) return `{Job ID}=${jobIds[0]}`
+  return `OR(${jobIds.map((id) => `{Job ID}=${id}`).join(',')})`
+}
