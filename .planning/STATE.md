@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 02-02-PLAN.md
-last_updated: "2026-03-12T00:49:38.410Z"
+stopped_at: Completed 02-03-PLAN.md (checkpoint pending human verification)
+last_updated: "2026-03-12T00:53:32.676Z"
 last_activity: 2026-03-12 -- Plan 02-01 executed (Supabase auth infrastructure)
 progress:
   total_phases: 7
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 6
-  completed_plans: 5
+  completed_plans: 6
   percent: 57
 ---
 
@@ -52,6 +52,7 @@ Progress: [████████░░] 57%
 
 *Updated after each plan completion*
 | Phase 02-authentication-and-property-scoping P02 | 2min | 2 tasks | 7 files |
+| Phase 02-authentication-and-property-scoping P03 | 2min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,9 @@ Recent decisions affecting current work:
 - [Phase 02-01]: Wave 0 test stubs use it.todo so plan 02-02/02-03 can fill implementations without restructuring
 - [Phase 02-02]: Card component has variant prop (not shadow) — plan interface reference was incorrect; removed invalid prop, shadow-sm already in base styles
 - [Phase 02-02]: (dashboard) route group cleanly separates AppShell from login page via Next.js route group layout inheritance
+- [Phase 02-03]: PropertySelectorWrapper is a separate client file — server component (UserHeader) cannot manage useState, so wrapper component bridges server to client boundary
+- [Phase 02-03]: AppShell accepts userHeader as React.ReactNode slot prop — avoids converting client component to server while allowing async server component in header
+- [Phase 02-03]: Form action pattern for logout — works without JS since logout is a server action, more resilient than onClick handler
 
 ### Pending Todos
 
@@ -89,6 +93,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T00:49:38.405Z
-Stopped at: Completed 02-02-PLAN.md
+Last session: 2026-03-12T00:53:32.662Z
+Stopped at: Completed 02-03-PLAN.md (checkpoint pending human verification)
 Resume file: None
