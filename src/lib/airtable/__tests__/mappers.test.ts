@@ -58,7 +58,7 @@ function makeJobRecord(overrides: Record<string, unknown> = {}) {
 describe('mapJob', () => {
   it('maps all fields correctly', () => {
     const record = makeJobRecord()
-    const job = mapJob(record as Parameters<typeof mapJob>[0])
+    const job = mapJob(record as unknown as Parameters<typeof mapJob>[0])
 
     expect(job.jobId).toBe(7)
     expect(job.requestType).toBe('Painting')
@@ -95,7 +95,7 @@ describe('mapJob', () => {
       'Property Name': null,
       'Duration (Days, If Completed)': null,
     })
-    const job = mapJob(record as Parameters<typeof mapJob>[0])
+    const job = mapJob(record as unknown as Parameters<typeof mapJob>[0])
 
     expect(job.requestType).toBeNull()
     expect(job.statusMessage).toBeNull()
@@ -114,7 +114,7 @@ describe('mapJob', () => {
 
   it('maps isCompleted boolean from truthy value', () => {
     const record = makeJobRecord({ 'Is Completed': true })
-    const job = mapJob(record as Parameters<typeof mapJob>[0])
+    const job = mapJob(record as unknown as Parameters<typeof mapJob>[0])
     expect(job.isCompleted).toBe(true)
   })
 })
@@ -156,7 +156,7 @@ function makeTurnRequestRecord(overrides: Record<string, unknown> = {}) {
 describe('mapTurnRequest', () => {
   it('maps all fields correctly', () => {
     const record = makeTurnRequestRecord()
-    const tr = mapTurnRequest(record as Parameters<typeof mapTurnRequest>[0])
+    const tr = mapTurnRequest(record as unknown as Parameters<typeof mapTurnRequest>[0])
 
     expect(tr.requestId).toBe(12)
     expect(tr.readyToLeaseDate).toBe('2024-02-01')
@@ -182,19 +182,19 @@ describe('mapTurnRequest', () => {
 
   it('parses Jobs string "51,52,53" into number array [51,52,53]', () => {
     const record = makeTurnRequestRecord({ 'Jobs': '51,52,53' })
-    const tr = mapTurnRequest(record as Parameters<typeof mapTurnRequest>[0])
+    const tr = mapTurnRequest(record as unknown as Parameters<typeof mapTurnRequest>[0])
     expect(tr.jobIds).toEqual([51, 52, 53])
   })
 
   it('returns empty array for null Jobs field', () => {
     const record = makeTurnRequestRecord({ 'Jobs': null })
-    const tr = mapTurnRequest(record as Parameters<typeof mapTurnRequest>[0])
+    const tr = mapTurnRequest(record as unknown as Parameters<typeof mapTurnRequest>[0])
     expect(tr.jobIds).toEqual([])
   })
 
   it('returns empty array for undefined Jobs field', () => {
     const record = makeTurnRequestRecord({ 'Jobs': undefined })
-    const tr = mapTurnRequest(record as Parameters<typeof mapTurnRequest>[0])
+    const tr = mapTurnRequest(record as unknown as Parameters<typeof mapTurnRequest>[0])
     expect(tr.jobIds).toEqual([])
   })
 
@@ -215,7 +215,7 @@ describe('mapTurnRequest', () => {
       'Time to Complete Unit (Days)': null,
       'Days Vacant Until Ready': null,
     })
-    const tr = mapTurnRequest(record as Parameters<typeof mapTurnRequest>[0])
+    const tr = mapTurnRequest(record as unknown as Parameters<typeof mapTurnRequest>[0])
 
     expect(tr.readyToLeaseDate).toBeNull()
     expect(tr.vacantDate).toBeNull()
@@ -235,7 +235,7 @@ describe('mapTurnRequest', () => {
 
   it('initializes jobs as undefined (not yet resolved)', () => {
     const record = makeTurnRequestRecord()
-    const tr = mapTurnRequest(record as Parameters<typeof mapTurnRequest>[0])
+    const tr = mapTurnRequest(record as unknown as Parameters<typeof mapTurnRequest>[0])
     expect(tr.jobs).toBeUndefined()
   })
 })

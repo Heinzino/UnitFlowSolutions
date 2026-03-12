@@ -1,4 +1,5 @@
 import { cacheTag, cacheLife } from 'next/cache'
+import type { FieldSet } from 'airtable'
 import { base, rateLimiter } from '../client'
 import { CACHE_TAGS } from '../cache-tags'
 import { mapTurnRequest } from './mappers'
@@ -42,7 +43,7 @@ export async function fetchTurnRequests(): Promise<TurnRequest[]> {
   cacheTag(CACHE_TAGS.turnRequests)
 
   await rateLimiter.acquire()
-  const records = await base('Turn Requests').select().all()
+  const records = await base<FieldSet>('Turn Requests').select().all()
   const turnRequests = records.map(mapTurnRequest)
   return resolveLinkedJobs(turnRequests)
 }
@@ -55,7 +56,7 @@ export async function fetchTurnRequestById(
   cacheTag(CACHE_TAGS.turnRequests, CACHE_TAGS.turnRequest(id))
 
   await rateLimiter.acquire()
-  const records = await base('Turn Requests')
+  const records = await base<FieldSet>('Turn Requests')
     .select({ filterByFormula: `{Request ID}=${id}` })
     .all()
 

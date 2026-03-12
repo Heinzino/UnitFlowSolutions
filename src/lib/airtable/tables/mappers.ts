@@ -1,16 +1,16 @@
-// Pure field mapping functions — no external dependencies.
+// Pure field mapping functions — no external dependencies on client.ts.
 // Extracted here so they can be imported and tested without triggering
 // the Airtable client env var guards.
 
-import type { Record as AirtableRecord } from 'airtable'
+import type { Record as AirtableRecord, FieldSet } from 'airtable'
 import type { Job, TurnRequest, JobStatus } from '@/lib/types/airtable'
 
 // ---------------------------------------------------------------------------
 // Job mapper
 // ---------------------------------------------------------------------------
 
-export function mapJob(record: AirtableRecord<Record<string, unknown>>): Job {
-  const f = record.fields
+export function mapJob(record: AirtableRecord<FieldSet>): Job {
+  const f = record.fields as Record<string, unknown>
   return {
     jobId: Number(f['Job ID']),
     requestType: f['Request Type'] ? String(f['Request Type']) : null,
@@ -45,10 +45,8 @@ export function mapJob(record: AirtableRecord<Record<string, unknown>>): Job {
 // Turn Request mapper
 // ---------------------------------------------------------------------------
 
-export function mapTurnRequest(
-  record: AirtableRecord<Record<string, unknown>>
-): TurnRequest {
-  const f = record.fields
+export function mapTurnRequest(record: AirtableRecord<FieldSet>): TurnRequest {
+  const f = record.fields as Record<string, unknown>
 
   // Parse Jobs field: "51,52,53" string → number[]
   let jobIds: number[] = []
