@@ -16,9 +16,9 @@
 
 ### Property Scoping
 
-- [ ] **SCOPE-01**: Property Managers see only turns/jobs for their assigned properties
-- [ ] **SCOPE-02**: District Managers see data for their assigned property set
-- [ ] **SCOPE-03**: Executives see data across all properties with no filter
+- [x] **SCOPE-01**: Property Managers see only turns/jobs for their assigned properties
+- [x] **SCOPE-02**: District Managers see data for their assigned property set
+- [x] **SCOPE-03**: Executives see data across all properties with no filter
 - [x] **SCOPE-04**: Property name matching between Supabase and Airtable is normalized to handle inconsistencies
 
 ### Design System
@@ -133,9 +133,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-04 | Phase 2 | Complete |
 | AUTH-05 | Phase 2 | Complete |
 | AUTH-06 | Phase 2 | Complete |
-| SCOPE-01 | Phase 2 | Pending |
-| SCOPE-02 | Phase 2 | Pending |
-| SCOPE-03 | Phase 2 | Pending |
+| SCOPE-01 | Phase 2 | Complete |
+| SCOPE-02 | Phase 2 | Complete |
+| SCOPE-03 | Phase 2 | Complete |
 | SCOPE-04 | Phase 2 | Complete |
 | DATA-01 | Phase 3 | Pending |
 | DATA-02 | Phase 3 | Pending |

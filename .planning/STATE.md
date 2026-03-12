@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in-progress
-stopped_at: Phase 2 Plan 01 complete
-last_updated: "2026-03-12T00:44:00Z"
+status: completed
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-03-12T00:49:38.410Z"
 last_activity: 2026-03-12 -- Plan 02-01 executed (Supabase auth infrastructure)
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 6
-  completed_plans: 4
+  completed_plans: 5
   percent: 57
 ---
 
@@ -51,6 +51,7 @@ Progress: [████████░░] 57%
 - Trend: stable
 
 *Updated after each plan completion*
+| Phase 02-authentication-and-property-scoping P02 | 2min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,8 @@ Recent decisions affecting current work:
 - [Phase 02-01]: supabaseResponse reassigned inside setAll callback per official pattern to prevent session drift
 - [Phase 02-01]: normalizePropertyName uses toLowerCase().trim() applied at comparison time (not storage time)
 - [Phase 02-01]: Wave 0 test stubs use it.todo so plan 02-02/02-03 can fill implementations without restructuring
+- [Phase 02-02]: Card component has variant prop (not shadow) — plan interface reference was incorrect; removed invalid prop, shadow-sm already in base styles
+- [Phase 02-02]: (dashboard) route group cleanly separates AppShell from login page via Next.js route group layout inheritance
 
 ### Pending Todos
 
@@ -86,6 +89,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T00:44:00Z
-Stopped at: Plan 02-01 complete -- Supabase auth infrastructure
-Resume file: .planning/phases/02-authentication-and-property-scoping/02-01-SUMMARY.md
+Last session: 2026-03-12T00:49:38.405Z
+Stopped at: Completed 02-02-PLAN.md
+Resume file: None
