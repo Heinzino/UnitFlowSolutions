@@ -36,7 +36,7 @@
 - [x] **DATA-03**: Cache responses with 60s TTL using Next.js caching with tag-based revalidation
 - [x] **DATA-04**: Rate limiter prevents exceeding Airtable's 5 req/sec limit
 - [ ] **DATA-05**: Linked record IDs are resolved via batch fetches (no N+1 queries)
-- [ ] **DATA-06**: Write operations (status updates) bust relevant cache tags immediately
+- [x] **DATA-06**: Write operations (status updates) bust relevant cache tags immediately
 
 ### Property Manager View
 
@@ -142,7 +142,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DATA-03 | Phase 3 | Complete |
 | DATA-04 | Phase 3 | Complete |
 | DATA-05 | Phase 3 | Pending |
-| DATA-06 | Phase 3 | Pending |
+| DATA-06 | Phase 3 | Complete |
 | EXEC-01 | Phase 4 | Pending |
 | EXEC-02 | Phase 4 | Pending |
 | EXEC-03 | Phase 4 | Pending |

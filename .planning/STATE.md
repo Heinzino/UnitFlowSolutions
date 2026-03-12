@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-03-12T03:43:54.490Z"
+stopped_at: Completed 03-03-PLAN.md
+last_updated: "2026-03-12T03:50:47.306Z"
 last_activity: 2026-03-12 -- Plan 02-01 executed (Supabase auth infrastructure)
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 9
-  completed_plans: 7
+  completed_plans: 8
   percent: 57
 ---
 
@@ -54,6 +54,7 @@ Progress: [████████░░] 57%
 | Phase 02-authentication-and-property-scoping P02 | 2min | 2 tasks | 7 files |
 | Phase 02-authentication-and-property-scoping P03 | 2min | 2 tasks | 6 files |
 | Phase 03-airtable-data-layer P01 | 5 | 2 tasks | 10 files |
+| Phase 03-airtable-data-layer P03 | 4 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,8 @@ Recent decisions affecting current work:
 - [Phase 02-03]: Form action pattern for logout — works without JS since logout is a server action, more resilient than onClick handler
 - [Phase 03-01]: Test for NEXT_PUBLIC_ env var access uses process.env.NEXT_PUBLIC_ pattern check — error messages may reference the prefix string without exposing env vars
 - [Phase 03-01]: TurnRequest includes quotePrice as string | null field from price rollup in Airtable
+- [Phase 03-03]: revalidateTag uses two-argument form revalidateTag(tag, { expire: 0 }) per Next.js 16 requirement
+- [Phase 03-03]: updateJobStatus returns structured { success, error } objects — never throws, always safe to await in client
 
 ### Pending Todos
 
@@ -96,6 +99,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T03:43:54.482Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-03-12T03:50:47.299Z
+Stopped at: Completed 03-03-PLAN.md
 Resume file: None
