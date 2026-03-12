@@ -49,8 +49,8 @@ patterns-established:
 
 requirements-completed: [AUTH-05, SCOPE-01, SCOPE-02, SCOPE-03]
 
-duration: 2min
-completed: 2026-03-12
+duration: 4min
+completed: 2026-03-11
 ---
 
 # Phase 02 Plan 03: Auth UX Layer Summary
@@ -62,7 +62,7 @@ completed: 2026-03-12
 - **Duration:** ~2 min
 - **Started:** 2026-03-12T00:50:58Z
 - **Completed:** 2026-03-12T00:52:36Z
-- **Tasks:** 2 (+ 1 checkpoint awaiting human verification)
+- **Tasks:** 3 (2 auto + 1 checkpoint verified by user)
 - **Files modified:** 6
 
 ## Accomplishments
@@ -93,7 +93,28 @@ Each task was committed atomically:
 
 ## Deviations from Plan
 
-None - plan executed exactly as written. The plan's "Note on PropertySelector integration" guidance about a local `'use client'` wrapper was implemented as a separate file (`property-selector-wrapper.tsx`) rather than inlining it in user-header.tsx, which is a cleaner organization pattern with the same effect.
+The plan's "Note on PropertySelector integration" guidance about a local `'use client'` wrapper was implemented as a separate file (`property-selector-wrapper.tsx`) rather than inlining it in user-header.tsx — cleaner separation with the same effect.
+
+### Post-Checkpoint UI Adjustments (after human verification)
+
+Minor UI fixes applied after the checkpoint to resolve visibility issues discovered during live testing:
+
+1. **[Rule 1 - Bug] User header text color visibility on dark background**
+   - Found during: Task 3 (human verification)
+   - Issue: `text-text-secondary` and `text-text-primary` Tailwind tokens rendered too dark against the green header background, making user name and role invisible
+   - Fix: Changed to `text-white/70` (user name) and `text-white` (role badge text) for proper contrast on dark background
+   - Files modified: `src/components/layout/user-header.tsx`
+
+2. **Search input hidden in AppShell header**
+   - Found during: Task 3 (human verification)
+   - Issue: Search input in header was not needed for current phase and cluttered the header area
+   - Fix: Search input commented out in `src/components/layout/app-shell.tsx` for future implementation
+   - Files modified: `src/components/layout/app-shell.tsx`
+
+3. **Seed script added for development testing**
+   - Found during: Task 3 setup
+   - Context: A seed script `scripts/seed-users.mjs` was added to ease creation of test users with proper `app_metadata` (role and property_ids) in Supabase during local development and verification
+   - Files created: `scripts/seed-users.mjs`
 
 ## Issues Encountered
 None.
@@ -101,11 +122,21 @@ None.
 ## User Setup Required
 None - no external service configuration required for this plan's code changes. Human verification of the complete auth flow end-to-end requires a Supabase project configured with users having `app_metadata.role` and `app_metadata.property_ids` set.
 
+## Task 3: Human Verification Result
+
+**Status: APPROVED**
+
+User verified the complete authentication flow end-to-end:
+- Login page visible at /login when unauthenticated
+- Login with valid credentials routes to role-appropriate dashboard
+- User name, role badge, and property context visible in header
+- Logout from sidebar redirects to /login
+- Role-based route protection prevents unauthorized access
+
 ## Next Phase Readiness
-- Complete auth UX layer: login page, middleware, role routing, sidebar logout, user identity header
+- Complete auth UX layer verified: login page, middleware, role routing, sidebar logout, user identity header
 - Phase 3 (Airtable data layer) can proceed — no auth blockers remain
 - PropertySelector is reusable for Phase 5 PM view property filtering
-- Human verification of auth flow still pending (Task 3 checkpoint)
 
 ---
 *Phase: 02-authentication-and-property-scoping*
