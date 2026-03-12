@@ -5,7 +5,13 @@ import { Sidebar } from "./sidebar";
 import { BottomTabBar } from "./bottom-tab-bar";
 import { Search, Mail, Bell, User } from "lucide-react";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  userHeader,
+}: {
+  children: React.ReactNode;
+  userHeader?: React.ReactNode;
+}) {
   const pathname = usePathname();
 
   return (
@@ -46,9 +52,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <button className="w-9 h-9 rounded-full bg-forest flex items-center justify-center text-white hover:bg-forest-light transition-colors">
               <Bell size={16} />
             </button>
-            <div className="w-9 h-9 rounded-full bg-emerald/20 flex items-center justify-center">
-              <User size={18} className="text-emerald" />
-            </div>
+            {userHeader ?? (
+              <div className="w-9 h-9 rounded-full bg-emerald/20 flex items-center justify-center">
+                <User size={18} className="text-emerald" />
+              </div>
+            )}
           </div>
         </header>
 
