@@ -23,15 +23,15 @@ export async function UserHeader() {
 
   if (role === "exec" || role === "dm") {
     propertyContext = (
-      <span className="text-sm text-text-secondary">All Properties</span>
+      <span className="text-sm text-white/70">All Properties</span>
     );
   } else if (propertyIds.length === 0) {
     propertyContext = (
-      <span className="text-sm text-text-secondary">No properties assigned</span>
+      <span className="text-sm text-white/70">No properties assigned</span>
     );
   } else if (propertyIds.length === 1) {
     propertyContext = (
-      <span className="text-sm text-text-secondary">{propertyIds[0]}</span>
+      <span className="text-sm text-white/70">{propertyIds[0]}</span>
     );
   } else {
     propertyContext = <PropertySelectorWrapper properties={propertyIds} />;
@@ -40,7 +40,7 @@ export async function UserHeader() {
   return (
     <div className="flex items-center gap-3">
       {propertyContext}
-      <span className="text-sm font-medium text-text-primary">{name}</span>
+      <span className="text-sm font-medium text-white">{name}</span>
       <Badge variant="emerald">{roleLabel}</Badge>
     </div>
   );

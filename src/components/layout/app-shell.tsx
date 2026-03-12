@@ -38,6 +38,7 @@ export function AppShell({
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Search — commented out for now, may add later
             <div className="relative hidden sm:block">
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" />
               <input
@@ -46,6 +47,7 @@ export function AppShell({
                 className="pl-9 pr-4 py-2 bg-surface border border-card-border rounded-pill text-sm text-text-primary placeholder:text-text-secondary w-48 focus:outline-none focus:ring-2 focus:ring-emerald/30"
               />
             </div>
+            */}
             <button className="w-9 h-9 rounded-full bg-forest flex items-center justify-center text-white hover:bg-forest-light transition-colors">
               <Mail size={16} />
             </button>
