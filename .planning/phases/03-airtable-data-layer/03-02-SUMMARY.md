@@ -150,6 +150,10 @@ None beyond auto-fixed deviations above.
 - mappers.ts exports provide stable test surface for any future unit tests
 - No blockers
 
+## Self-Check: PASSED
+
+All 12 expected files exist on disk. Both task commits (06fe74d, 901e801) verified in git log.
+
 ---
 *Phase: 03-airtable-data-layer*
 *Completed: 2026-03-12*
