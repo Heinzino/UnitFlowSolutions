@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { clsx } from "clsx";
 import type { LucideIcon } from "lucide-react";
+import { logout } from "@/app/actions/auth";
 
 interface NavItem {
   icon: LucideIcon;
@@ -68,13 +69,15 @@ export function Sidebar({ activePath }: SidebarProps) {
 
       {/* Bottom */}
       <div className="px-3 pb-6">
-        <button
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface transition-colors w-full"
-          onClick={() => {/* logout */}}
-        >
-          <LogOut size={18} />
-          <span>Logout</span>
-        </button>
+        <form action={logout}>
+          <button
+            type="submit"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface transition-colors w-full"
+          >
+            <LogOut size={18} />
+            <span>Logout</span>
+          </button>
+        </form>
       </div>
     </aside>
   );
