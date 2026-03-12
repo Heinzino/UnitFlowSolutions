@@ -66,11 +66,12 @@ Plans:
   3. Rate limiter prevents exceeding 5 req/sec to Airtable API under concurrent access
   4. Linked record IDs (e.g., Jobs on Turn Requests) are batch-resolved without N+1 queries
   5. Property scoping filters data correctly per user role and assigned properties
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
+- [ ] 03-01-PLAN.md — Foundation: install airtable+sonner, enable cacheComponents, define all 9 TypeScript interfaces, build rate limiter, create Airtable client singleton
+- [ ] 03-02-PLAN.md — All 9 table fetch functions with field mapping, caching, batch linked record resolution, property scoping
+- [ ] 03-03-PLAN.md — Write server action for job status updates with cascade cache busting, sonner toast infrastructure
 
 ### Phase 4: Executive Dashboard
 **Goal**: Executives can view a health snapshot of all properties through KPI cards and alert indicators without any filtering or configuration
@@ -82,7 +83,7 @@ Plans:
   3. Alert cards appear with correct severity styling: pink for past target (NEEDS ATTENTION), yellow for trending past target (2-day warning)
   4. All KPI data reflects all properties with no user-applied filter
   5. Loading skeleton states display while data is being fetched
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
 - [ ] 04-01: TBD
@@ -98,7 +99,7 @@ Plans:
   3. KPI cards display: Active Make Readys, Completed (30d), Completed (7d), Average Time, Projected Spend, Past Target Time (pink alert)
   4. Clicking a turn opens detail page showing all linked jobs with Vendor Name, Type, Status badge, dates, and price
   5. PM can change a job's status from the turn detail page and see the update reflected without navigating away
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
 - [ ] 05-01: TBD
@@ -113,7 +114,7 @@ Plans:
   2. KPI row shows turn completion rate gauge, jobs pending approval count, and overdue items with alert styling when count exceeds zero
   3. Clicking a property card navigates to that property's turn list and KPI view (reusing PM view components)
   4. Loading skeleton states display while data is being fetched
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
 - [ ] 06-01: TBD
@@ -128,7 +129,7 @@ Plans:
   3. Vendor performance bar chart renders with rounded-top bars and green fill; completion gauge renders as semi-circular arc with gradient
   4. KPI cards display trend indicators (arrow direction, percentage, color coding)
   5. Vendor metrics table shows: Vendor Name, Jobs Completed, Average Completion Time, Jobs Assigned, linked job badges
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
 - [ ] 07-01: TBD
@@ -143,7 +144,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 |-------|----------------|--------|-----------|
 | 1. Scaffolding and Design System | 3/3 | Complete   | 2026-03-09 |
 | 2. Authentication and Property Scoping | 3/3 | Complete   | 2026-03-12 |
-| 3. Airtable Data Layer | 0/TBD | Not started | - |
+| 3. Airtable Data Layer | 0/3 | Not started | - |
 | 4. Executive Dashboard | 0/TBD | Not started | - |
 | 5. Property Manager View | 0/TBD | Not started | - |
 | 6. District Manager View | 0/TBD | Not started | - |
