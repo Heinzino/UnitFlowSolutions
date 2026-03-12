@@ -31,10 +31,10 @@
 
 ### Airtable Integration
 
-- [ ] **DATA-01**: All Airtable access is server-side only (API key never exposed to browser)
+- [x] **DATA-01**: All Airtable access is server-side only (API key never exposed to browser)
 - [ ] **DATA-02**: Read data from all 9 Airtable tables with correct TypeScript type mappings
-- [ ] **DATA-03**: Cache responses with 60s TTL using Next.js caching with tag-based revalidation
-- [ ] **DATA-04**: Rate limiter prevents exceeding Airtable's 5 req/sec limit
+- [x] **DATA-03**: Cache responses with 60s TTL using Next.js caching with tag-based revalidation
+- [x] **DATA-04**: Rate limiter prevents exceeding Airtable's 5 req/sec limit
 - [ ] **DATA-05**: Linked record IDs are resolved via batch fetches (no N+1 queries)
 - [ ] **DATA-06**: Write operations (status updates) bust relevant cache tags immediately
 
@@ -137,10 +137,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SCOPE-02 | Phase 2 | Complete |
 | SCOPE-03 | Phase 2 | Complete |
 | SCOPE-04 | Phase 2 | Complete |
-| DATA-01 | Phase 3 | Pending |
+| DATA-01 | Phase 3 | Complete |
 | DATA-02 | Phase 3 | Pending |
-| DATA-03 | Phase 3 | Pending |
-| DATA-04 | Phase 3 | Pending |
+| DATA-03 | Phase 3 | Complete |
+| DATA-04 | Phase 3 | Complete |
 | DATA-05 | Phase 3 | Pending |
 | DATA-06 | Phase 3 | Pending |
 | EXEC-01 | Phase 4 | Pending |

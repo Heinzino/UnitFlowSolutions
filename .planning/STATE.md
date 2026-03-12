@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Phase 3 context gathered
-last_updated: "2026-03-12T03:19:28.533Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-12T03:43:54.490Z"
 last_activity: 2026-03-12 -- Plan 02-01 executed (Supabase auth infrastructure)
 progress:
   total_phases: 7
   completed_phases: 2
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 9
+  completed_plans: 7
   percent: 57
 ---
 
@@ -53,6 +53,7 @@ Progress: [████████░░] 57%
 *Updated after each plan completion*
 | Phase 02-authentication-and-property-scoping P02 | 2min | 2 tasks | 7 files |
 | Phase 02-authentication-and-property-scoping P03 | 2min | 2 tasks | 6 files |
+| Phase 03-airtable-data-layer P01 | 5 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,8 @@ Recent decisions affecting current work:
 - [Phase 02-03]: PropertySelectorWrapper is a separate client file — server component (UserHeader) cannot manage useState, so wrapper component bridges server to client boundary
 - [Phase 02-03]: AppShell accepts userHeader as React.ReactNode slot prop — avoids converting client component to server while allowing async server component in header
 - [Phase 02-03]: Form action pattern for logout — works without JS since logout is a server action, more resilient than onClick handler
+- [Phase 03-01]: Test for NEXT_PUBLIC_ env var access uses process.env.NEXT_PUBLIC_ pattern check — error messages may reference the prefix string without exposing env vars
+- [Phase 03-01]: TurnRequest includes quotePrice as string | null field from price rollup in Airtable
 
 ### Pending Todos
 
@@ -93,6 +96,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-12T03:19:28.528Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-airtable-data-layer/03-CONTEXT.md
+Last session: 2026-03-12T03:43:54.482Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: None
