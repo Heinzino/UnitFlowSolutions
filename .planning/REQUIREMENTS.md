@@ -7,19 +7,19 @@
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can log in with email and password via Supabase
-- [ ] **AUTH-02**: User is redirected to their role-appropriate dashboard after login (PM → /property, DM → /district, Exec → /executive)
-- [ ] **AUTH-03**: Unauthenticated users are redirected to login page
-- [ ] **AUTH-04**: User session persists across browser refresh
-- [ ] **AUTH-05**: User can log out from any page
-- [ ] **AUTH-06**: Users can only access routes matching their role (PM cannot access /executive)
+- [x] **AUTH-01**: User can log in with email and password via Supabase
+- [x] **AUTH-02**: User is redirected to their role-appropriate dashboard after login (PM → /property, DM → /district, Exec → /executive)
+- [x] **AUTH-03**: Unauthenticated users are redirected to login page
+- [x] **AUTH-04**: User session persists across browser refresh
+- [x] **AUTH-05**: User can log out from any page
+- [x] **AUTH-06**: Users can only access routes matching their role (PM cannot access /executive)
 
 ### Property Scoping
 
 - [ ] **SCOPE-01**: Property Managers see only turns/jobs for their assigned properties
 - [ ] **SCOPE-02**: District Managers see data for their assigned property set
 - [ ] **SCOPE-03**: Executives see data across all properties with no filter
-- [ ] **SCOPE-04**: Property name matching between Supabase and Airtable is normalized to handle inconsistencies
+- [x] **SCOPE-04**: Property name matching between Supabase and Airtable is normalized to handle inconsistencies
 
 ### Design System
 
@@ -127,16 +127,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UI-03 | Phase 1 | Complete |
 | UI-04 | Phase 1 | Complete |
 | UI-05 | Phase 1 | Complete |
-| AUTH-01 | Phase 2 | Pending |
-| AUTH-02 | Phase 2 | Pending |
-| AUTH-03 | Phase 2 | Pending |
-| AUTH-04 | Phase 2 | Pending |
-| AUTH-05 | Phase 2 | Pending |
-| AUTH-06 | Phase 2 | Pending |
+| AUTH-01 | Phase 2 | Complete |
+| AUTH-02 | Phase 2 | Complete |
+| AUTH-03 | Phase 2 | Complete |
+| AUTH-04 | Phase 2 | Complete |
+| AUTH-05 | Phase 2 | Complete |
+| AUTH-06 | Phase 2 | Complete |
 | SCOPE-01 | Phase 2 | Pending |
 | SCOPE-02 | Phase 2 | Pending |
 | SCOPE-03 | Phase 2 | Pending |
-| SCOPE-04 | Phase 2 | Pending |
+| SCOPE-04 | Phase 2 | Complete |
 | DATA-01 | Phase 3 | Pending |
 | DATA-02 | Phase 3 | Pending |
 | DATA-03 | Phase 3 | Pending |

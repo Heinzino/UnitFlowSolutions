@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Phase 2 context gathered
-last_updated: "2026-03-10T03:08:37.899Z"
-last_activity: 2026-03-09 -- Plan 01-03 executed (Phase 1 complete)
+status: in-progress
+stopped_at: Phase 2 Plan 01 complete
+last_updated: "2026-03-12T00:44:00Z"
+last_activity: 2026-03-12 -- Plan 02-01 executed (Supabase auth infrastructure)
 progress:
   total_phases: 7
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
-  percent: 100
+  total_plans: 6
+  completed_plans: 4
+  percent: 57
 ---
 
 # Project State
@@ -21,32 +21,33 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-08)
 
 **Core value:** Property Managers can instantly see which turns are overdue, which jobs are stuck, and take action without hunting through Airtable -- fewer clicks to the information that matters.
-**Current focus:** Phase 1: Scaffolding and Design System
+**Current focus:** Phase 2: Authentication and Property Scoping
 
 ## Current Position
 
-Phase: 1 of 7 (Scaffolding and Design System) -- COMPLETE
-Plan: 3 of 3 in current phase (complete)
-Status: Phase 1 complete, ready for Phase 2
-Last activity: 2026-03-09 -- Plan 01-03 executed (Phase 1 complete)
+Phase: 2 of 7 (Authentication and Property Scoping) -- in progress
+Plan: 1 of 3 in current phase (complete)
+Status: Plan 02-01 complete, ready for Plan 02-02
+Last activity: 2026-03-12 -- Plan 02-01 executed (Supabase auth infrastructure)
 
-Progress: [██████████] 100%
+Progress: [████████░░] 57%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 7min
-- Total execution time: 0.33 hours
+- Total plans completed: 4
+- Average duration: 6min
+- Total execution time: 0.40 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-scaffolding | 3 | 20min | 7min |
+| 02-authentication-and-property-scoping | 1 | 4min | 4min |
 
 **Recent Trend:**
-- Last 5 plans: 6min, 2min, 12min
+- Last 5 plans: 6min, 2min, 12min, 4min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -69,19 +70,22 @@ Recent decisions affecting current work:
 - [Phase 01-03]: Sidebar redesigned from icon-only to full-width white floating panel with labels to match Dribbble reference
 - [Phase 01-03]: AppShell header floats on green background; green shows between all floating elements
 - [Phase 01-03]: KPICard added highlighted variant with chartreuse background for key metrics
+- [Phase 02-01]: ROLE_ROUTES imported from src/lib/types/auth.ts as single source of truth for both middleware and server actions
+- [Phase 02-01]: supabaseResponse reassigned inside setAll callback per official pattern to prevent session drift
+- [Phase 02-01]: normalizePropertyName uses toLowerCase().trim() applied at comparison time (not storage time)
+- [Phase 02-01]: Wave 0 test stubs use it.todo so plan 02-02/02-03 can fill implementations without restructuring
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
 - Phase 3: Verify exact `unstable_cache` API in installed Next.js version (may have changed)
-- Phase 2: Verify `@supabase/ssr` current API for middleware pattern
 - Phase 3: Property name normalization between Supabase and Airtable needs real data validation
 
 ## Session Continuity
 
-Last session: 2026-03-10T03:08:37.892Z
-Stopped at: Phase 2 context gathered
-Resume file: .planning/phases/02-authentication-and-property-scoping/02-CONTEXT.md
+Last session: 2026-03-12T00:44:00Z
+Stopped at: Plan 02-01 complete -- Supabase auth infrastructure
+Resume file: .planning/phases/02-authentication-and-property-scoping/02-01-SUMMARY.md
