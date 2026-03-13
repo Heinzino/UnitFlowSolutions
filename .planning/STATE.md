@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Phase 5 context gathered
-last_updated: "2026-03-13T17:36:57.573Z"
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-03-13T18:04:03.920Z"
 last_activity: 2026-03-12 -- Plan 02-01 executed (Supabase auth infrastructure)
 progress:
   total_phases: 7
   completed_phases: 4
-  total_plans: 12
-  completed_plans: 12
+  total_plans: 15
+  completed_plans: 13
   percent: 57
 ---
 
@@ -60,6 +60,7 @@ Progress: [████████░░] 57%
 | Phase 04-executive-dashboard P02 | 3 | 2 tasks | 3 files |
 | Phase 04-executive-dashboard P03 | 5 | 1 tasks | 4 files |
 | Phase 04-executive-dashboard P03 | 10 | 2 tasks | 4 files |
+| Phase 05-property-manager-view P01 | 8 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -104,6 +105,9 @@ Recent decisions affecting current work:
 - [Phase 04-executive-dashboard]: Static Overview heading removed from AppShell — placeholder with no functional purpose consuming 40px vertical space
 - [Phase 04-executive-dashboard]: AlertItemList removed — user did not want gray unit-level detail lists below alert cards
 - [Phase 04-executive-dashboard]: Title bumped text-lg to text-xl and subtitle text-xs to text-sm after user visual approval
+- [Phase 05-01]: projectedSpendMTD uses tr.created >= startOfMonth, not readyToLeaseDate — created date determines billing period
+- [Phase 05-01]: parseCurrency defined locally in pm-kpis.ts (not shared) — consistent with executive-kpis.ts pattern
+- [Phase 05-01]: JobStatusDropdown reverts optimistic status to currentStatus prop on failure — prop is server-confirmed source of truth
 
 ### Pending Todos
 
@@ -116,6 +120,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-13T17:36:57.567Z
-Stopped at: Phase 5 context gathered
-Resume file: .planning/phases/05-property-manager-view/05-CONTEXT.md
+Last session: 2026-03-13T18:04:03.912Z
+Stopped at: Completed 05-01-PLAN.md
+Resume file: None
