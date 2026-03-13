@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 04-executive-dashboard
 source: [04-01-SUMMARY.md, 04-02-SUMMARY.md]
 started: 2026-03-13T02:30:00Z
@@ -49,14 +49,36 @@ skipped: 0
   reason: "User reported: Those are very dark; I can't see any of them, so lighting them up"
   severity: cosmetic
   test: 1
-  artifacts: []
-  missing: []
+  root_cause: "text-text-primary (#111827) and text-text-secondary (#6B7280) are dark-on-dark against body background #0a3a1f. These color tokens are designed for light backgrounds but page header h1, welcome subtitle, Make Ready Overview heading, and alert item list all render directly on the dark green gradient."
+  artifacts:
+    - path: "src/app/(dashboard)/executive/page.tsx"
+      issue: "h1 uses text-text-primary, subtitle uses text-text-secondary — both invisible on dark green"
+    - path: "src/app/(dashboard)/executive/_components/executive-kpis.tsx"
+      issue: "Make Ready Overview h2 uses text-text-primary, alert list items use text-text-secondary — both on dark background"
+  missing:
+    - "Switch page header text to text-white or text-emerald for dark background contrast"
+    - "Switch subtitle to text-white/70 or similar light token"
+    - "Switch Make Ready Overview heading and alert list text to light colors"
   debug_session: ""
 - truth: "Dashboard fits in one viewport without scrolling"
   status: failed
   reason: "User reported: the overview at the top kind of does nothing — put the executive dashboard text there and move everything up so it all fits in one computer view"
   severity: cosmetic
   test: 1
-  artifacts: []
-  missing: []
+  root_cause: "AppShell header (app-shell.tsx:27-63) renders a static 'Overview' h1 that is the same on every page. Executive page then renders its own h1 + subtitle below that — two stacked heading zones consuming ~80-100px before first KPI card. Combined with gap-6 spacing and p-6 card padding, content overflows viewport."
+  artifacts:
+    - path: "src/components/layout/app-shell.tsx"
+      issue: "Static 'Overview' h1 at line 37 is unused — takes vertical space on every page"
+    - path: "src/app/(dashboard)/executive/page.tsx"
+      issue: "Separate title block (lines 25-32) duplicates header area, gap-6 adds 24px"
+    - path: "src/components/ui/kpi-card.tsx"
+      issue: "p-6 internal padding adds 48px per card row (24px top + bottom)"
+    - path: "src/app/(dashboard)/executive/_components/executive-kpis.tsx"
+      issue: "gap-6 between sections, mb-4 on Make Ready heading — all additive"
+  missing:
+    - "Move Executive Dashboard title into AppShell header slot, remove static 'Overview' text"
+    - "Remove standalone title block from executive/page.tsx"
+    - "Reduce gap-6 to gap-4 in page and KPI containers"
+    - "Reduce KPICard p-6 to p-4"
+    - "Reduce Make Ready Overview mb-4 to mb-2"
   debug_session: ""
