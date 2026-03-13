@@ -40,10 +40,10 @@
 
 ### Property Manager View
 
-- [ ] **PM-01**: Turn request list with "Make Readys Past Target Time" section displayed first (overdue-first)
-- [ ] **PM-02**: Turn request list with "Active Make Readys (On Schedule)" section below
-- [ ] **PM-03**: Turn list columns: Property Name (badge), Unit Number, Status (pill), Ready To Lease Date, Vacant Date, Jobs (linked IDs), Price
-- [ ] **PM-04**: Property filter dropdown when PM has multiple assigned properties
+- [x] **PM-01**: Turn request list with "Make Readys Past Target Time" section displayed first (overdue-first)
+- [x] **PM-02**: Turn request list with "Active Make Readys (On Schedule)" section below
+- [x] **PM-03**: Turn list columns: Property Name (badge), Unit Number, Status (pill), Ready To Lease Date, Vacant Date, Jobs (linked IDs), Price
+- [x] **PM-04**: Property filter dropdown when PM has multiple assigned properties
 - [x] **PM-05**: KPI cards: Number of Active Make Readys, Make Readys Completed (30 days), Make Readys Completed (7 days)
 - [x] **PM-06**: KPI cards: Average Make Ready Time, Projected Spend (MTD), Make Readys Past Target Time (pink alert card)
 - [x] **PM-07**: Turn detail page showing all linked jobs with: Job ID, Vendor Name, Vendor Type, Status badge, Start/End dates, Price
@@ -150,10 +150,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EXEC-05 | Phase 4 | Complete |
 | EXEC-06 | Phase 4 | Complete |
 | EXEC-07 | Phase 4 | Complete |
-| PM-01 | Phase 5 | Pending |
-| PM-02 | Phase 5 | Pending |
-| PM-03 | Phase 5 | Pending |
-| PM-04 | Phase 5 | Pending |
+| PM-01 | Phase 5 | Complete |
+| PM-02 | Phase 5 | Complete |
+| PM-03 | Phase 5 | Complete |
+| PM-04 | Phase 5 | Complete |
 | PM-05 | Phase 5 | Complete |
 | PM-06 | Phase 5 | Complete |
 | PM-07 | Phase 5 | Complete |

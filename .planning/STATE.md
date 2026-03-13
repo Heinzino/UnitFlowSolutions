@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: "Checkpoint: Task 2 human-verify in 05-03-PLAN.md"
-last_updated: "2026-03-13T18:08:05.273Z"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-03-13T18:09:08.633Z"
 last_activity: 2026-03-12 -- Plan 02-01 executed (Supabase auth infrastructure)
 progress:
   total_phases: 7
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 15
-  completed_plans: 14
+  completed_plans: 15
   percent: 57
 ---
 
@@ -62,6 +62,7 @@ Progress: [████████░░] 57%
 | Phase 04-executive-dashboard P03 | 10 | 2 tasks | 4 files |
 | Phase 05-property-manager-view P01 | 8 | 2 tasks | 5 files |
 | Phase 05-property-manager-view P03 | 2 | 1 tasks | 2 files |
+| Phase 05-property-manager-view P02 | 2min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -111,6 +112,9 @@ Recent decisions affecting current work:
 - [Phase 05-01]: JobStatusDropdown reverts optimistic status to currentStatus prop on failure — prop is server-confirmed source of truth
 - [Phase 05-03]: params awaited as Promise<{ id: string }> per Next.js 15 requirement
 - [Phase 05-03]: TurnDetailView is a server component (no use client) — JobStatusDropdown is the only client leaf
+- [Phase 05-02]: Suspense boundaries keyed on selectedProperty — forces server component remount when filter changes, no client state threading needed
+- [Phase 05-02]: Overdue section hidden entirely when overdue.length === 0 — no empty pink header shown per user decision
+- [Phase 05-02]: TurnStatusDisplay maps raw Airtable status strings to StatusBadge Status type with plain span fallback for unmapped values
 
 ### Pending Todos
 
@@ -123,6 +127,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-13T18:08:05.266Z
-Stopped at: Checkpoint: Task 2 human-verify in 05-03-PLAN.md
+Last session: 2026-03-13T18:09:08.627Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None

@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Authentication and Property Scoping** - Supabase login/logout, role-based route protection, property-scoped data access per user role (completed 2026-03-12)
 - [x] **Phase 3: Airtable Data Layer** - Server-side Airtable integration with typed interfaces, caching, rate limiting, linked record resolution, and property scoping (completed 2026-03-12)
 - [x] **Phase 4: Executive Dashboard** - Read-only KPI dashboard with alert cards, validating data layer aggregations across all properties (completed 2026-03-13)
-- [ ] **Phase 5: Property Manager View** - Core PM workflow with overdue-first turn lists, turn detail with linked jobs, inline status updates, and PM KPI cards
+- [x] **Phase 5: Property Manager View** - Core PM workflow with overdue-first turn lists, turn detail with linked jobs, inline status updates, and PM KPI cards (completed 2026-03-13)
 - [ ] **Phase 6: District Manager View** - Portfolio overview with per-property cards and drill-down reusing PM components
 - [ ] **Phase 7: Notifications, Charts, and Vendor Metrics** - Smart notification panel, data visualizations (bar charts, gauges, trend indicators), and vendor performance table
 
@@ -148,6 +148,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 2. Authentication and Property Scoping | 3/3 | Complete   | 2026-03-12 |
 | 3. Airtable Data Layer | 3/3 | Complete   | 2026-03-12 |
 | 4. Executive Dashboard | 3/3 | Complete   | 2026-03-13 |
-| 5. Property Manager View | 2/3 | In Progress|  |
+| 5. Property Manager View | 3/3 | Complete   | 2026-03-13 |
 | 6. District Manager View | 0/TBD | Not started | - |
 | 7. Notifications, Charts, and Vendor Metrics | 0/TBD | Not started | - |
