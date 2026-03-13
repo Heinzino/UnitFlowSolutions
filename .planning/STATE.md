@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-13T18:04:03.920Z"
+stopped_at: "Checkpoint: Task 2 human-verify in 05-03-PLAN.md"
+last_updated: "2026-03-13T18:08:05.273Z"
 last_activity: 2026-03-12 -- Plan 02-01 executed (Supabase auth infrastructure)
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 15
-  completed_plans: 13
+  completed_plans: 14
   percent: 57
 ---
 
@@ -61,6 +61,7 @@ Progress: [████████░░] 57%
 | Phase 04-executive-dashboard P03 | 5 | 1 tasks | 4 files |
 | Phase 04-executive-dashboard P03 | 10 | 2 tasks | 4 files |
 | Phase 05-property-manager-view P01 | 8 | 2 tasks | 5 files |
+| Phase 05-property-manager-view P03 | 2 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -108,6 +109,8 @@ Recent decisions affecting current work:
 - [Phase 05-01]: projectedSpendMTD uses tr.created >= startOfMonth, not readyToLeaseDate — created date determines billing period
 - [Phase 05-01]: parseCurrency defined locally in pm-kpis.ts (not shared) — consistent with executive-kpis.ts pattern
 - [Phase 05-01]: JobStatusDropdown reverts optimistic status to currentStatus prop on failure — prop is server-confirmed source of truth
+- [Phase 05-03]: params awaited as Promise<{ id: string }> per Next.js 15 requirement
+- [Phase 05-03]: TurnDetailView is a server component (no use client) — JobStatusDropdown is the only client leaf
 
 ### Pending Todos
 
@@ -120,6 +123,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-13T18:04:03.912Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-03-13T18:08:05.266Z
+Stopped at: Checkpoint: Task 2 human-verify in 05-03-PLAN.md
 Resume file: None
