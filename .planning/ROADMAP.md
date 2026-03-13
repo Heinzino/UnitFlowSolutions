@@ -83,11 +83,11 @@ Plans:
   3. Alert cards appear with correct severity styling: pink for past target (NEEDS ATTENTION), yellow for trending past target (2-day warning)
   4. All KPI data reflects all properties with no user-applied filter
   5. Loading skeleton states display while data is being fetched
-**Plans**: 3 plans
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 04-01-PLAN.md — Add delta field to Job type/mapper, build and test pure KPI compute functions (TDD)
+- [ ] 04-02-PLAN.md — Assemble executive dashboard page with Suspense boundaries, KPI grid, alert cards, skeleton fallback
 
 ### Phase 5: Property Manager View
 **Goal**: Property Managers can see their overdue turns first, drill into job details, and update job statuses inline -- the core "fewer clicks" workflow
@@ -145,7 +145,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 1. Scaffolding and Design System | 3/3 | Complete   | 2026-03-09 |
 | 2. Authentication and Property Scoping | 3/3 | Complete   | 2026-03-12 |
 | 3. Airtable Data Layer | 3/3 | Complete   | 2026-03-12 |
-| 4. Executive Dashboard | 0/TBD | Not started | - |
+| 4. Executive Dashboard | 0/2 | Not started | - |
 | 5. Property Manager View | 0/TBD | Not started | - |
 | 6. District Manager View | 0/TBD | Not started | - |
 | 7. Notifications, Charts, and Vendor Metrics | 0/TBD | Not started | - |
