@@ -1,6 +1,8 @@
+import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { Card } from '@/components/ui/card';
+import { ExecutiveKPIs } from './_components/executive-kpis';
+import { ExecutiveKPISkeleton } from './_components/executive-kpi-skeleton';
 
 export default async function ExecutivePage() {
   const supabase = await createClient();
@@ -11,25 +13,27 @@ export default async function ExecutivePage() {
   }
 
   const displayName: string = user.user_metadata?.full_name ?? user.email ?? 'Unknown';
+  const today = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return (
-    <div className="flex flex-col gap-4">
-      <Card className="p-6">
-        <h1 className="font-heading font-bold text-2xl text-text-primary mb-2">
+    <div className="flex flex-col gap-6">
+      <div>
+        <h1 className="font-heading font-bold text-2xl text-text-primary">
           Executive Dashboard
         </h1>
-        <p className="text-text-secondary text-sm mb-4">
-          Welcome, {displayName}
+        <p className="text-text-secondary text-sm mt-1">
+          Welcome, {displayName} &mdash; {today}
         </p>
+      </div>
 
-        <p className="text-text-secondary text-sm">
-          All Properties
-        </p>
-
-        <p className="text-text-secondary text-sm mt-4">
-          Executive KPIs coming in Phase 4.
-        </p>
-      </Card>
+      <Suspense fallback={<ExecutiveKPISkeleton />}>
+        <ExecutiveKPIs />
+      </Suspense>
     </div>
   );
 }
