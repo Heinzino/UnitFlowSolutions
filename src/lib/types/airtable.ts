@@ -52,6 +52,7 @@ export interface Job {
   turnRequestId: number | null
   propertyName: string | null
   durationDays: number | null
+  delta: number | null
   isCompleted: boolean
   created: string
 }

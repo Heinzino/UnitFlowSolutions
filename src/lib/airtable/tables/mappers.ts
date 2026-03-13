@@ -36,6 +36,7 @@ export function mapJob(record: AirtableRecord<FieldSet>): Job {
       f['Duration (Days, If Completed)'] != null
         ? Number(f['Duration (Days, If Completed)']) || null
         : null,
+    delta: f['Delta'] != null ? Number(f['Delta']) : null,
     isCompleted: Boolean(f['Is Completed']),
     created: String(f['Created'] ?? ''),
   }
