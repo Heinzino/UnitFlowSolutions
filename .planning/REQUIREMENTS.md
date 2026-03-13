@@ -58,7 +58,7 @@
 - [x] **EXEC-04**: Make Ready Overview section: Active Make Readys Open
 - [x] **EXEC-05**: Alert cards: Make Readys Past Target Time (pink, NEEDS ATTENTION), Make Readys Trending Past Target Date (yellow, 2 days warning)
 - [x] **EXEC-06**: All KPI data computed across all properties (no filter)
-- [ ] **EXEC-07**: Loading skeleton states
+- [x] **EXEC-07**: Loading skeleton states
 
 ### District Manager View
 
@@ -149,7 +149,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EXEC-04 | Phase 4 | Complete |
 | EXEC-05 | Phase 4 | Complete |
 | EXEC-06 | Phase 4 | Complete |
-| EXEC-07 | Phase 4 | Pending |
+| EXEC-07 | Phase 4 | Complete |
 | PM-01 | Phase 5 | Pending |
 | PM-02 | Phase 5 | Pending |
 | PM-03 | Phase 5 | Pending |

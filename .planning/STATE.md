@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-03-13T02:10:52.676Z"
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-03-13T02:15:19.196Z"
 last_activity: 2026-03-12 -- Plan 02-01 executed (Supabase auth infrastructure)
 progress:
   total_phases: 7
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 11
-  completed_plans: 10
+  completed_plans: 11
   percent: 57
 ---
 
@@ -57,6 +57,7 @@ Progress: [████████░░] 57%
 | Phase 03-airtable-data-layer P03 | 4 | 2 tasks | 4 files |
 | Phase 03-airtable-data-layer P02 | 9 | 2 tasks | 11 files |
 | Phase 04-executive-dashboard P01 | 4 | 2 tasks | 5 files |
+| Phase 04-executive-dashboard P02 | 3 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -95,6 +96,8 @@ Recent decisions affecting current work:
 - [Phase 04-01]: Active jobs filter uses status \!== 'Completed' — Invoice Sent does not exist in real Airtable data
 - [Phase 04-01]: activeMakeReadysOpen uses status \!== 'Done' (safer than allowlist) — catches any future non-Done status values
 - [Phase 04-01]: delta: Number(f['Delta']) without || null fallback — preserves 0 as valid delta value
+- [Phase 04-02]: Suspense wraps ExecutiveKPIs child — page.tsx is synchronous (auth only), data fetching in child fixes Next.js 16 blocking route error
+- [Phase 04-02]: costDisplay formatted inline with Intl.NumberFormat — CurrencyDisplay renders a span not a string, so value prop needs pre-formatted string
 
 ### Pending Todos
 
@@ -107,6 +110,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-13T02:10:52.670Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-03-13T02:15:19.184Z
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None
