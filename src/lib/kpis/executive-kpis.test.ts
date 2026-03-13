@@ -105,24 +105,28 @@ describe('computeExecutiveKPIs', () => {
   // EXEC-01: jobsTrendingPastTarget
   describe('jobsTrendingPastTarget', () => {
     it('counts active jobs with endDate within next 2 days from now', () => {
+      // now = 2024-02-15T12:00:00Z, twoDaysFromNow = 2024-02-17T12:00:00Z
+      // Date strings parse as midnight UTC, so:
+      //   '2024-02-16' = 2024-02-16T00:00:00Z — between now and twoDaysFromNow (INCLUDE)
+      //   '2024-02-17' = 2024-02-17T00:00:00Z — between now and twoDaysFromNow (INCLUDE)
+      //   '2024-02-18' = 2024-02-18T00:00:00Z — after twoDaysFromNow (EXCLUDE)
+      //   '2024-02-15' = 2024-02-15T00:00:00Z — before now/noon (EXCLUDE)
       const jobs = [
-        // endDate today = within 2 days (INCLUDE)
-        makeJob({ status: 'In Progress', endDate: '2024-02-15' }),
-        // endDate 1 day from now = within 2 days (INCLUDE)
+        // endDate tomorrow = within 2 days (INCLUDE)
         makeJob({ status: 'In Progress', endDate: '2024-02-16' }),
-        // endDate exactly 2 days from now (INCLUDE)
+        // endDate day after = within 2 days (INCLUDE)
         makeJob({ status: 'In Progress', endDate: '2024-02-17' }),
-        // endDate 3 days from now (EXCLUDE)
+        // endDate 3+ days away (EXCLUDE)
         makeJob({ status: 'In Progress', endDate: '2024-02-18' }),
         // Completed job with endDate in range (EXCLUDE - not active)
-        makeJob({ status: 'Completed', endDate: '2024-02-15' }),
+        makeJob({ status: 'Completed', endDate: '2024-02-16' }),
         // Active job with no endDate (EXCLUDE)
         makeJob({ status: 'In Progress', endDate: null }),
         // Past endDate (EXCLUDE)
         makeJob({ status: 'In Progress', endDate: '2024-02-14' }),
       ]
       const { jobsTrendingPastTarget } = computeExecutiveKPIs(jobs, [])
-      expect(jobsTrendingPastTarget).toBe(3)
+      expect(jobsTrendingPastTarget).toBe(2)
     })
 
     it('returns 0 when no active jobs have endDate in range', () => {
@@ -135,10 +139,13 @@ describe('computeExecutiveKPIs', () => {
   // EXEC-02: jobsCompleted30d
   describe('jobsCompleted30d', () => {
     it('counts Completed jobs with endDate in past 30 days', () => {
-      // thirtyDaysAgo = 2024-01-16
+      // thirtyDaysAgo = 2024-01-16T12:00:00Z
+      // Date strings parse as midnight UTC, so:
+      //   '2024-01-16' = 2024-01-16T00:00:00Z — BEFORE thirtyDaysAgo noon (EXCLUDE)
+      //   '2024-01-17' = 2024-01-17T00:00:00Z — after thirtyDaysAgo (INCLUDE)
       const jobs = [
-        // endDate within 30 days (INCLUDE)
-        makeJob({ status: 'Completed', endDate: '2024-01-16' }),
+        // endDate just inside 30-day window (INCLUDE)
+        makeJob({ status: 'Completed', endDate: '2024-01-17' }),
         makeJob({ status: 'Completed', endDate: '2024-02-01' }),
         // endDate older than 30 days (EXCLUDE)
         makeJob({ status: 'Completed', endDate: '2024-01-15' }),
