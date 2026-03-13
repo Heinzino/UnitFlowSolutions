@@ -32,10 +32,10 @@
 ### Airtable Integration
 
 - [x] **DATA-01**: All Airtable access is server-side only (API key never exposed to browser)
-- [ ] **DATA-02**: Read data from all 9 Airtable tables with correct TypeScript type mappings
+- [x] **DATA-02**: Read data from all 9 Airtable tables with correct TypeScript type mappings
 - [x] **DATA-03**: Cache responses with 60s TTL using Next.js caching with tag-based revalidation
 - [x] **DATA-04**: Rate limiter prevents exceeding Airtable's 5 req/sec limit
-- [ ] **DATA-05**: Linked record IDs are resolved via batch fetches (no N+1 queries)
+- [x] **DATA-05**: Linked record IDs are resolved via batch fetches (no N+1 queries)
 - [x] **DATA-06**: Write operations (status updates) bust relevant cache tags immediately
 
 ### Property Manager View
@@ -52,12 +52,12 @@
 
 ### Executive View
 
-- [ ] **EXEC-01**: KPI cards row 1: Active Jobs Open, Jobs Trending Past Target (2 days from completion)
-- [ ] **EXEC-02**: KPI cards row 2: Jobs Completed (30 days), Backlog Delta (opened minus completed)
-- [ ] **EXEC-03**: KPI cards row 3: Average Time To Complete a Job, Projected Cost Exposure (MTD)
-- [ ] **EXEC-04**: Make Ready Overview section: Active Make Readys Open
-- [ ] **EXEC-05**: Alert cards: Make Readys Past Target Time (pink, NEEDS ATTENTION), Make Readys Trending Past Target Date (yellow, 2 days warning)
-- [ ] **EXEC-06**: All KPI data computed across all properties (no filter)
+- [x] **EXEC-01**: KPI cards row 1: Active Jobs Open, Jobs Trending Past Target (2 days from completion)
+- [x] **EXEC-02**: KPI cards row 2: Jobs Completed (30 days), Backlog Delta (opened minus completed)
+- [x] **EXEC-03**: KPI cards row 3: Average Time To Complete a Job, Projected Cost Exposure (MTD)
+- [x] **EXEC-04**: Make Ready Overview section: Active Make Readys Open
+- [x] **EXEC-05**: Alert cards: Make Readys Past Target Time (pink, NEEDS ATTENTION), Make Readys Trending Past Target Date (yellow, 2 days warning)
+- [x] **EXEC-06**: All KPI data computed across all properties (no filter)
 - [ ] **EXEC-07**: Loading skeleton states
 
 ### District Manager View
@@ -138,17 +138,17 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SCOPE-03 | Phase 2 | Complete |
 | SCOPE-04 | Phase 2 | Complete |
 | DATA-01 | Phase 3 | Complete |
-| DATA-02 | Phase 3 | Pending |
+| DATA-02 | Phase 3 | Complete |
 | DATA-03 | Phase 3 | Complete |
 | DATA-04 | Phase 3 | Complete |
-| DATA-05 | Phase 3 | Pending |
+| DATA-05 | Phase 3 | Complete |
 | DATA-06 | Phase 3 | Complete |
-| EXEC-01 | Phase 4 | Pending |
-| EXEC-02 | Phase 4 | Pending |
-| EXEC-03 | Phase 4 | Pending |
-| EXEC-04 | Phase 4 | Pending |
-| EXEC-05 | Phase 4 | Pending |
-| EXEC-06 | Phase 4 | Pending |
+| EXEC-01 | Phase 4 | Complete |
+| EXEC-02 | Phase 4 | Complete |
+| EXEC-03 | Phase 4 | Complete |
+| EXEC-04 | Phase 4 | Complete |
+| EXEC-05 | Phase 4 | Complete |
+| EXEC-06 | Phase 4 | Complete |
 | EXEC-07 | Phase 4 | Pending |
 | PM-01 | Phase 5 | Pending |
 | PM-02 | Phase 5 | Pending |

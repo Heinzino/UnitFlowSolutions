@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Phase 4 context gathered
-last_updated: "2026-03-13T01:38:26.685Z"
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-13T02:10:52.676Z"
 last_activity: 2026-03-12 -- Plan 02-01 executed (Supabase auth infrastructure)
 progress:
   total_phases: 7
   completed_phases: 3
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 11
+  completed_plans: 10
   percent: 57
 ---
 
@@ -56,6 +56,7 @@ Progress: [████████░░] 57%
 | Phase 03-airtable-data-layer P01 | 5 | 2 tasks | 10 files |
 | Phase 03-airtable-data-layer P03 | 4 | 2 tasks | 4 files |
 | Phase 03-airtable-data-layer P02 | 9 | 2 tasks | 11 files |
+| Phase 04-executive-dashboard P01 | 4 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,10 @@ Recent decisions affecting current work:
 - [Phase 03-03]: updateJobStatus returns structured { success, error } objects — never throws, always safe to await in client
 - [Phase 03-airtable-data-layer]: Mappers extracted to mappers.ts (no client dep) so tests import pure functions without env var guards firing
 - [Phase 03-airtable-data-layer]: base<FieldSet>('Table') pattern: FieldSet generic on base() not select() per airtable SDK AirtableBase interface
+- [Phase 04-01]: parseCurrency uses totalCost first, falls back to quotePrice if null — totalCost is semantically correct field
+- [Phase 04-01]: Active jobs filter uses status \!== 'Completed' — Invoice Sent does not exist in real Airtable data
+- [Phase 04-01]: activeMakeReadysOpen uses status \!== 'Done' (safer than allowlist) — catches any future non-Done status values
+- [Phase 04-01]: delta: Number(f['Delta']) without || null fallback — preserves 0 as valid delta value
 
 ### Pending Todos
 
@@ -102,6 +107,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-13T01:38:26.676Z
-Stopped at: Phase 4 context gathered
-Resume file: .planning/phases/04-executive-dashboard/04-CONTEXT.md
+Last session: 2026-03-13T02:10:52.670Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: None

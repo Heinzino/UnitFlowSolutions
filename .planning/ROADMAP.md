@@ -145,7 +145,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 1. Scaffolding and Design System | 3/3 | Complete   | 2026-03-09 |
 | 2. Authentication and Property Scoping | 3/3 | Complete   | 2026-03-12 |
 | 3. Airtable Data Layer | 3/3 | Complete   | 2026-03-12 |
-| 4. Executive Dashboard | 0/2 | Not started | - |
+| 4. Executive Dashboard | 1/2 | In Progress|  |
 | 5. Property Manager View | 0/TBD | Not started | - |
 | 6. District Manager View | 0/TBD | Not started | - |
 | 7. Notifications, Charts, and Vendor Metrics | 0/TBD | Not started | - |
