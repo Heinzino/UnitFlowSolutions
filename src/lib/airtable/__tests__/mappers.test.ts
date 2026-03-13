@@ -50,6 +50,7 @@ function makeJobRecord(overrides: Record<string, unknown> = {}) {
       'Duration (Days, If Completed)': 5,
       'Is Completed': false,
       'Created': '2024-01-10T00:00:00.000Z',
+      'Delta': 3,
       ...overrides,
     },
   }
@@ -77,6 +78,7 @@ describe('mapJob', () => {
     expect(job.durationDays).toBe(5)
     expect(job.isCompleted).toBe(false)
     expect(job.created).toBe('2024-01-10T00:00:00.000Z')
+    expect(job.delta).toBe(3)
   })
 
   it('handles null optional fields', () => {
@@ -116,6 +118,17 @@ describe('mapJob', () => {
     const record = makeJobRecord({ 'Is Completed': true })
     const job = mapJob(record as unknown as Parameters<typeof mapJob>[0])
     expect(job.isCompleted).toBe(true)
+  })
+
+  it('maps delta field correctly', () => {
+    const positive = makeJobRecord({ 'Delta': 5 })
+    expect(mapJob(positive as unknown as Parameters<typeof mapJob>[0]).delta).toBe(5)
+
+    const zero = makeJobRecord({ 'Delta': 0 })
+    expect(mapJob(zero as unknown as Parameters<typeof mapJob>[0]).delta).toBe(0)
+
+    const nullDelta = makeJobRecord({ 'Delta': null })
+    expect(mapJob(nullDelta as unknown as Parameters<typeof mapJob>[0]).delta).toBeNull()
   })
 })
 
