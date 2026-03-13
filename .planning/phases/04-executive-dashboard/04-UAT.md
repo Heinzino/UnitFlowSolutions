@@ -1,5 +1,5 @@
 ---
-status: diagnosed
+status: resolved
 phase: 04-executive-dashboard
 source: [04-01-SUMMARY.md, 04-02-SUMMARY.md]
 started: 2026-03-13T02:30:00Z
@@ -45,7 +45,7 @@ skipped: 0
 ## Gaps
 
 - truth: "Page loads with readable content — header, date, KPI cards all visible against background"
-  status: failed
+  status: resolved
   reason: "User reported: Those are very dark; I can't see any of them, so lighting them up"
   severity: cosmetic
   test: 1
@@ -61,7 +61,7 @@ skipped: 0
     - "Switch Make Ready Overview heading and alert list text to light colors"
   debug_session: ""
 - truth: "Dashboard fits in one viewport without scrolling"
-  status: failed
+  status: resolved
   reason: "User reported: the overview at the top kind of does nothing — put the executive dashboard text there and move everything up so it all fits in one computer view"
   severity: cosmetic
   test: 1
