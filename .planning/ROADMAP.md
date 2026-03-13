@@ -103,8 +103,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
+- [ ] 05-01-PLAN.md — TDD computePMKPIs pure function, build JobStatusDropdown client component, KPI and turn list skeleton fallbacks
+- [ ] 05-02-PLAN.md — PM dashboard page with KPI cards, property filter dropdown, overdue-first turn list with two sections
+- [ ] 05-03-PLAN.md — Turn detail page with linked jobs table, inline job status updates, visual verification checkpoint
 
 ### Phase 6: District Manager View
 **Goal**: District Managers can see a portfolio-level overview of their assigned properties and drill down into any property's turn data
@@ -147,6 +148,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 2. Authentication and Property Scoping | 3/3 | Complete   | 2026-03-12 |
 | 3. Airtable Data Layer | 3/3 | Complete   | 2026-03-12 |
 | 4. Executive Dashboard | 3/3 | Complete   | 2026-03-13 |
-| 5. Property Manager View | 0/TBD | Not started | - |
+| 5. Property Manager View | 0/3 | Not started | - |
 | 6. District Manager View | 0/TBD | Not started | - |
 | 7. Notifications, Charts, and Vendor Metrics | 0/TBD | Not started | - |
