@@ -24,19 +24,7 @@ export function AppShell({
       {/* Main content — cards float directly on green */}
       <div className="flex-1 md:ml-[236px] p-3 pb-24 md:pb-3 min-h-screen">
         {/* Top header bar — its own floating card */}
-        <header className="flex items-center justify-between px-6 py-3 mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-emerald/10 flex items-center justify-center">
-              <div className="grid grid-cols-2 gap-0.5">
-                <div className="w-1 h-1 rounded-full bg-emerald" />
-                <div className="w-1 h-1 rounded-full bg-emerald" />
-                <div className="w-1 h-1 rounded-full bg-emerald" />
-                <div className="w-1 h-1 rounded-full bg-emerald" />
-              </div>
-            </div>
-            <h1 className="text-lg font-heading font-semibold text-emerald">Overview</h1>
-          </div>
-
+        <header className="flex items-center justify-end px-6 py-3 mb-3">
           <div className="flex items-center gap-3">
             {/* Search — commented out for now, may add later
             <div className="relative hidden sm:block">

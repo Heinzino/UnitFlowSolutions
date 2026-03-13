@@ -23,7 +23,7 @@ function AlertItemList({ items }: AlertItemListProps) {
   const overflow = items.length - 5;
 
   return (
-    <ul className="mt-2 text-sm text-text-secondary space-y-1 px-6 pb-4">
+    <ul className="mt-2 text-sm text-white/70 space-y-1 px-6 pb-4">
       {displayed.map((item, i) => (
         <li key={i}>
           {item.propertyName} #{item.unitNumber}
@@ -54,7 +54,7 @@ export async function ExecutiveKPIs() {
   const hasAlerts = kpis.pastTargetAlerts.length > 0 || kpis.trendingAlerts.length > 0;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       {/* KPI grid: 3 columns, 2 rows */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <KPICard
@@ -91,7 +91,7 @@ export async function ExecutiveKPIs() {
 
       {/* Make Ready Overview */}
       <div>
-        <h2 className="font-heading font-semibold text-lg text-text-primary mb-4">
+        <h2 className="font-heading font-semibold text-lg text-white mb-2">
           Make Ready Overview
         </h2>
         <KPICard

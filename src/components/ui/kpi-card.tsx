@@ -33,7 +33,7 @@ export function KPICard({
     return (
       <div
         className={cn(
-          "rounded-card p-6 shadow-sm bg-card border border-card-border",
+          "rounded-card p-4 shadow-sm bg-card border border-card-border",
           className
         )}
       >
@@ -49,7 +49,7 @@ export function KPICard({
   return (
     <div
       className={cn(
-        "rounded-card p-6 shadow-sm",
+        "rounded-card p-4 shadow-sm",
         variantStyles[variant],
         className
       )}
