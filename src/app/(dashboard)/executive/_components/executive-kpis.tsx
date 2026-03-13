@@ -14,27 +14,6 @@ import { fetchTurnRequests } from '@/lib/airtable/tables/turn-requests';
 import { computeExecutiveKPIs } from '@/lib/kpis/executive-kpis';
 import { KPICard } from '@/components/ui/kpi-card';
 
-interface AlertItemListProps {
-  items: { propertyName: string; unitNumber: string }[];
-}
-
-function AlertItemList({ items }: AlertItemListProps) {
-  const displayed = items.slice(0, 5);
-  const overflow = items.length - 5;
-
-  return (
-    <ul className="mt-2 text-sm text-white/70 space-y-1 px-6 pb-4">
-      {displayed.map((item, i) => (
-        <li key={i}>
-          {item.propertyName} #{item.unitNumber}
-        </li>
-      ))}
-      {overflow > 0 && (
-        <li className="font-medium">+{overflow} more</li>
-      )}
-    </ul>
-  );
-}
 
 export async function ExecutiveKPIs() {
   const [jobs, turnRequests] = await Promise.all([fetchJobs(), fetchTurnRequests()]);
@@ -105,26 +84,20 @@ export async function ExecutiveKPIs() {
       {hasAlerts && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {kpis.pastTargetAlerts.length > 0 && (
-            <div>
-              <KPICard
-                icon={AlertTriangle}
-                label="Make Readys Past Target Time"
-                value={kpis.pastTargetAlerts.length}
-                variant="alert-past"
-              />
-              <AlertItemList items={kpis.pastTargetAlerts} />
-            </div>
+            <KPICard
+              icon={AlertTriangle}
+              label="Make Readys Past Target Time"
+              value={kpis.pastTargetAlerts.length}
+              variant="alert-past"
+            />
           )}
           {kpis.trendingAlerts.length > 0 && (
-            <div>
-              <KPICard
-                icon={AlertCircle}
-                label="Make Readys Trending Past Target Date"
-                value={kpis.trendingAlerts.length}
-                variant="alert-trending"
-              />
-              <AlertItemList items={kpis.trendingAlerts} />
-            </div>
+            <KPICard
+              icon={AlertCircle}
+              label="Make Readys Trending Past Target Date"
+              value={kpis.trendingAlerts.length}
+              variant="alert-trending"
+            />
           )}
         </div>
       )}

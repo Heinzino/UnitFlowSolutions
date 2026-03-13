@@ -23,10 +23,10 @@ export default async function ExecutivePage() {
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <h1 className="font-heading font-bold text-lg text-white">
+        <h1 className="font-heading font-bold text-xl text-white">
           Executive Dashboard
         </h1>
-        <p className="text-white/70 text-xs mt-0.5">
+        <p className="text-white/70 text-sm mt-0.5">
           Welcome, {displayName} &mdash; {today}
         </p>
       </div>
