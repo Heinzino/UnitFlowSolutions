@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { fetchTurnRequestsForUser } from '@/lib/airtable/tables/turn-requests';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { StatusBadge, type Status } from '@/components/ui/status-badge';
 import {
   Table,
   TableHeader,
@@ -11,7 +10,9 @@ import {
   TableHead,
   TableCell,
 } from '@/components/ui/table';
-import { JobStatusDropdown } from './job-status-dropdown';
+import { MobileJobsList } from './mobile-jobs-list';
+import { ClickableTurnRow } from './clickable-turn-row';
+import { TurnStatusDropdown } from './turn-status-dropdown';
 import type { UserRole } from '@/lib/types/auth';
 import type { TurnRequest } from '@/lib/types/airtable';
 
@@ -20,15 +21,6 @@ interface PMTurnListProps {
   role: string;
 }
 
-// Map Airtable turn request status strings to StatusBadge Status type
-function mapTurnStatus(status: string): Status | null {
-  const normalized = status.toLowerCase().trim();
-  if (normalized === 'done' || normalized === 'completed' || normalized === 'ready') return 'completed';
-  if (normalized === 'in progress' || normalized === 'in-progress') return 'in-progress';
-  if (normalized === 'blocked') return 'blocked';
-  if (normalized === 'needs attention') return 'attention';
-  return null;
-}
 
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return '---';
@@ -51,40 +43,31 @@ function formatPrice(totalCost: string | null, quotePrice: string | null): strin
   }).format(num);
 }
 
-function TurnStatusDisplay({ status }: { status: string }) {
-  const mapped = mapTurnStatus(status);
-  if (mapped) {
-    return <StatusBadge status={mapped} label={status} />;
-  }
-  // Fallback for unmapped statuses
-  return (
-    <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-pill bg-gray-100 text-text-primary">
-      {status}
-    </span>
-  );
-}
 
 function JobsCell({ turn }: { turn: TurnRequest }) {
   if (turn.jobs && turn.jobs.length > 0) {
     return (
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-wrap gap-1" onClick={(e) => e.stopPropagation()}>
         {turn.jobs.map((job) => (
-          <JobStatusDropdown
+          <Link
             key={job.jobId}
-            jobId={job.jobId}
-            turnRequestId={turn.requestId}
-            currentStatus={job.status}
-          />
+            href={`/property/job/${job.jobId}`}
+            className="inline-flex items-center gap-1 bg-emerald/15 text-emerald-dark hover:bg-emerald/25 text-xs font-semibold rounded-pill px-2.5 py-0.5 transition-colors"
+          >
+            #{job.jobId}
+          </Link>
         ))}
       </div>
     );
   }
-  // Fallback: plain count badge when jobs not resolved
   if (turn.jobIds.length > 0) {
     return (
-      <Badge variant="default">
+      <Link
+        href={`/property/turn/${turn.requestId}`}
+        className="inline-flex items-center bg-emerald/15 text-emerald-dark hover:bg-emerald/25 text-xs font-semibold rounded-pill px-2.5 py-0.5 transition-colors"
+      >
         {turn.jobIds.length} job{turn.jobIds.length !== 1 ? 's' : ''}
-      </Badge>
+      </Link>
     );
   }
   return <span className="text-text-secondary text-xs">No jobs</span>;
@@ -94,54 +77,23 @@ function TurnTableRows({ turns }: { turns: TurnRequest[] }) {
   return (
     <>
       {turns.map((turn) => (
-        <TableRow key={turn.requestId} className="group">
-          {/* Property Name */}
+        <ClickableTurnRow key={turn.requestId} href={`/property/turn/${turn.requestId}`}>
           <TableCell>
-            <Link
-              href={`/property/turn/${turn.requestId}`}
-              className="contents"
-            >
-              <Badge variant="emerald">{turn.propertyName}</Badge>
-            </Link>
+            <Badge variant="emerald">{turn.propertyName}</Badge>
           </TableCell>
-          {/* Unit Number */}
+          <TableCell>{turn.unitNumber}</TableCell>
           <TableCell>
-            <Link
-              href={`/property/turn/${turn.requestId}`}
-              className="text-text-primary hover:text-forest transition-colors"
-            >
-              {turn.unitNumber}
-            </Link>
+            <div onClick={(e) => e.stopPropagation()}>
+              <TurnStatusDropdown requestId={turn.requestId} currentStatus={turn.status} />
+            </div>
           </TableCell>
-          {/* Status */}
-          <TableCell>
-            <Link href={`/property/turn/${turn.requestId}`} className="contents">
-              <TurnStatusDisplay status={turn.status} />
-            </Link>
-          </TableCell>
-          {/* Ready To Lease Date */}
-          <TableCell>
-            <Link href={`/property/turn/${turn.requestId}`} className="text-text-primary hover:text-forest transition-colors">
-              {formatDate(turn.readyToLeaseDate)}
-            </Link>
-          </TableCell>
-          {/* Vacant Date */}
-          <TableCell>
-            <Link href={`/property/turn/${turn.requestId}`} className="text-text-primary hover:text-forest transition-colors">
-              {formatDate(turn.vacantDate)}
-            </Link>
-          </TableCell>
-          {/* Jobs — inline dropdowns, stopPropagation handled in JobStatusDropdown */}
+          <TableCell>{formatDate(turn.readyToLeaseDate)}</TableCell>
+          <TableCell>{formatDate(turn.vacantDate)}</TableCell>
           <TableCell>
             <JobsCell turn={turn} />
           </TableCell>
-          {/* Price */}
-          <TableCell>
-            <Link href={`/property/turn/${turn.requestId}`} className="text-text-primary hover:text-forest transition-colors">
-              {formatPrice(turn.totalCost, turn.quotePrice)}
-            </Link>
-          </TableCell>
-        </TableRow>
+          <TableCell>{formatPrice(turn.totalCost, turn.quotePrice)}</TableCell>
+        </ClickableTurnRow>
       ))}
     </>
   );
@@ -154,7 +106,7 @@ function TurnCard({ turn }: { turn: TurnRequest }) {
       <div className="p-4 border-b border-card-border last:border-b-0">
         <div className="flex items-start justify-between gap-2 mb-2">
           <Badge variant="emerald">{turn.propertyName}</Badge>
-          <TurnStatusDisplay status={turn.status} />
+          <TurnStatusDropdown requestId={turn.requestId} currentStatus={turn.status} />
         </div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
           <span className="text-text-secondary text-xs">Unit</span>
@@ -169,23 +121,11 @@ function TurnCard({ turn }: { turn: TurnRequest }) {
           <span className="text-text-secondary text-xs">Price</span>
           <span className="text-text-primary">{formatPrice(turn.totalCost, turn.quotePrice)}</span>
         </div>
-        {/* Jobs: dropdowns stacked vertically, stopPropagation prevents Link navigation */}
+        {/* Jobs: dropdowns rendered via client component wrapper to handle stopPropagation */}
         {turn.jobs && turn.jobs.length > 0 && (
           <div className="mt-2">
             <span className="text-text-secondary text-xs block mb-1">Jobs</span>
-            <div
-              className="flex flex-col gap-1"
-              onClick={(e) => e.preventDefault()}
-            >
-              {turn.jobs.map((job) => (
-                <JobStatusDropdown
-                  key={job.jobId}
-                  jobId={job.jobId}
-                  turnRequestId={turn.requestId}
-                  currentStatus={job.status}
-                />
-              ))}
-            </div>
+            <MobileJobsList turn={turn} />
           </div>
         )}
         {(!turn.jobs || turn.jobs.length === 0) && turn.jobIds.length > 0 && (

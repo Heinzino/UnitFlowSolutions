@@ -11,7 +11,7 @@ import {
   TableCell,
 } from '@/components/ui/table'
 import { JobStatusDropdown } from '@/app/(dashboard)/property/_components/job-status-dropdown'
-import type { TurnRequest } from '@/lib/types/airtable'
+import type { TurnRequest, Job } from '@/lib/types/airtable'
 
 interface TurnDetailViewProps {
   turn: TurnRequest
@@ -45,6 +45,41 @@ function mapTurnStatusToBadge(status: string): Status {
   return 'in-progress'
 }
 
+function JobCard({ job, turnRequestId }: { job: Job; turnRequestId: number }) {
+  return (
+    <div className="p-4 border-b border-gray-100 last:border-b-0">
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <Link href={`/property/job/${job.jobId}`} className="text-emerald-dark hover:underline font-medium text-sm">
+          Job #{job.jobId}
+        </Link>
+        <JobStatusDropdown
+          jobId={job.jobId}
+          turnRequestId={turnRequestId}
+          currentStatus={job.status}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+        <span className="text-text-secondary text-xs">Vendor</span>
+        <span className="text-text-primary">{job.vendorName ?? '---'}</span>
+
+        <span className="text-text-secondary text-xs">Type</span>
+        <span className="text-text-primary">{job.vendorType ?? '---'}</span>
+
+        <span className="text-text-secondary text-xs">Start</span>
+        <span className="text-text-primary">{formatDate(job.startDate)}</span>
+
+        <span className="text-text-secondary text-xs">End</span>
+        <span className="text-text-primary">{formatDate(job.endDate)}</span>
+
+        <span className="text-text-secondary text-xs">Price</span>
+        <span className="text-text-primary">
+          {job.quotePrice != null ? parseCurrency(job.quotePrice) : '---'}
+        </span>
+      </div>
+    </div>
+  )
+}
+
 export function TurnDetailView({ turn }: TurnDetailViewProps) {
   const jobs = turn.jobs ?? []
 
@@ -59,9 +94,9 @@ export function TurnDetailView({ turn }: TurnDetailViewProps) {
       {/* Back link */}
       <Link
         href="/property"
-        className="text-white/70 hover:text-white text-sm transition-colors"
+        className="text-white hover:text-white/80 text-base font-medium transition-colors"
       >
-        &lt; Back to turns
+        &larr; Back to turns
       </Link>
 
       {/* Header Card */}
@@ -119,7 +154,7 @@ export function TurnDetailView({ turn }: TurnDetailViewProps) {
         </div>
       </Card>
 
-      {/* Jobs Table Card */}
+      {/* Jobs Card */}
       <Card>
         <div className="flex flex-col gap-4">
           <h2 className="font-heading font-semibold text-lg text-text-primary">
@@ -131,45 +166,56 @@ export function TurnDetailView({ turn }: TurnDetailViewProps) {
               No jobs linked to this turn request.
             </p>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent border-b border-gray-100">
-                  <TableHead>Job ID</TableHead>
-                  <TableHead>Vendor Name</TableHead>
-                  <TableHead>Vendor Type</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Start Date</TableHead>
-                  <TableHead>End Date</TableHead>
-                  <TableHead>Price</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <>
+              {/* Desktop table — hidden on small screens */}
+              <div className="hidden md:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent border-b border-gray-100">
+                      <TableHead>Job ID</TableHead>
+                      <TableHead>Vendor Name</TableHead>
+                      <TableHead>Vendor Type</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Start Date</TableHead>
+                      <TableHead>End Date</TableHead>
+                      <TableHead>Price</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {jobs.map((job) => (
+                      <TableRow key={job.jobId}>
+                        <TableCell className="font-medium">
+          <Link href={`/property/job/${job.jobId}`} className="text-emerald-dark hover:underline">
+            #{job.jobId}
+          </Link>
+        </TableCell>
+                        <TableCell>{job.vendorName ?? '---'}</TableCell>
+                        <TableCell>{job.vendorType ?? '---'}</TableCell>
+                        <TableCell>
+                          <JobStatusDropdown
+                            jobId={job.jobId}
+                            turnRequestId={turn.requestId}
+                            currentStatus={job.status}
+                          />
+                        </TableCell>
+                        <TableCell>{formatDate(job.startDate)}</TableCell>
+                        <TableCell>{formatDate(job.endDate)}</TableCell>
+                        <TableCell>
+                          {job.quotePrice != null ? parseCurrency(job.quotePrice) : '---'}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile card list — hidden on md+ */}
+              <div className="md:hidden">
                 {jobs.map((job) => (
-                  <TableRow key={job.jobId}>
-                    <TableCell className="font-medium">{job.jobId}</TableCell>
-                    <TableCell>{job.vendorName ?? '---'}</TableCell>
-                    <TableCell>{job.vendorType ?? '---'}</TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <JobStatusDropdown
-                        jobId={job.jobId}
-                        turnRequestId={turn.requestId}
-                        currentStatus={job.status}
-                      />
-                    </TableCell>
-                    <TableCell>{formatDate(job.startDate)}</TableCell>
-                    <TableCell>{formatDate(job.endDate)}</TableCell>
-                    <TableCell>
-                      {job.quotePrice != null
-                        ? new Intl.NumberFormat('en-US', {
-                            style: 'currency',
-                            currency: 'USD',
-                          }).format(job.quotePrice)
-                        : '---'}
-                    </TableCell>
-                  </TableRow>
+                  <JobCard key={job.jobId} job={job} turnRequestId={turn.requestId} />
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            </>
           )}
         </div>
       </Card>
