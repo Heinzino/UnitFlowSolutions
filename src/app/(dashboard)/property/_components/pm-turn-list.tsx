@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { MobileJobsList } from './mobile-jobs-list';
 import { ClickableTurnRow } from './clickable-turn-row';
+import { StopPropagation } from './stop-propagation';
 import { TurnStatusDropdown } from './turn-status-dropdown';
 import type { UserRole } from '@/lib/types/auth';
 import type { TurnRequest } from '@/lib/types/airtable';
@@ -47,7 +48,7 @@ function formatPrice(totalCost: string | null, quotePrice: string | null): strin
 function JobsCell({ turn }: { turn: TurnRequest }) {
   if (turn.jobs && turn.jobs.length > 0) {
     return (
-      <div className="flex flex-wrap gap-1" onClick={(e) => e.stopPropagation()}>
+      <StopPropagation className="flex flex-wrap gap-1">
         {turn.jobs.map((job) => (
           <Link
             key={job.jobId}
@@ -57,7 +58,7 @@ function JobsCell({ turn }: { turn: TurnRequest }) {
             #{job.jobId}
           </Link>
         ))}
-      </div>
+      </StopPropagation>
     );
   }
   if (turn.jobIds.length > 0) {
@@ -83,9 +84,9 @@ function TurnTableRows({ turns }: { turns: TurnRequest[] }) {
           </TableCell>
           <TableCell>{turn.unitNumber}</TableCell>
           <TableCell>
-            <div onClick={(e) => e.stopPropagation()}>
+            <StopPropagation>
               <TurnStatusDropdown requestId={turn.requestId} currentStatus={turn.status} />
-            </div>
+            </StopPropagation>
           </TableCell>
           <TableCell>{formatDate(turn.readyToLeaseDate)}</TableCell>
           <TableCell>{formatDate(turn.vacantDate)}</TableCell>
@@ -106,7 +107,9 @@ function TurnCard({ turn }: { turn: TurnRequest }) {
       <div className="p-4 border-b border-card-border last:border-b-0">
         <div className="flex items-start justify-between gap-2 mb-2">
           <Badge variant="emerald">{turn.propertyName}</Badge>
-          <TurnStatusDropdown requestId={turn.requestId} currentStatus={turn.status} />
+          <StopPropagation>
+            <TurnStatusDropdown requestId={turn.requestId} currentStatus={turn.status} />
+          </StopPropagation>
         </div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
           <span className="text-text-secondary text-xs">Unit</span>

@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import type { TurnRequest } from '@/lib/types/airtable';
 
