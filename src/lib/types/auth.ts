@@ -1,9 +1,15 @@
-export type UserRole = 'pm' | 'dm' | 'exec'
+export type UserRole = 'pm' | 'rm' | 'exec'
 
 export const ROLE_ROUTES: Record<UserRole, string> = {
   pm: '/property',
-  dm: '/district',
+  rm: '/property',
   exec: '/executive',
+}
+
+/** Routes each role is allowed to access (beyond their own ROLE_ROUTES entry) */
+export const ROLE_ALLOWED_ROUTES: Partial<Record<UserRole, string[]>> = {
+  exec: ['/executive', '/property'],
+  rm: ['/property'],
 }
 
 export interface AppMetadata {
@@ -13,6 +19,6 @@ export interface AppMetadata {
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   pm: 'Property Manager',
-  dm: 'District Manager',
+  rm: 'Regional Manager',
   exec: 'Executive',
 }
