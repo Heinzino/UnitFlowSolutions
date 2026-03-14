@@ -117,10 +117,11 @@ Plans:
   2. RM users see 'Regional Manager' label in header badge and PropertySelector dropdown for multi-property access
   3. /district URL redirects to /property gracefully
   4. All existing tests pass and TypeScript compiles with zero errors
-**Plans**: 1 plan
+**Plans**: 2 plans
 
 Plans:
 - [ ] 06-01-PLAN.md — Rename dm to rm in auth type system, update user-header role logic, replace /district with redirect, add auth constant tests
+- [ ] 06-02-PLAN.md — Gap closure: rewrite DM-01 through DM-04 requirement descriptions to match delivered rm rename outcomes
 
 ### Phase 7: Notifications, Charts, and Vendor Metrics
 **Goal**: Users receive automatic attention alerts via the notification panel, see data visualizations on dashboards, and can review vendor performance metrics
@@ -150,5 +151,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 3. Airtable Data Layer | 3/3 | Complete   | 2026-03-12 |
 | 4. Executive Dashboard | 3/3 | Complete   | 2026-03-13 |
 | 5. Property Manager View | 4/4 | Complete   | 2026-03-14 |
-| 6. District Manager View | 1/1 | Complete   | 2026-03-14 |
+| 6. District Manager View | 1/2 | Gap closure | 2026-03-14 |
 | 7. Notifications, Charts, and Vendor Metrics | 0/TBD | Not started | - |
