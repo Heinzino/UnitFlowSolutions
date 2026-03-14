@@ -62,10 +62,10 @@
 
 ### District Manager View
 
-- [ ] **DM-01**: Portfolio overview with one card per assigned property showing: property name, active turns, completion rate, pending approvals
-- [ ] **DM-02**: KPI row: Turn completion rate (gauge), Jobs pending approval, Overdue items (alert styling if > 0)
-- [ ] **DM-03**: Click property card to drill-down into that property's data (reuses PM turn list and KPI components)
-- [ ] **DM-04**: Loading skeleton states
+- [x] **DM-01**: Portfolio overview with one card per assigned property showing: property name, active turns, completion rate, pending approvals
+- [x] **DM-02**: KPI row: Turn completion rate (gauge), Jobs pending approval, Overdue items (alert styling if > 0)
+- [x] **DM-03**: Click property card to drill-down into that property's data (reuses PM turn list and KPI components)
+- [x] **DM-04**: Loading skeleton states
 
 ### Vendor Metrics
 
@@ -159,10 +159,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PM-07 | Phase 5 | Complete |
 | PM-08 | Phase 5 | Complete |
 | PM-09 | Phase 5 | Complete |
-| DM-01 | Phase 6 | Pending |
-| DM-02 | Phase 6 | Pending |
-| DM-03 | Phase 6 | Pending |
-| DM-04 | Phase 6 | Pending |
+| DM-01 | Phase 6 | Complete |
+| DM-02 | Phase 6 | Complete |
+| DM-03 | Phase 6 | Complete |
+| DM-04 | Phase 6 | Complete |
 | NOTIF-01 | Phase 7 | Pending |
 | NOTIF-02 | Phase 7 | Pending |
 | NOTIF-03 | Phase 7 | Pending |

@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Airtable Data Layer** - Server-side Airtable integration with typed interfaces, caching, rate limiting, linked record resolution, and property scoping (completed 2026-03-12)
 - [x] **Phase 4: Executive Dashboard** - Read-only KPI dashboard with alert cards, validating data layer aggregations across all properties (completed 2026-03-13)
 - [x] **Phase 5: Property Manager View** - Core PM workflow with overdue-first turn lists, turn detail with linked jobs, inline status updates, and PM KPI cards (gap closure in progress) (completed 2026-03-14)
-- [ ] **Phase 6: District Manager View** - Portfolio overview with per-property cards and drill-down reusing PM components
+- [x] **Phase 6: District Manager View** - Portfolio overview with per-property cards and drill-down reusing PM components (completed 2026-03-14)
 - [ ] **Phase 7: Notifications, Charts, and Vendor Metrics** - Smart notification panel, data visualizations (bar charts, gauges, trend indicators), and vendor performance table
 
 ## Phase Details
@@ -150,5 +150,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 3. Airtable Data Layer | 3/3 | Complete   | 2026-03-12 |
 | 4. Executive Dashboard | 3/3 | Complete   | 2026-03-13 |
 | 5. Property Manager View | 4/4 | Complete   | 2026-03-14 |
-| 6. District Manager View | 0/1 | Not started | - |
+| 6. District Manager View | 1/1 | Complete   | 2026-03-14 |
 | 7. Notifications, Charts, and Vendor Metrics | 0/TBD | Not started | - |
