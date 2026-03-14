@@ -21,7 +21,7 @@ export async function UserHeader() {
 
   let propertyContext: React.ReactNode;
 
-  if (role === "exec" || role === "dm") {
+  if (role === "exec") {
     propertyContext = (
       <span className="text-sm text-white/70">All Properties</span>
     );
