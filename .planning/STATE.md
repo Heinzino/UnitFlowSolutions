@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-03-13T18:09:08.633Z"
+stopped_at: Completed 05-04-PLAN.md
+last_updated: "2026-03-14T23:03:58.126Z"
 last_activity: 2026-03-12 -- Plan 02-01 executed (Supabase auth infrastructure)
 progress:
   total_phases: 7
   completed_phases: 5
-  total_plans: 15
-  completed_plans: 15
+  total_plans: 16
+  completed_plans: 16
   percent: 57
 ---
 
@@ -63,6 +63,7 @@ Progress: [████████░░] 57%
 | Phase 05-property-manager-view P01 | 8 | 2 tasks | 5 files |
 | Phase 05-property-manager-view P03 | 2 | 1 tasks | 2 files |
 | Phase 05-property-manager-view P02 | 2min | 2 tasks | 4 files |
+| Phase 05-property-manager-view P04 | 3 | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -115,6 +116,9 @@ Recent decisions affecting current work:
 - [Phase 05-02]: Suspense boundaries keyed on selectedProperty — forces server component remount when filter changes, no client state threading needed
 - [Phase 05-02]: Overdue section hidden entirely when overdue.length === 0 — no empty pink header shown per user decision
 - [Phase 05-02]: TurnStatusDisplay maps raw Airtable status strings to StatusBadge Status type with plain span fallback for unmapped values
+- [Phase 05-property-manager-view]: TurnStatusDropdown mirrors JobStatusDropdown pattern exactly — same portal, useOptimistic, stopPropagation wrapper
+- [Phase 05-property-manager-view]: mobile-jobs-list converted from client to server component — renders Links instead of JobStatusDropdown
+- [Phase 05-property-manager-view]: JobsCell stopPropagation on wrapper div prevents ClickableTurnRow navigation when clicking job badge pills
 
 ### Pending Todos
 
@@ -127,6 +131,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-13T18:09:08.627Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-03-14T23:03:58.111Z
+Stopped at: Completed 05-04-PLAN.md
 Resume file: None
