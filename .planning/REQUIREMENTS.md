@@ -62,10 +62,12 @@
 
 ### District Manager View
 
-- [x] **DM-01**: Portfolio overview with one card per assigned property showing: property name, active turns, completion rate, pending approvals
-- [x] **DM-02**: KPI row: Turn completion rate (gauge), Jobs pending approval, Overdue items (alert styling if > 0)
-- [x] **DM-03**: Click property card to drill-down into that property's data (reuses PM turn list and KPI components)
-- [x] **DM-04**: Loading skeleton states
+> *Redesigned in Phase 6: Regional Managers reuse the PM view with PropertySelector for multi-property access. The original portfolio UI was dropped per user decision (see 06-CONTEXT.md).*
+
+- [x] **DM-01**: UserRole type contains 'rm' (Regional Manager) replacing 'dm'; ROLE_ROUTES maps rm to /property; ROLE_LABELS maps rm to 'Regional Manager'
+- [x] **DM-02**: RM users see the same PM KPI cards and turn list via shared /property route — no separate KPI view needed
+- [x] **DM-03**: RM users with multiple properties see PropertySelector dropdown in header for multi-property access (reuses existing PM components)
+- [x] **DM-04**: /district URL redirects to /property gracefully; all existing tests pass and TypeScript compiles with zero errors after rename
 
 ### Vendor Metrics
 
