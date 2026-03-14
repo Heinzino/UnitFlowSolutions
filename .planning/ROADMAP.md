@@ -109,18 +109,18 @@ Plans:
 - [ ] 05-04-PLAN.md — UAT gap closure: turn status dropdown, job badge pills, job detail page (gap closure)
 
 ### Phase 6: District Manager View
-**Goal**: District Managers can see a portfolio-level overview of their assigned properties and drill down into any property's turn data
+**Goal**: Regional Managers use the existing PM view with PropertySelector for multi-property access — rename dm role to rm across the type system, routing, and UI
 **Depends on**: Phase 5
 **Requirements**: DM-01, DM-02, DM-03, DM-04
 **Success Criteria** (what must be TRUE):
-  1. Portfolio overview displays one card per assigned property showing: property name, active turns, completion rate, pending approvals
-  2. KPI row shows turn completion rate gauge, jobs pending approval count, and overdue items with alert styling when count exceeds zero
-  3. Clicking a property card navigates to that property's turn list and KPI view (reusing PM view components)
-  4. Loading skeleton states display while data is being fetched
-**Plans**: 3 plans
+  1. UserRole type contains 'rm' (not 'dm') and RM users are routed to /property
+  2. RM users see 'Regional Manager' label in header badge and PropertySelector dropdown for multi-property access
+  3. /district URL redirects to /property gracefully
+  4. All existing tests pass and TypeScript compiles with zero errors
+**Plans**: 1 plan
 
 Plans:
-- [ ] 06-01: TBD
+- [ ] 06-01-PLAN.md — Rename dm to rm in auth type system, update user-header role logic, replace /district with redirect, add auth constant tests
 
 ### Phase 7: Notifications, Charts, and Vendor Metrics
 **Goal**: Users receive automatic attention alerts via the notification panel, see data visualizations on dashboards, and can review vendor performance metrics
@@ -150,5 +150,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 3. Airtable Data Layer | 3/3 | Complete   | 2026-03-12 |
 | 4. Executive Dashboard | 3/3 | Complete   | 2026-03-13 |
 | 5. Property Manager View | 4/4 | Complete   | 2026-03-14 |
-| 6. District Manager View | 0/TBD | Not started | - |
+| 6. District Manager View | 0/1 | Not started | - |
 | 7. Notifications, Charts, and Vendor Metrics | 0/TBD | Not started | - |
