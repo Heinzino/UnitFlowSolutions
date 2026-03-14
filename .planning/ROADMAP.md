@@ -151,5 +151,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 3. Airtable Data Layer | 3/3 | Complete   | 2026-03-12 |
 | 4. Executive Dashboard | 3/3 | Complete   | 2026-03-13 |
 | 5. Property Manager View | 4/4 | Complete   | 2026-03-14 |
-| 6. District Manager View | 1/2 | Gap closure | 2026-03-14 |
+| 6. District Manager View | 2/2 | Complete   | 2026-03-14 |
 | 7. Notifications, Charts, and Vendor Metrics | 0/TBD | Not started | - |
