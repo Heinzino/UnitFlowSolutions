@@ -4,10 +4,10 @@ milestone: v1.1
 milestone_name: Admin Tools & Unit Management
 status: active
 stopped_at: —
-last_updated: "2026-03-15T20:00:00.000Z"
-last_activity: 2026-03-15 -- Milestone v1.1 started
+last_updated: "2026-03-15"
+last_activity: 2026-03-15 -- Roadmap created for v1.1 (Phases 10-11)
 progress:
-  total_phases: 0
+  total_phases: 2
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -20,8 +20,33 @@ progress:
 
 See: .planning/PROJECT.md (updated 2026-03-15)
 
-**Core value:** Property Managers can instantly see which turns are overdue, which jobs are stuck, and take action without hunting through Airtable -- fewer clicks to the information that matters.
-**Current focus:** Not started (defining requirements)
+**Core value:** Property Managers can instantly see which turns are overdue, which jobs are stuck, and take action without hunting through Airtable — fewer clicks to the information that matters.
+**Current focus:** Phase 10 — Admin User Creation (ready to plan)
+
+## Current Position
+
+Phase: 10 of 11 (Admin User Creation)
+Plan: 0 of ? in current phase
+Status: Ready to plan
+Last activity: 2026-03-15 — Roadmap created for v1.1
+
+Progress: [░░░░░░░░░░] 0%
+
+## Performance Metrics
+
+**Velocity:**
+- Total plans completed: 24 (v1.0)
+- Average duration: —
+- Total execution time: —
+
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| v1.0 (phases 1-9) | 24 | — | — |
+
+**Recent Trend:**
+- Trend: —
 
 ## Accumulated Context
 
@@ -30,67 +55,10 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- Roadmap: Executive dashboard built before PM view (simpler read-only view validates data layer first)
-- Roadmap: DM view depends on PM view (reuses PM components for drill-down)
-- Roadmap: Notifications, charts, and vendor metrics deferred to final phase (enhancements over core workflows)
-- 01-01: Used Geist from geist/font/sans package for reliable CSS variable integration
-- 01-01: Scaffolded via temp directory due to npm naming restriction on capital letters
-- [Phase 01-02]: CurrencyDisplay uses module-level Intl.NumberFormat constant per research guidance
-- [Phase 01-02]: Table uses compound component pattern with forwardRef on all sub-components
-- [Phase 01-02]: KPICard renders its own Skeleton loading state internally
-- [Phase 01-03]: Sidebar redesigned from icon-only to full-width white floating panel with labels to match Dribbble reference
-- [Phase 01-03]: AppShell header floats on green background; green shows between all floating elements
-- [Phase 01-03]: KPICard added highlighted variant with chartreuse background for key metrics
-- [Phase 02-01]: ROLE_ROUTES imported from src/lib/types/auth.ts as single source of truth for both middleware and server actions
-- [Phase 02-01]: supabaseResponse reassigned inside setAll callback per official pattern to prevent session drift
-- [Phase 02-01]: normalizePropertyName uses toLowerCase().trim() applied at comparison time (not storage time)
-- [Phase 02-01]: Wave 0 test stubs use it.todo so plan 02-02/02-03 can fill implementations without restructuring
-- [Phase 02-02]: Card component has variant prop (not shadow) — plan interface reference was incorrect; removed invalid prop, shadow-sm already in base styles
-- [Phase 02-02]: (dashboard) route group cleanly separates AppShell from login page via Next.js route group layout inheritance
-- [Phase 02-03]: PropertySelectorWrapper is a separate client file — server component (UserHeader) cannot manage useState, so wrapper component bridges server to client boundary
-- [Phase 02-03]: AppShell accepts userHeader as React.ReactNode slot prop — avoids converting client component to server while allowing async server component in header
-- [Phase 02-03]: Form action pattern for logout — works without JS since logout is a server action, more resilient than onClick handler
-- [Phase 03-01]: Test for NEXT_PUBLIC_ env var access uses process.env.NEXT_PUBLIC_ pattern check — error messages may reference the prefix string without exposing env vars
-- [Phase 03-01]: TurnRequest includes quotePrice as string | null field from price rollup in Airtable
-- [Phase 03-03]: revalidateTag uses two-argument form revalidateTag(tag, { expire: 0 }) per Next.js 16 requirement
-- [Phase 03-03]: updateJobStatus returns structured { success, error } objects — never throws, always safe to await in client
-- [Phase 03-airtable-data-layer]: Mappers extracted to mappers.ts (no client dep) so tests import pure functions without env var guards firing
-- [Phase 03-airtable-data-layer]: base<FieldSet>('Table') pattern: FieldSet generic on base() not select() per airtable SDK AirtableBase interface
-- [Phase 04-01]: parseCurrency uses totalCost first, falls back to quotePrice if null — totalCost is semantically correct field
-- [Phase 04-01]: Active jobs filter uses status \!== 'Completed' — Invoice Sent does not exist in real Airtable data
-- [Phase 04-01]: activeMakeReadysOpen uses status \!== 'Done' (safer than allowlist) — catches any future non-Done status values
-- [Phase 04-01]: delta: Number(f['Delta']) without || null fallback — preserves 0 as valid delta value
-- [Phase 04-02]: Suspense wraps ExecutiveKPIs child — page.tsx is synchronous (auth only), data fetching in child fixes Next.js 16 blocking route error
-- [Phase 04-02]: costDisplay formatted inline with Intl.NumberFormat — CurrencyDisplay renders a span not a string, so value prop needs pre-formatted string
-- [Phase 04-executive-dashboard]: Text on dark green must use text-white or text-white/70 — text-text-primary and text-text-secondary are invisible on bg-forest
-- [Phase 04-executive-dashboard]: Static Overview heading removed from AppShell — placeholder with no functional purpose consuming 40px vertical space
-- [Phase 04-executive-dashboard]: AlertItemList removed — user did not want gray unit-level detail lists below alert cards
-- [Phase 04-executive-dashboard]: Title bumped text-lg to text-xl and subtitle text-xs to text-sm after user visual approval
-- [Phase 05-01]: projectedSpendMTD uses tr.created >= startOfMonth, not readyToLeaseDate — created date determines billing period
-- [Phase 05-01]: parseCurrency defined locally in pm-kpis.ts (not shared) — consistent with executive-kpis.ts pattern
-- [Phase 05-01]: JobStatusDropdown reverts optimistic status to currentStatus prop on failure — prop is server-confirmed source of truth
-- [Phase 05-03]: params awaited as Promise<{ id: string }> per Next.js 15 requirement
-- [Phase 05-03]: TurnDetailView is a server component (no use client) — JobStatusDropdown is the only client leaf
-- [Phase 05-02]: Suspense boundaries keyed on selectedProperty — forces server component remount when filter changes, no client state threading needed
-- [Phase 05-02]: Overdue section hidden entirely when overdue.length === 0 — no empty pink header shown per user decision
-- [Phase 05-02]: TurnStatusDisplay maps raw Airtable status strings to StatusBadge Status type with plain span fallback for unmapped values
-- [Phase 05-property-manager-view]: TurnStatusDropdown mirrors JobStatusDropdown pattern exactly — same portal, useOptimistic, stopPropagation wrapper
-- [Phase 05-property-manager-view]: mobile-jobs-list converted from client to server component — renders Links instead of JobStatusDropdown
-- [Phase 05-property-manager-view]: JobsCell stopPropagation on wrapper div prevents ClickableTurnRow navigation when clicking job badge pills
-- [Phase 06-01]: UserRole renamed dm to rm — Regional Managers use PM view with multiple properties, no separate UI needed
-- [Phase 06-01]: district page kept as redirect rather than deleted — bookmarked URLs recover gracefully
-- [Phase 06-02]: DM requirement descriptions rewritten to match rm rename outcomes rather than the original portfolio UI spec
-- [Phase 07-notifications-charts-and-vendor-metrics]: computeKPITrends uses same-dataset date windowing since Airtable provides a single snapshot; current and prev arrays are the same jobs/TRs with internal date filtering
-- [Phase 07-notifications-charts-and-vendor-metrics]: recharts ^3.8.0 installed as dependency — prepares for Plan 03 chart components
-- [Phase 07-notifications-charts-and-vendor-metrics]: jobIds extraction uses dual-format defensive parsing: Array.isArray for Airtable API array, string split for CSV format
-- [Phase 07-notifications-charts-and-vendor-metrics]: Null avgCompletionTimeDays sorts to bottom regardless of sort direction by short-circuiting before comparison
-- [Phase 07-notifications-charts-and-vendor-metrics]: HealthGauge is pure server component (no use client) — SVG requires no DOM APIs
-- [Phase 07-notifications-charts-and-vendor-metrics]: vi.mocked() pattern used in executive-charts tests — avoids hoisting TDZ issue with vi.mock factories
-- [Phase 08-01]: isGood: false added inline at call site as spread override in executive-kpis.tsx - no type changes needed
-- [Phase 08-01]: PropertySelectorWrapper always pushes to /property route - correct since header selector only renders for RM on /property page
-- [Phase 08-01]: Dashboard and Settings nav items removed entirely (not relocated): Dashboard duplicated Properties; Settings had no route in v1
-- [Phase 09-02]: AUTH-02 description corrected to RM -> /property (from DM -> /district) after Phase 6 rm rename
-- [Phase 09-02]: NOTIF-01 through NOTIF-04 were already correctly marked as unchecked with descoped annotations — no changes needed
+- v1.0 shipped: Supabase used only for auth + role mapping — user creation via Supabase Admin API will follow same pattern
+- v1.0 shipped: Properties dropdown exists (Airtable Properties table) — Phase 10 and 11 both read from it; Phase 11 can reuse dropdown component built in Phase 10
+- v1.1 scope: Admin user creation is create-only; editing/deleting users deferred
+- v1.1 scope: Vacant unit entry is create-only; editing/deleting units deferred
 
 ### Pending Todos
 
@@ -98,11 +66,11 @@ None.
 
 ### Blockers/Concerns
 
-- Phase 3: Verify exact `unstable_cache` API in installed Next.js version (may have changed)
-- Phase 3: Property name normalization between Supabase and Airtable needs real data validation
+- Phase 10: Supabase Admin API (service role key) must remain server-side only — confirm environment variable setup before planning
+- Phase 10: USER-04 (inline property creation from user form) and UNIT-07 (inline property creation from unit form) share identical behavior — plan for a shared component
 
 ## Session Continuity
 
-Last session: 2026-03-15T20:00:00.000Z
-Stopped at: —
+Last session: 2026-03-15
+Stopped at: Roadmap written for v1.1 — ready to plan Phase 10
 Resume file: None

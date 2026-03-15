@@ -47,24 +47,24 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| USER-01 | — | Pending |
-| USER-02 | — | Pending |
-| USER-03 | — | Pending |
-| USER-04 | — | Pending |
-| UNIT-01 | — | Pending |
-| UNIT-02 | — | Pending |
-| UNIT-03 | — | Pending |
-| UNIT-04 | — | Pending |
-| UNIT-05 | — | Pending |
-| UNIT-06 | — | Pending |
-| UNIT-07 | — | Pending |
-| UNIT-08 | — | Pending |
+| USER-01 | Phase 10 | Pending |
+| USER-02 | Phase 10 | Pending |
+| USER-03 | Phase 10 | Pending |
+| USER-04 | Phase 10 | Pending |
+| UNIT-01 | Phase 11 | Pending |
+| UNIT-02 | Phase 11 | Pending |
+| UNIT-03 | Phase 11 | Pending |
+| UNIT-04 | Phase 11 | Pending |
+| UNIT-05 | Phase 11 | Pending |
+| UNIT-06 | Phase 11 | Pending |
+| UNIT-07 | Phase 11 | Pending |
+| UNIT-08 | Phase 11 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 12 total
-- Mapped to phases: 0
-- Unmapped: 12 ⚠️
+- Mapped to phases: 12
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-15*
-*Last updated: 2026-03-15 after initial definition*
+*Last updated: 2026-03-15 — traceability mapped after roadmap creation*
