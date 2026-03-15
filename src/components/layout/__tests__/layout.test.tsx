@@ -32,12 +32,19 @@ import { AppShell } from "@/components/layout/app-shell";
 
 /* ─── Sidebar ──────────────────────────────────────────────────── */
 describe("Sidebar", () => {
-  it("renders navigation links", () => {
+  it("renders exactly 2 navigation links (Properties and Vendors)", () => {
     render(<Sidebar activePath="/" />);
     const links = screen.getAllByRole("link");
-    expect(links.length).toBeGreaterThanOrEqual(4);
-    // Check for Dashboard link
-    expect(links.some((link) => link.getAttribute("href") === "/")).toBe(true);
+    expect(links.length).toBe(2);
+    expect(links.some((link) => link.getAttribute("href") === "/property")).toBe(true);
+    expect(links.some((link) => link.getAttribute("href") === "/vendors")).toBe(true);
+  });
+
+  it("does not render a Dashboard or Settings link", () => {
+    render(<Sidebar activePath="/" />);
+    const links = screen.getAllByRole("link");
+    expect(links.some((link) => link.getAttribute("href") === "/")).toBe(false);
+    expect(links.some((link) => link.getAttribute("href") === "/settings")).toBe(false);
   });
 
   it("does not render a Notifications link", () => {
@@ -49,11 +56,19 @@ describe("Sidebar", () => {
 
 /* ─── BottomTabBar ─────────────────────────────────────────────── */
 describe("BottomTabBar", () => {
-  it("renders navigation links", () => {
+  it("renders exactly 2 tab items (Properties and Vendors)", () => {
     render(<BottomTabBar activePath="/" />);
     const links = screen.getAllByRole("link");
-    expect(links.length).toBeGreaterThanOrEqual(4);
+    expect(links.length).toBe(2);
     expect(links.some((link) => link.getAttribute("href") === "/property")).toBe(true);
+    expect(links.some((link) => link.getAttribute("href") === "/vendors")).toBe(true);
+  });
+
+  it("does not render a Dashboard or Settings tab", () => {
+    render(<BottomTabBar activePath="/" />);
+    const links = screen.getAllByRole("link");
+    expect(links.some((link) => link.getAttribute("href") === "/")).toBe(false);
+    expect(links.some((link) => link.getAttribute("href") === "/settings")).toBe(false);
   });
 
   it("does not render a Notifications link", () => {

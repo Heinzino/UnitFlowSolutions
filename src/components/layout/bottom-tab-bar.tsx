@@ -2,10 +2,8 @@
 
 import Link from "next/link";
 import {
-  LayoutDashboard,
   Building2,
   Users,
-  Settings,
 } from "lucide-react";
 import { clsx } from "clsx";
 import type { LucideIcon } from "lucide-react";
@@ -17,10 +15,8 @@ interface TabItem {
 }
 
 const tabItems: TabItem[] = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/" },
   { icon: Building2, label: "Properties", href: "/property" },
   { icon: Users, label: "Vendors", href: "/vendors" },
-  { icon: Settings, label: "Settings", href: "/settings" },
 ];
 
 interface BottomTabBarProps {

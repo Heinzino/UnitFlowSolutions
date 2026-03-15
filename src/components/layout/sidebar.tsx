@@ -3,10 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  LayoutDashboard,
   Building2,
   Users,
-  Settings,
   LogOut,
 } from "lucide-react";
 import { clsx } from "clsx";
@@ -20,10 +18,8 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/" },
   { icon: Building2, label: "Properties", href: "/property" },
   { icon: Users, label: "Vendors", href: "/vendors" },
-  { icon: Settings, label: "Settings", href: "/settings" },
 ];
 
 interface SidebarProps {
