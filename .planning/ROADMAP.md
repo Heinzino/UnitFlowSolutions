@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: District Manager View** - Portfolio overview with per-property cards and drill-down reusing PM components (completed 2026-03-14)
 - [x] **Phase 7: Notifications, Charts, and Vendor Metrics** - Data visualizations (health gauge, vendor bar chart), trend indicators on executive KPI cards, and vendor performance table. Notifications descoped. (completed 2026-03-15)
 - [x] **Phase 8: Code Fixes & Integration Wiring** - Fix VIZ-03 trend arrow semantics, wire header PropertySelector to URL params, fix navigation hrefs, correct 07-VERIFICATION.md (gap closure) (completed 2026-03-15)
-- [ ] **Phase 9: Documentation & Verification Cleanup** - Retroactive Phase 3 verification, mark NOTIF-01–04 as descoped, fix AUTH-02 description, update Phase 7 SUMMARY frontmatter (gap closure)
+- [x] **Phase 9: Documentation & Verification Cleanup** - Retroactive Phase 3 verification, mark NOTIF-01–04 as descoped, fix AUTH-02 description, update Phase 7 SUMMARY frontmatter (gap closure) (completed 2026-03-15)
 
 ## Phase Details
 
@@ -189,4 +189,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 6. District Manager View | 2/2 | Complete   | 2026-03-14 |
 | 7. Notifications, Charts, and Vendor Metrics | 3/3 | Complete   | 2026-03-15 |
 | 8. Code Fixes & Integration Wiring | 1/1 | Complete   | 2026-03-15 |
-| 9. Documentation & Verification Cleanup | 0/2 | Not Started | — |
+| 9. Documentation & Verification Cleanup | 2/2 | Complete   | 2026-03-15 |
