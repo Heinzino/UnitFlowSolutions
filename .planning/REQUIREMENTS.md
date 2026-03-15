@@ -75,17 +75,17 @@
 
 ### Notification Panel
 
-- [ ] **NOTIF-01**: Middle column displays auto-derived notifications from Airtable data
-- [ ] **NOTIF-02**: Alert types: Job status "NEEDS ATTENTION" (red), Counter Quote pending (dollar icon), Job approaching deadline within 2 days (clock), Turn past target time (warning)
-- [ ] **NOTIF-03**: Each notification shows icon, description text, and timestamp or amount
-- [ ] **NOTIF-04**: Clicking a notification navigates to the relevant turn/job detail page
+- [x] **NOTIF-01**: Middle column displays auto-derived notifications from Airtable data
+- [x] **NOTIF-02**: Alert types: Job status "NEEDS ATTENTION" (red), Counter Quote pending (dollar icon), Job approaching deadline within 2 days (clock), Turn past target time (warning)
+- [x] **NOTIF-03**: Each notification shows icon, description text, and timestamp or amount
+- [x] **NOTIF-04**: Clicking a notification navigates to the relevant turn/job detail page
 
 ### Charts & Visualization
 
 - [ ] **VIZ-01**: Vendor performance bar chart (rounded-top bars, green fill, diagonal hatch for non-highlighted)
 - [ ] **VIZ-02**: Completion gauge (semi-circular arc, dark-to-light green gradient, centered number)
-- [ ] **VIZ-03**: Trend indicators on KPI cards (arrow up/down + percentage + color)
-- [ ] **VIZ-04**: Color-coded alert cards: pink for past target, yellow for trending past target
+- [x] **VIZ-03**: Trend indicators on KPI cards (arrow up/down + percentage + color)
+- [x] **VIZ-04**: Color-coded alert cards: pink for past target, yellow for trending past target
 
 ## v2 Requirements
 
@@ -165,14 +165,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DM-02 | Phase 6 | Complete |
 | DM-03 | Phase 6 | Complete |
 | DM-04 | Phase 6 | Complete |
-| NOTIF-01 | Phase 7 | Pending |
-| NOTIF-02 | Phase 7 | Pending |
-| NOTIF-03 | Phase 7 | Pending |
-| NOTIF-04 | Phase 7 | Pending |
+| NOTIF-01 | Phase 7 | Complete |
+| NOTIF-02 | Phase 7 | Complete |
+| NOTIF-03 | Phase 7 | Complete |
+| NOTIF-04 | Phase 7 | Complete |
 | VIZ-01 | Phase 7 | Pending |
 | VIZ-02 | Phase 7 | Pending |
-| VIZ-03 | Phase 7 | Pending |
-| VIZ-04 | Phase 7 | Pending |
+| VIZ-03 | Phase 7 | Complete |
+| VIZ-04 | Phase 7 | Complete |
 | VEND-01 | Phase 7 | Pending |
 
 **Coverage:**
