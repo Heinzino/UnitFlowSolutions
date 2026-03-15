@@ -17,25 +17,25 @@ function getLabel(score: number | null): string {
   return 'Critical'
 }
 
-export function HealthGauge({ score, size = 128 }: HealthGaugeProps) {
+export function HealthGauge({ score, size = 140 }: HealthGaugeProps) {
   const r = 52
   const cx = 64
   const cy = 64
   const circ = 2 * Math.PI * r
-  const dash = circ * 0.75 // 75% visible arc (bottom-opening semi-circle)
+  const dash = circ * 0.75 // 270° arc, open at the bottom
   const fill = dash * ((score ?? 0) / 100)
   const color = getColor(score)
   const label = getLabel(score)
 
   return (
-    <div className="bg-card rounded-card p-4 shadow-sm flex flex-col items-center gap-2">
+    <div className="bg-card rounded-card p-4 shadow-sm flex flex-col items-center justify-center gap-3">
       <h3 className="font-heading font-semibold text-sm text-text-primary">
         Turn Health Score
       </h3>
       <svg
         width={size}
-        height={size}
-        viewBox="0 0 128 128"
+        height={size * 0.82}
+        viewBox="0 4 128 105"
         aria-label={`Health gauge: ${score !== null ? `${score}%` : 'No data'}`}
       >
         {/* Track arc */}
@@ -87,6 +87,9 @@ export function HealthGauge({ score, size = 128 }: HealthGaugeProps) {
           {label}
         </text>
       </svg>
+      <p className="text-text-secondary text-xs text-center max-w-48">
+        % of turns completed within 10 days vacant
+      </p>
     </div>
   )
 }

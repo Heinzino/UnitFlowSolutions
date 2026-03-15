@@ -68,55 +68,57 @@ export function VendorTable({ vendors }: VendorTableProps) {
   const headClass = 'cursor-pointer select-none'
 
   return (
-    <Table className="w-full">
-      <TableHeader>
-        <TableRow>
-          <TableHead className={headClass} onClick={() => handleSort('vendorName')}>
-            Vendor Name
-            <SortIcon column="vendorName" sortKey={sortKey} sortDir={sortDir} />
-          </TableHead>
-          <TableHead className={headClass} onClick={() => handleSort('numJobsCompleted')}>
-            Jobs Completed
-            <SortIcon column="numJobsCompleted" sortKey={sortKey} sortDir={sortDir} />
-          </TableHead>
-          <TableHead className={headClass} onClick={() => handleSort('avgCompletionTimeDays')}>
-            Avg Completion Time (Days)
-            <SortIcon column="avgCompletionTimeDays" sortKey={sortKey} sortDir={sortDir} />
-          </TableHead>
-          <TableHead className={headClass} onClick={() => handleSort('numJobsAssigned')}>
-            Jobs Assigned
-            <SortIcon column="numJobsAssigned" sortKey={sortKey} sortDir={sortDir} />
-          </TableHead>
-          <TableHead>Jobs</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {sorted.map((vendor, idx) => (
-          <TableRow key={`${vendor.vendorName}-${idx}`}>
-            <TableCell className="text-text-primary">{vendor.vendorName}</TableCell>
-            <TableCell className="tabular-nums">{vendor.numJobsCompleted}</TableCell>
-            <TableCell className="tabular-nums">
-              {vendor.avgCompletionTimeDays != null
-                ? vendor.avgCompletionTimeDays.toFixed(1)
-                : 'N/A'}
-            </TableCell>
-            <TableCell className="tabular-nums">{vendor.numJobsAssigned}</TableCell>
-            <TableCell>
-              {vendor.jobIds.length === 0 ? (
-                <span>-</span>
-              ) : (
-                <div className="flex flex-wrap gap-1">
-                  {vendor.jobIds.map(jobId => (
-                    <Link key={jobId} href={`/property/job/${jobId}`}>
-                      <Badge variant="default">{jobId}</Badge>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </TableCell>
+    <div className="bg-card rounded-card shadow-sm overflow-hidden">
+      <Table className="w-full">
+        <TableHeader>
+          <TableRow className="border-b border-card-border hover:bg-transparent">
+            <TableHead className={headClass} onClick={() => handleSort('vendorName')}>
+              Vendor Name
+              <SortIcon column="vendorName" sortKey={sortKey} sortDir={sortDir} />
+            </TableHead>
+            <TableHead className={headClass} onClick={() => handleSort('numJobsCompleted')}>
+              Jobs Completed
+              <SortIcon column="numJobsCompleted" sortKey={sortKey} sortDir={sortDir} />
+            </TableHead>
+            <TableHead className={headClass} onClick={() => handleSort('avgCompletionTimeDays')}>
+              Avg Completion Time (Days)
+              <SortIcon column="avgCompletionTimeDays" sortKey={sortKey} sortDir={sortDir} />
+            </TableHead>
+            <TableHead className={headClass} onClick={() => handleSort('numJobsAssigned')}>
+              Jobs Assigned
+              <SortIcon column="numJobsAssigned" sortKey={sortKey} sortDir={sortDir} />
+            </TableHead>
+            <TableHead>Jobs</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {sorted.map((vendor, idx) => (
+            <TableRow key={`${vendor.vendorName}-${idx}`} className="border-b border-card-border">
+              <TableCell className="font-medium">{vendor.vendorName}</TableCell>
+              <TableCell className="tabular-nums">{vendor.numJobsCompleted}</TableCell>
+              <TableCell className="tabular-nums">
+                {vendor.avgCompletionTimeDays != null
+                  ? vendor.avgCompletionTimeDays.toFixed(1)
+                  : 'N/A'}
+              </TableCell>
+              <TableCell className="tabular-nums">{vendor.numJobsAssigned}</TableCell>
+              <TableCell>
+                {vendor.jobIds.length === 0 ? (
+                  <span>-</span>
+                ) : (
+                  <div className="flex flex-wrap gap-1">
+                    {vendor.jobIds.map(jobId => (
+                      <Link key={jobId} href={`/property/job/${jobId}`}>
+                        <Badge variant="default">{jobId}</Badge>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   )
 }

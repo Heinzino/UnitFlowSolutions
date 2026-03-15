@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export function VendorTableSkeleton() {
   return (
-    <div className="rounded-card bg-surface border border-border overflow-hidden">
+    <div className="rounded-card bg-card shadow-sm overflow-hidden">
       <Table className="w-full">
         <TableHeader>
           <TableRow>

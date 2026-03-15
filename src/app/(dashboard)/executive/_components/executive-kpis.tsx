@@ -41,7 +41,7 @@ export async function ExecutiveKPIs() {
           icon={Briefcase}
           label="Active Jobs Open"
           value={kpis.activeJobsOpen}
-          trend={trends.activeJobsOpen ? { ...trends.activeJobsOpen, isGood: false } : undefined}
+          trend={trends.activeJobsOpen ?? undefined}
         />
         <KPICard
           icon={TrendingUp}
@@ -63,7 +63,7 @@ export async function ExecutiveKPIs() {
           icon={Clock}
           label="Avg Time to Complete"
           value={avgTimeDisplay}
-          trend={trends.avgTimeToComplete ? { ...trends.avgTimeToComplete, isGood: false } : undefined}
+          trend={trends.avgTimeToComplete ?? undefined}
         />
         <KPICard
           icon={DollarSign}
