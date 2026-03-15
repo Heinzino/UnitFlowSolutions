@@ -9,14 +9,16 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AppShell
-      userHeader={
-        <Suspense fallback={<Skeleton className="w-32 h-8" />}>
-          <UserHeader />
-        </Suspense>
-      }
-    >
-      <Suspense>{children}</Suspense>
-    </AppShell>
+    <Suspense>
+      <AppShell
+        userHeader={
+          <Suspense fallback={<Skeleton className="w-32 h-8" />}>
+            <UserHeader />
+          </Suspense>
+        }
+      >
+        <Suspense>{children}</Suspense>
+      </AppShell>
+    </Suspense>
   );
 }
