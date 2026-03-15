@@ -51,6 +51,7 @@ metrics:
   completed: "2026-03-14"
   tasks: 2
   files: 13
+requirements-completed: [VIZ-03, VIZ-04]
 ---
 
 # Phase 7 Plan 1: Install Recharts, Cleanup Notifications, Add Vendor Auth, Wire KPI Trends Summary
