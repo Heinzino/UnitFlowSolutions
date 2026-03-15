@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { computeExecutiveKPIs } from './executive-kpis'
+import { computeExecutiveKPIs, computeKPITrends } from './executive-kpis'
 import type { Job, TurnRequest, JobStatus } from '@/lib/types/airtable'
 
 // ---------------------------------------------------------------------------
@@ -38,6 +38,7 @@ function makeTurnRequest(overrides: Partial<TurnRequest> = {}): TurnRequest {
     targetDate: null,
     status: 'In progress',
     jobIds: [],
+    jobRecordIds: [],
     timeToCompleteUnit: null,
     notes: null,
     quotePrice: null,
@@ -358,5 +359,68 @@ describe('computeExecutiveKPIs', () => {
       expect(kpis.pastTargetAlerts).toEqual([])
       expect(kpis.trendingAlerts).toEqual([])
     })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// computeKPITrends
+// ---------------------------------------------------------------------------
+// FIXED_NOW = 2024-02-15T12:00:00Z
+// Current window: 2024-01-16T12:00:00Z to 2024-02-15T12:00:00Z (30d ago to now)
+// Previous window: 2023-12-17T12:00:00Z to 2024-01-16T12:00:00Z (60d ago to 30d ago)
+
+describe('computeKPITrends', () => {
+  it('returns direction=up and positive percentage when current jobsCompleted30d > previous', () => {
+    // Current: 2 jobs completed in current window (Jan 17 - Feb 15)
+    // Previous: 1 job completed in previous window (Dec 17 - Jan 16)
+    const jobs = [
+      makeJob({ status: 'Completed', endDate: '2024-02-01' }), // current
+      makeJob({ status: 'Completed', endDate: '2024-01-20' }), // current
+      makeJob({ status: 'Completed', endDate: '2024-01-01' }), // previous
+    ]
+    const trends = computeKPITrends(jobs, jobs, [], [])
+    expect(trends.jobsCompleted).not.toBeNull()
+    expect(trends.jobsCompleted!.direction).toBe('up')
+    expect(trends.jobsCompleted!.percentage).toBeCloseTo(100, 0) // 2 vs 1 = 100% increase
+  })
+
+  it('returns direction=down when current activeJobsOpen < previous', () => {
+    // prevJobs: 3 active. currentJobs: 1 active.
+    const currentJobs = [makeJob({ status: 'In Progress' })]
+    const prevJobs = [
+      makeJob({ status: 'In Progress' }),
+      makeJob({ status: 'In Progress' }),
+      makeJob({ status: 'In Progress' }),
+    ]
+    const trends = computeKPITrends(currentJobs, prevJobs, [], [])
+    expect(trends.activeJobsOpen).not.toBeNull()
+    expect(trends.activeJobsOpen!.direction).toBe('down')
+  })
+
+  it('returns null for jobsCompleted when previous period value is 0', () => {
+    // Previous: no completed jobs → division by zero → null
+    const jobs = [
+      makeJob({ status: 'Completed', endDate: '2024-02-01' }), // current only
+    ]
+    const trends = computeKPITrends(jobs, jobs, [], [])
+    expect(trends.jobsCompleted).toBeNull()
+  })
+
+  it('returns null for avgTimeToComplete when no Done TRs in either period', () => {
+    const trs = [makeTurnRequest({ status: 'In progress' })]
+    const trends = computeKPITrends([], [], trs, trs)
+    expect(trends.avgTimeToComplete).toBeNull()
+  })
+
+  it('returns direction with 0.0% change for identical period counts', () => {
+    // Both periods have 1 completed job in range
+    const jobs = [
+      makeJob({ status: 'Completed', endDate: '2024-02-01' }), // current window
+      makeJob({ status: 'Completed', endDate: '2024-01-01' }), // previous window
+    ]
+    const trends = computeKPITrends(jobs, jobs, [], [])
+    // 1 vs 1 — percentage should be 0
+    expect(trends.jobsCompleted).not.toBeNull()
+    expect(trends.jobsCompleted!.percentage).toBeCloseTo(0, 1)
   })
 })

@@ -11,13 +11,14 @@ import {
 } from 'lucide-react';
 import { fetchJobs } from '@/lib/airtable/tables/jobs';
 import { fetchTurnRequests } from '@/lib/airtable/tables/turn-requests';
-import { computeExecutiveKPIs } from '@/lib/kpis/executive-kpis';
+import { computeExecutiveKPIs, computeKPITrends } from '@/lib/kpis/executive-kpis';
 import { KPICard } from '@/components/ui/kpi-card';
 
 
 export async function ExecutiveKPIs() {
   const [jobs, turnRequests] = await Promise.all([fetchJobs(), fetchTurnRequests()]);
   const kpis = computeExecutiveKPIs(jobs, turnRequests);
+  const trends = computeKPITrends(jobs, jobs, turnRequests, turnRequests);
 
   const avgTimeDisplay =
     kpis.avgTimeToComplete !== null
@@ -40,6 +41,7 @@ export async function ExecutiveKPIs() {
           icon={Briefcase}
           label="Active Jobs Open"
           value={kpis.activeJobsOpen}
+          trend={trends.activeJobsOpen ? { ...trends.activeJobsOpen, isGood: false } : undefined}
         />
         <KPICard
           icon={TrendingUp}
@@ -50,6 +52,7 @@ export async function ExecutiveKPIs() {
           icon={CheckCircle}
           label="Jobs Completed (30d)"
           value={kpis.jobsCompleted30d}
+          trend={trends.jobsCompleted ?? undefined}
         />
         <KPICard
           icon={BarChart2}
@@ -60,6 +63,7 @@ export async function ExecutiveKPIs() {
           icon={Clock}
           label="Avg Time to Complete"
           value={avgTimeDisplay}
+          trend={trends.avgTimeToComplete ? { ...trends.avgTimeToComplete, isGood: false } : undefined}
         />
         <KPICard
           icon={DollarSign}
