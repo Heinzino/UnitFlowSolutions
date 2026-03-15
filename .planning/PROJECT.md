@@ -26,10 +26,15 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 
 ### Active
 
-- [ ] Inline pricing approval (accept/flag vendor quotes from turn detail)
-- [ ] Notes on turn requests (add/view notes per unit turnover)
-- [ ] Middle column notification/alert system (descoped from v1.0)
-- [ ] Maintenance Manager role view
+- [ ] Admin-only user creation form (restricted to heinz@readymation.com and jgiles@cdvsolutions.com)
+- [ ] Add Vacant Units form (all roles, creates records in Airtable Properties table)
+
+### Future
+
+- Inline pricing approval (accept/flag vendor quotes from turn detail)
+- Notes on turn requests (add/view notes per unit turnover)
+- Middle column notification/alert system (descoped from v1.0)
+- Maintenance Manager role view
 
 ### Out of Scope
 
@@ -70,5 +75,13 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 | DM → RM rename (Phase 6) | Client uses "Regional Manager" not "District Manager" | ✓ Good — aligned with real org |
 | NOTIF-01..04 descoped | Alert cards on KPI dashboard sufficient for v1.0 | ⚠️ Revisit — may need middle column for v1.1 |
 
+## Current Milestone: v1.1 Admin Tools & Unit Management
+
+**Goal:** Enable admin user creation and allow all roles to add vacant units directly into Airtable.
+
+**Target features:**
+- Admin-only "Create New User" form (Supabase account + role/property assignment)
+- "Add Vacant Units" form for all roles (property selection, repeatable unit sub-form, Airtable write)
+
 ---
-*Last updated: 2026-03-15 after v1.0 milestone*
+*Last updated: 2026-03-15 after v1.1 milestone start*
