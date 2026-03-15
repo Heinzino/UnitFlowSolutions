@@ -82,8 +82,8 @@
 
 ### Charts & Visualization
 
-- [ ] **VIZ-01**: Vendor performance bar chart (rounded-top bars, green fill, diagonal hatch for non-highlighted)
-- [ ] **VIZ-02**: Completion gauge (semi-circular arc, dark-to-light green gradient, centered number)
+- [x] **VIZ-01**: Vendor performance bar chart (rounded-top bars, green fill, diagonal hatch for non-highlighted)
+- [x] **VIZ-02**: Completion gauge (semi-circular arc, dark-to-light green gradient, centered number)
 - [x] **VIZ-03**: Trend indicators on KPI cards (arrow up/down + percentage + color)
 - [x] **VIZ-04**: Color-coded alert cards: pink for past target, yellow for trending past target
 
@@ -169,8 +169,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | NOTIF-02 | Phase 7 | Complete |
 | NOTIF-03 | Phase 7 | Complete |
 | NOTIF-04 | Phase 7 | Complete |
-| VIZ-01 | Phase 7 | Pending |
-| VIZ-02 | Phase 7 | Pending |
+| VIZ-01 | Phase 7 | Complete |
+| VIZ-02 | Phase 7 | Complete |
 | VIZ-03 | Phase 7 | Complete |
 | VIZ-04 | Phase 7 | Complete |
 | VEND-01 | Phase 7 | Complete |

@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Executive Dashboard** - Read-only KPI dashboard with alert cards, validating data layer aggregations across all properties (completed 2026-03-13)
 - [x] **Phase 5: Property Manager View** - Core PM workflow with overdue-first turn lists, turn detail with linked jobs, inline status updates, and PM KPI cards (gap closure in progress) (completed 2026-03-14)
 - [x] **Phase 6: District Manager View** - Portfolio overview with per-property cards and drill-down reusing PM components (completed 2026-03-14)
-- [ ] **Phase 7: Notifications, Charts, and Vendor Metrics** - Data visualizations (health gauge, vendor bar chart), trend indicators on executive KPI cards, and vendor performance table. Notifications descoped.
+- [x] **Phase 7: Notifications, Charts, and Vendor Metrics** - Data visualizations (health gauge, vendor bar chart), trend indicators on executive KPI cards, and vendor performance table. Notifications descoped. (completed 2026-03-15)
 
 ## Phase Details
 
@@ -153,4 +153,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 4. Executive Dashboard | 3/3 | Complete   | 2026-03-13 |
 | 5. Property Manager View | 4/4 | Complete   | 2026-03-14 |
 | 6. District Manager View | 2/2 | Complete   | 2026-03-14 |
-| 7. Notifications, Charts, and Vendor Metrics | 2/3 | In Progress|  |
+| 7. Notifications, Charts, and Vendor Metrics | 3/3 | Complete   | 2026-03-15 |
