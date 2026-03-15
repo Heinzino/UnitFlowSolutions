@@ -127,6 +127,21 @@ describe("TrendIndicator", () => {
     // The container span should have the text-negative class for down
     expect(container.firstChild).toHaveClass("text-negative");
   });
+
+  it("isGood=true (default): up direction renders text-positive", () => {
+    const { container } = render(<TrendIndicator direction="up" percentage={5} isGood={true} />);
+    expect(container.firstChild).toHaveClass("text-positive");
+  });
+
+  it("isGood=false: up direction renders text-negative (inverted)", () => {
+    const { container } = render(<TrendIndicator direction="up" percentage={5} isGood={false} />);
+    expect(container.firstChild).toHaveClass("text-negative");
+  });
+
+  it("isGood=false: down direction renders text-positive (inverted)", () => {
+    const { container } = render(<TrendIndicator direction="down" percentage={5} isGood={false} />);
+    expect(container.firstChild).toHaveClass("text-positive");
+  });
 });
 
 /* ─── CurrencyDisplay ──────────────────────────────────────────── */

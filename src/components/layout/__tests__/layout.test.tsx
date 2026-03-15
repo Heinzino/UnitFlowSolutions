@@ -4,6 +4,7 @@ import { render, screen } from "@testing-library/react";
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
   usePathname: () => "/",
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
 }));
 
 // Mock next/link to render a plain anchor
@@ -34,9 +35,15 @@ describe("Sidebar", () => {
   it("renders navigation links", () => {
     render(<Sidebar activePath="/" />);
     const links = screen.getAllByRole("link");
-    expect(links.length).toBeGreaterThanOrEqual(5);
+    expect(links.length).toBeGreaterThanOrEqual(4);
     // Check for Dashboard link
     expect(links.some((link) => link.getAttribute("href") === "/")).toBe(true);
+  });
+
+  it("does not render a Notifications link", () => {
+    render(<Sidebar activePath="/" />);
+    const links = screen.getAllByRole("link");
+    expect(links.some((link) => link.getAttribute("href") === "/notifications")).toBe(false);
   });
 });
 
@@ -45,8 +52,14 @@ describe("BottomTabBar", () => {
   it("renders navigation links", () => {
     render(<BottomTabBar activePath="/" />);
     const links = screen.getAllByRole("link");
-    expect(links.length).toBeGreaterThanOrEqual(5);
+    expect(links.length).toBeGreaterThanOrEqual(4);
     expect(links.some((link) => link.getAttribute("href") === "/property")).toBe(true);
+  });
+
+  it("does not render a Notifications link", () => {
+    render(<BottomTabBar activePath="/" />);
+    const links = screen.getAllByRole("link");
+    expect(links.some((link) => link.getAttribute("href") === "/notifications")).toBe(false);
   });
 });
 

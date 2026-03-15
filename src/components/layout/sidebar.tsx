@@ -1,17 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Building2,
   Users,
-  Bell,
   Settings,
   LogOut,
 } from "lucide-react";
 import { clsx } from "clsx";
 import type { LucideIcon } from "lucide-react";
-import { logout } from "@/app/actions/auth";
+import { createClient } from "@/lib/supabase/client";
 
 interface NavItem {
   icon: LucideIcon;
@@ -23,7 +23,6 @@ const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
   { icon: Building2, label: "Properties", href: "/property" },
   { icon: Users, label: "Vendors", href: "/vendors" },
-  { icon: Bell, label: "Notifications", href: "/notifications" },
   { icon: Settings, label: "Settings", href: "/settings" },
 ];
 
@@ -32,6 +31,14 @@ interface SidebarProps {
 }
 
 export function Sidebar({ activePath }: SidebarProps) {
+  const router = useRouter();
+
+  async function handleLogout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+  }
+
   return (
     <aside className="flex flex-col w-[220px] h-[calc(100vh-1.5rem)] bg-white rounded-[20px] shadow-lg border border-white/30">
       {/* Logo */}
@@ -69,15 +76,14 @@ export function Sidebar({ activePath }: SidebarProps) {
 
       {/* Bottom */}
       <div className="px-3 pb-6">
-        <form action={logout}>
-          <button
-            type="submit"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface transition-colors w-full"
-          >
-            <LogOut size={18} />
-            <span>Logout</span>
-          </button>
-        </form>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface transition-colors w-full"
+        >
+          <LogOut size={18} />
+          <span>Logout</span>
+        </button>
       </div>
     </aside>
   );

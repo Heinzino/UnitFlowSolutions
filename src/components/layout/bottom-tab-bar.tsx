@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   Building2,
   Users,
-  Bell,
   Settings,
 } from "lucide-react";
 import { clsx } from "clsx";
@@ -21,7 +20,6 @@ const tabItems: TabItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
   { icon: Building2, label: "Properties", href: "/property" },
   { icon: Users, label: "Vendors", href: "/vendors" },
-  { icon: Bell, label: "Notifications", href: "/notifications" },
   { icon: Settings, label: "Settings", href: "/settings" },
 ];
 

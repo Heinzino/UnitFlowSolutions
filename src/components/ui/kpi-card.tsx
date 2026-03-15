@@ -7,7 +7,7 @@ export interface KPICardProps {
   icon: LucideIcon;
   label: string;
   value: string | number;
-  trend?: { direction: "up" | "down"; percentage: number };
+  trend?: { direction: "up" | "down"; percentage: number; isGood?: boolean };
   variant?: "default" | "highlighted" | "alert-past" | "alert-trending";
   loading?: boolean;
   className?: string;
@@ -72,6 +72,7 @@ export function KPICard({
         <TrendIndicator
           direction={trend.direction}
           percentage={trend.percentage}
+          isGood={trend.isGood}
         />
       )}
     </div>
