@@ -18,6 +18,7 @@ export interface TurnRequest {
   targetDate: string | null
   status: string
   jobIds: number[]
+  jobRecordIds: string[]
   jobs?: Job[]
   timeToCompleteUnit: number | null
   notes: string | null
@@ -77,6 +78,7 @@ export interface Vendor {
   numJobsCompleted: number
   numJobsAssigned: number
   avgCompletionTimeDays: number | null
+  jobIds: number[]
 }
 
 export interface VendorPricing {

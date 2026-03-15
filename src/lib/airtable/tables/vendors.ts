@@ -18,6 +18,11 @@ function mapVendor(record: { fields: FieldSet }): Vendor {
       f['Average Completion Time (Days)'] != null
         ? Number(f['Average Completion Time (Days)']) || null
         : null,
+    jobIds: Array.isArray(f['Jobs'])
+      ? (f['Jobs'] as (string | number)[]).map(id => Number(id)).filter(n => !isNaN(n))
+      : typeof f['Jobs'] === 'string' && f['Jobs']
+        ? String(f['Jobs']).split(',').map(s => Number(s.trim())).filter(n => !isNaN(n))
+        : [],
   }
 }
 
