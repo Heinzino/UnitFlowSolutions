@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { PropertySelector } from "./property-selector";
 
 interface PropertySelectorWrapperProps {
@@ -10,15 +10,25 @@ interface PropertySelectorWrapperProps {
 export function PropertySelectorWrapper({
   properties,
 }: PropertySelectorWrapperProps) {
-  const [selectedProperty, setSelectedProperty] = useState<string>(
-    properties[0] ?? ""
-  );
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const selectedProperty = searchParams.get("property") ?? properties[0] ?? "";
+
+  function handleSelect(value: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === "" || value === properties[0]) {
+      params.delete("property");
+    } else {
+      params.set("property", value);
+    }
+    router.push(`/property${params.toString() ? `?${params.toString()}` : ""}`);
+  }
 
   return (
     <PropertySelector
       properties={properties}
       selectedProperty={selectedProperty}
-      onSelect={setSelectedProperty}
+      onSelect={handleSelect}
     />
   );
 }

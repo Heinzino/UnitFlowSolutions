@@ -439,8 +439,11 @@ describe('isGood prop semantics (VIZ-03)', () => {
   })
 
   it('ternary with null TrendData returns undefined (null guard preserved)', () => {
-    const trend = null
-    const result = trend ? { ...trend, isGood: false } : undefined
-    expect(result).toBeUndefined()
+    // Verify the null guard pattern: when trend is null, ternary returns undefined
+    function applyIsGood(trend: { direction: 'up' | 'down'; percentage: number } | null) {
+      return trend ? { ...trend, isGood: false } : undefined
+    }
+    expect(applyIsGood(null)).toBeUndefined()
+    expect(applyIsGood({ direction: 'up', percentage: 5 })).toEqual({ direction: 'up', percentage: 5, isGood: false })
   })
 })
