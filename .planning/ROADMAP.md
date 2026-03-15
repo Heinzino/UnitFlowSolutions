@@ -166,9 +166,13 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Phase 3 VERIFICATION.md exists with verification of all 6 DATA requirements against running code
   2. NOTIF-01 through NOTIF-04 marked as descoped (not `[x] Complete`) in REQUIREMENTS.md
-  3. AUTH-02 description updated to reflect `RM → /property` (not `DM → /district`)
+  3. AUTH-02 description updated to reflect `RM -> /property` (not `DM -> /district`)
   4. Phase 7 SUMMARY frontmatter includes VIZ-01 through VIZ-04 in requirements_completed
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — Write missing Phase 3 VERIFICATION.md documenting all 6 DATA requirements with code evidence
+- [ ] 09-02-PLAN.md — Fix AUTH-02 description in REQUIREMENTS.md, verify NOTIF descope markers, add VIZ IDs to Phase 7 SUMMARY frontmatter
 
 ## Progress
 
@@ -185,4 +189,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 6. District Manager View | 2/2 | Complete   | 2026-03-14 |
 | 7. Notifications, Charts, and Vendor Metrics | 3/3 | Complete   | 2026-03-15 |
 | 8. Code Fixes & Integration Wiring | 1/1 | Complete   | 2026-03-15 |
-| 9. Documentation & Verification Cleanup | 0/0 | Not Started | — |
+| 9. Documentation & Verification Cleanup | 0/2 | Not Started | — |
