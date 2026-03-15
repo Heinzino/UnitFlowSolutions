@@ -8,7 +8,7 @@
 ### Authentication
 
 - [x] **AUTH-01**: User can log in with email and password via Supabase
-- [x] **AUTH-02**: User is redirected to their role-appropriate dashboard after login (PM → /property, DM → /district, Exec → /executive)
+- [x] **AUTH-02**: User is redirected to their role-appropriate dashboard after login (PM → /property, RM → /property, Exec → /executive)
 - [x] **AUTH-03**: Unauthenticated users are redirected to login page
 - [x] **AUTH-04**: User session persists across browser refresh
 - [x] **AUTH-05**: User can log out from any page
