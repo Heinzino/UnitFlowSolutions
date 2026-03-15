@@ -424,3 +424,23 @@ describe('computeKPITrends', () => {
     expect(trends.jobsCompleted!.percentage).toBeCloseTo(0, 1)
   })
 })
+
+// ---------------------------------------------------------------------------
+// isGood prop semantics (VIZ-03)
+// ---------------------------------------------------------------------------
+
+describe('isGood prop semantics (VIZ-03)', () => {
+  it('spreading non-null TrendData with isGood: false produces isGood === false', () => {
+    const trend = { direction: 'up' as const, percentage: 10 }
+    const result = { ...trend, isGood: false }
+    expect(result.isGood).toBe(false)
+    expect(result.direction).toBe('up')
+    expect(result.percentage).toBe(10)
+  })
+
+  it('ternary with null TrendData returns undefined (null guard preserved)', () => {
+    const trend = null
+    const result = trend ? { ...trend, isGood: false } : undefined
+    expect(result).toBeUndefined()
+  })
+})

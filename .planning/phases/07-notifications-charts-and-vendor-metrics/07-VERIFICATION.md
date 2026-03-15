@@ -38,7 +38,7 @@ human_verification:
 |---|-------|--------|----------|
 | 1 | Bell/Notifications nav item is gone from sidebar and bottom tab bar | VERIFIED | sidebar.tsx has 4 items (Dashboard, Properties, Vendors, Settings); no Bell import. bottom-tab-bar.tsx identical 4-item list. No "notification" string in either file. |
 | 2 | All roles (pm, rm, exec) can access /vendors without redirect | VERIFIED | auth.ts ROLE_ALLOWED_ROUTES: exec=['/executive','/property','/vendors'], rm=['/property','/vendors'], pm=['/property','/vendors'] |
-| 3 | Executive KPI cards for Jobs Completed, Active Jobs Open, and Avg Time to Complete show trend arrows with correct color semantics | VERIFIED | executive-kpis.tsx passes isGood=false for Active Jobs Open and Avg Time to Complete; isGood defaults to true (green-up) for Jobs Completed. KPICard passes isGood through to TrendIndicator. |
+| 3 | Executive KPI cards for Jobs Completed, Active Jobs Open, and Avg Time to Complete show trend arrows with correct color semantics | CORRECTED | executive-kpis.tsx did NOT pass isGood=false at time of Phase 7 verification. Fixed in Phase 8 (08-01-PLAN). TrendIndicator logic was always correct; only the call site was missing isGood: false. |
 | 4 | TrendIndicator shows red arrow when "up is bad" (Active Jobs Open increasing, Avg Time increasing) | VERIFIED | trend-indicator.tsx: isPositive = isGood ? direction==="up" : direction==="down"; colorClass = isPositive ? "text-positive" : "text-negative". Logic is correct. |
 | 5 | User navigates to /vendors and sees a table of all vendors with 5 columns | VERIFIED | vendors/page.tsx: auth check + Suspense + VendorTableData. vendor-table.tsx: 5 TableHead columns (Vendor Name, Jobs Completed, Avg Completion Time, Jobs Assigned, Jobs). |
 | 6 | User clicks a column header and the table re-sorts | VERIFIED | vendor-table.tsx: handleSort() with useState(sortKey, sortDir); clicking same column toggles direction; clicking new column switches to desc default. |
@@ -61,7 +61,7 @@ human_verification:
 | `src/lib/types/auth.ts` | VERIFIED | ROLE_ALLOWED_ROUTES has /vendors for pm, rm, exec |
 | `src/components/ui/trend-indicator.tsx` | VERIFIED | isGood?: boolean prop (default true); isPositive logic correct; exports TrendIndicatorProps and TrendIndicator |
 | `src/lib/kpis/executive-kpis.ts` | VERIFIED | Exports computeExecutiveKPIs and computeKPITrends; TrendData type; KPITrends interface; date-windowed logic |
-| `src/app/(dashboard)/executive/_components/executive-kpis.tsx` | VERIFIED | Imports computeKPITrends; passes trends.activeJobsOpen with isGood=false, trends.jobsCompleted (default good), trends.avgTimeToComplete with isGood=false |
+| `src/app/(dashboard)/executive/_components/executive-kpis.tsx` | CORRECTED | isGood=false was missing at Phase 7 verification; fixed in Phase 8 |
 | `src/components/ui/kpi-card.tsx` | VERIFIED | trend prop type includes isGood?: boolean; passes isGood={trend.isGood} to TrendIndicator |
 
 ### Plan 07-02 Artifacts
