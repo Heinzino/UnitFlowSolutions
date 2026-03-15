@@ -14,6 +14,7 @@ function makeTurnRequest(overrides: Partial<TurnRequest> = {}): TurnRequest {
     targetDate: null,
     status: 'In progress',
     jobIds: [],
+    jobRecordIds: [],
     timeToCompleteUnit: null,
     notes: null,
     quotePrice: null,

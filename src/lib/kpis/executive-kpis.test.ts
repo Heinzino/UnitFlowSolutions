@@ -412,16 +412,15 @@ describe('computeKPITrends', () => {
     expect(trends.avgTimeToComplete).toBeNull()
   })
 
-  it('returns direction with 0.0% change for identical period counts', () => {
+  it('returns null when current and previous period counts are identical', () => {
     // Both periods have 1 completed job in range
     const jobs = [
       makeJob({ status: 'Completed', endDate: '2024-02-01' }), // current window
       makeJob({ status: 'Completed', endDate: '2024-01-01' }), // previous window
     ]
     const trends = computeKPITrends(jobs, jobs, [], [])
-    // 1 vs 1 — percentage should be 0
-    expect(trends.jobsCompleted).not.toBeNull()
-    expect(trends.jobsCompleted!.percentage).toBeCloseTo(0, 1)
+    // 1 vs 1 — no change, no trend to display
+    expect(trends.jobsCompleted).toBeNull()
   })
 })
 

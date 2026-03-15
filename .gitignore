@@ -37,3 +37,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+scripts
+
+# local data/reference
+AirtableReference/
+SnapshotData/
+temp-scaffold/
+
+# claude code
+.claude/

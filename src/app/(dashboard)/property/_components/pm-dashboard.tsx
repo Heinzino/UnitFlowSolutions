@@ -1,41 +1,37 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { PropertySelector } from '@/components/layout/property-selector';
-import { PMKPIs } from './pm-kpis';
-import { PMKPISkeleton } from './pm-kpi-skeleton';
-import { PMTurnList } from './pm-turn-list';
-import { PMTurnListSkeleton } from './pm-turn-list-skeleton';
 
 interface PMDashboardProps {
   assignedProperties: string[];
-  role: string;
   displayName: string;
+  children: React.ReactNode;
 }
 
 export function PMDashboard({
   assignedProperties,
-  role,
   displayName,
+  children,
 }: PMDashboardProps) {
-  // "" sentinel = "All Properties"
-  const [selectedProperty, setSelectedProperty] = useState('');
-
-  // Compute effective scope for data fetching
-  const effectiveProperties =
-    selectedProperty === '' ? assignedProperties : [selectedProperty];
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const selectedProperty = searchParams.get('property') ?? '';
 
   function handleSelect(value: string) {
-    if (value === 'All Properties') {
-      setSelectedProperty('');
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === 'All Properties' || value === '') {
+      params.delete('property');
     } else {
-      setSelectedProperty(value);
+      params.set('property', value);
     }
+    const qs = params.toString();
+    router.push(`/property${qs ? `?${qs}` : ''}`);
   }
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Page header — dark green background, white text per Phase 4 pattern */}
+      {/* Page header */}
       <div>
         <h1 className="font-heading font-bold text-xl text-white">
           Property Manager Dashboard
@@ -56,15 +52,8 @@ export function PMDashboard({
         </div>
       )}
 
-      {/* KPI grid — keyed on selectedProperty to force remount on filter change */}
-      <Suspense key={`kpis-${selectedProperty}`} fallback={<PMKPISkeleton />}>
-        <PMKPIs assignedProperties={effectiveProperties} />
-      </Suspense>
-
-      {/* Turn list — keyed on selectedProperty to force remount on filter change */}
-      <Suspense key={`turns-${selectedProperty}`} fallback={<PMTurnListSkeleton />}>
-        <PMTurnList assignedProperties={effectiveProperties} role={role} />
-      </Suspense>
+      {/* Server-rendered KPIs and turn list passed as children */}
+      {children}
     </div>
   );
 }

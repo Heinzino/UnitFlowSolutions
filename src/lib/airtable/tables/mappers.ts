@@ -26,7 +26,9 @@ export function mapJob(record: AirtableRecord<FieldSet>): Job {
     email: f['Email (from Vendor)'] ? String(f['Email (from Vendor)']) : null,
     phone: f['Phone (from Vendor)'] ? String(f['Phone (from Vendor)']) : null,
     quotePrice:
-      f['Quote Price'] != null ? Number(f['Quote Price']) || null : null,
+      f['Price (from Quote Price)'] != null
+        ? Number(f['Price (from Quote Price)']) || null
+        : f['Quote Price'] != null ? Number(f['Quote Price']) || null : null,
     turnRequestId:
       f['Request ID (from Turn Requests)'] != null
         ? Number(f['Request ID (from Turn Requests)']) || null
@@ -49,16 +51,25 @@ export function mapJob(record: AirtableRecord<FieldSet>): Job {
 export function mapTurnRequest(record: AirtableRecord<FieldSet>): TurnRequest {
   const f = record.fields as Record<string, unknown>
 
-  // Parse Jobs field: "51,52,53" string → number[]
+  // Parse Jobs linked record field — API returns array of record IDs ["recXXX"]
+  let jobRecordIds: string[] = []
   let jobIds: number[] = []
   const rawJobs = f['Jobs']
-  if (typeof rawJobs === 'string' && rawJobs.trim() !== '') {
+  if (Array.isArray(rawJobs)) {
+    // Linked record field: array of record IDs (strings starting with "rec")
+    const recIds = rawJobs.filter((v): v is string => typeof v === 'string' && v.startsWith('rec'))
+    if (recIds.length > 0) {
+      jobRecordIds = recIds
+    } else {
+      // Fallback: array of numeric IDs
+      jobIds = rawJobs.map(Number).filter((n) => !isNaN(n) && n > 0)
+    }
+  } else if (typeof rawJobs === 'string' && rawJobs.trim() !== '') {
+    // CSV-style: "51,52,53"
     jobIds = rawJobs
       .split(',')
       .map((s) => Number(s.trim()))
       .filter((n) => !isNaN(n) && n > 0)
-  } else if (Array.isArray(rawJobs)) {
-    jobIds = rawJobs.map(Number).filter((n) => !isNaN(n) && n > 0)
   }
 
   return {
@@ -70,6 +81,7 @@ export function mapTurnRequest(record: AirtableRecord<FieldSet>): TurnRequest {
     targetDate: f['Target Date'] ? String(f['Target Date']) : null,
     status: String(f['Status'] ?? ''),
     jobIds,
+    jobRecordIds,
     // jobs will be populated by resolveLinkedJobs
     timeToCompleteUnit:
       f['Time to Complete Unit (Days)'] != null

@@ -134,9 +134,9 @@ export interface KPITrends {
 }
 
 function computeTrend(current: number, prev: number): TrendData {
-  if (prev === 0) return null
+  if (prev === 0 || current === prev) return null
   const percentage = Math.abs((current - prev) / prev * 100)
-  const direction = current >= prev ? 'up' : 'down'
+  const direction = current > prev ? 'up' : 'down'
   return { direction, percentage }
 }
 

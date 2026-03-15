@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { ROLE_ROUTES } from '@/lib/types/auth'
+import { ROLE_ROUTES, ROLE_ALLOWED_ROUTES } from '@/lib/types/auth'
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -55,9 +55,12 @@ export async function updateSession(request: NextRequest) {
     const ownRoute = role ? ROLE_ROUTES[role as keyof typeof ROLE_ROUTES] : undefined
     const isRoleRoute = Object.values(ROLE_ROUTES).some((r) => path.startsWith(r))
 
-    if (isRoleRoute && ownRoute && !path.startsWith(ownRoute)) {
+    const allowedRoutes = role ? ROLE_ALLOWED_ROUTES[role as keyof typeof ROLE_ALLOWED_ROUTES] : undefined
+    const isAllowed = allowedRoutes?.some((r) => path.startsWith(r)) ?? (ownRoute ? path.startsWith(ownRoute) : false)
+
+    if (isRoleRoute && !isAllowed) {
       const url = request.nextUrl.clone()
-      url.pathname = ownRoute
+      url.pathname = ownRoute ?? '/'
       return NextResponse.redirect(url)
     }
 

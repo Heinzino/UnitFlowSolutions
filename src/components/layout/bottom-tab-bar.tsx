@@ -4,17 +4,23 @@ import Link from "next/link";
 import {
   Building2,
   Users,
+  LayoutDashboard,
 } from "lucide-react";
 import { clsx } from "clsx";
 import type { LucideIcon } from "lucide-react";
+import type { UserRole } from "@/lib/types/auth";
+import { createClient } from "@/lib/supabase/client";
+import { useEffect, useState } from "react";
 
 interface TabItem {
   icon: LucideIcon;
   label: string;
   href: string;
+  roles?: UserRole[];
 }
 
 const tabItems: TabItem[] = [
+  { icon: LayoutDashboard, label: "Executive", href: "/executive", roles: ["exec"] },
   { icon: Building2, label: "Properties", href: "/property" },
   { icon: Users, label: "Vendors", href: "/vendors" },
 ];
@@ -24,9 +30,28 @@ interface BottomTabBarProps {
 }
 
 export function BottomTabBar({ activePath }: BottomTabBarProps) {
+  const [role, setRole] = useState<UserRole>("pm");
+
+  useEffect(() => {
+    try {
+      const supabase = createClient();
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) {
+          setRole((user.app_metadata?.role as UserRole) ?? "pm");
+        }
+      }).catch(() => {});
+    } catch {
+      // Supabase client unavailable (e.g. missing env vars in tests)
+    }
+  }, []);
+
+  const visibleItems = tabItems.filter(
+    (item) => !item.roles || item.roles.includes(role)
+  );
+
   return (
     <nav className="md:hidden fixed bottom-4 left-4 right-4 bg-forest/95 backdrop-blur-sm rounded-2xl px-2 py-2 flex justify-around items-center shadow-2xl z-50">
-      {tabItems.map((item) => {
+      {visibleItems.map((item) => {
         const Icon = item.icon;
         const isActive = activePath === item.href;
 

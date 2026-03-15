@@ -5,19 +5,24 @@ import { useRouter } from "next/navigation";
 import {
   Building2,
   Users,
+  LayoutDashboard,
   LogOut,
 } from "lucide-react";
 import { clsx } from "clsx";
 import type { LucideIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import type { UserRole } from "@/lib/types/auth";
+import { useEffect, useState } from "react";
 
 interface NavItem {
   icon: LucideIcon;
   label: string;
   href: string;
+  roles?: UserRole[];
 }
 
 const navItems: NavItem[] = [
+  { icon: LayoutDashboard, label: "Executive", href: "/executive", roles: ["exec"] },
   { icon: Building2, label: "Properties", href: "/property" },
   { icon: Users, label: "Vendors", href: "/vendors" },
 ];
@@ -28,12 +33,30 @@ interface SidebarProps {
 
 export function Sidebar({ activePath }: SidebarProps) {
   const router = useRouter();
+  const [role, setRole] = useState<UserRole>("pm");
+
+  useEffect(() => {
+    try {
+      const supabase = createClient();
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) {
+          setRole((user.app_metadata?.role as UserRole) ?? "pm");
+        }
+      }).catch(() => {});
+    } catch {
+      // Supabase client unavailable (e.g. missing env vars in tests)
+    }
+  }, []);
 
   async function handleLogout() {
     const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/login");
   }
+
+  const visibleItems = navItems.filter(
+    (item) => !item.roles || item.roles.includes(role)
+  );
 
   return (
     <aside className="flex flex-col w-[220px] h-[calc(100vh-1.5rem)] bg-white rounded-[20px] shadow-lg border border-white/30">
@@ -49,7 +72,7 @@ export function Sidebar({ activePath }: SidebarProps) {
 
       {/* Nav */}
       <nav className="px-3 flex flex-col gap-1 flex-1">
-        {navItems.map((item) => {
+        {visibleItems.map((item) => {
           const Icon = item.icon;
           const isActive = activePath === item.href;
           return (

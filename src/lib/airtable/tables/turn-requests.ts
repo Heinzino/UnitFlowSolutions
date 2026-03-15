@@ -2,7 +2,7 @@ import { cacheTag, cacheLife } from 'next/cache'
 import type { FieldSet } from 'airtable'
 import { base, rateLimiter } from '../client'
 import { CACHE_TAGS } from '../cache-tags'
-import { mapTurnRequest } from './mappers'
+import { mapTurnRequest, mapJob } from './mappers'
 import { fetchJobsByIds } from './jobs'
 import { filterByProperties } from '@/lib/normalize-property-name'
 import type { TurnRequest } from '@/lib/types/airtable'
@@ -15,9 +15,45 @@ export { mapTurnRequest } from './mappers'
 // Linked record resolution (batch, no N+1)
 // ---------------------------------------------------------------------------
 
+async function fetchJobsByRecordIds(recordIds: string[]) {
+  if (recordIds.length === 0) return []
+  await rateLimiter.acquire()
+  // Airtable SDK: fetch specific records by their record IDs
+  const results = await Promise.all(
+    recordIds.map((id) => base<FieldSet>('Jobs').find(id))
+  )
+  return results.map(mapJob)
+}
+
 async function resolveLinkedJobs(
   turnRequests: TurnRequest[]
 ): Promise<TurnRequest[]> {
+  // Prefer record IDs (from API linked field), fall back to numeric job IDs
+  const allRecordIds = Array.from(
+    new Set(turnRequests.flatMap((tr) => tr.jobRecordIds))
+  )
+
+  if (allRecordIds.length > 0) {
+    const jobs = await fetchJobsByRecordIds(allRecordIds)
+    const recordIdToJob = new Map<string, typeof jobs[number]>()
+    // Map each record ID to its resolved job
+    allRecordIds.forEach((recId, i) => {
+      if (jobs[i]) recordIdToJob.set(recId, jobs[i])
+    })
+
+    return turnRequests.map((tr) => {
+      const resolved = tr.jobRecordIds
+        .map((recId) => recordIdToJob.get(recId))
+        .filter(Boolean) as typeof jobs
+      return {
+        ...tr,
+        jobs: resolved,
+        jobIds: resolved.map((j) => j.jobId),
+      }
+    })
+  }
+
+  // Fallback: numeric job IDs
   const allJobIds = Array.from(
     new Set(turnRequests.flatMap((tr) => tr.jobIds))
   )

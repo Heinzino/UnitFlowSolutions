@@ -211,6 +211,13 @@ describe('mapTurnRequest', () => {
     expect(tr.jobIds).toEqual([])
   })
 
+  it('parses linked record IDs from Jobs array', () => {
+    const record = makeTurnRequestRecord({ 'Jobs': ['recABC123', 'recDEF456'] })
+    const tr = mapTurnRequest(record as unknown as Parameters<typeof mapTurnRequest>[0])
+    expect(tr.jobRecordIds).toEqual(['recABC123', 'recDEF456'])
+    expect(tr.jobIds).toEqual([])
+  })
+
   it('handles null optional fields', () => {
     const record = makeTurnRequestRecord({
       'Ready To Lease Date': null,

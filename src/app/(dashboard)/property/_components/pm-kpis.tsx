@@ -13,10 +13,11 @@ import type { UserRole } from '@/lib/types/auth';
 
 interface PMKPIsProps {
   assignedProperties: string[];
+  role?: string;
 }
 
-export async function PMKPIs({ assignedProperties }: PMKPIsProps) {
-  const turnRequests = await fetchTurnRequestsForUser('pm' as UserRole, assignedProperties);
+export async function PMKPIs({ assignedProperties, role = 'pm' }: PMKPIsProps) {
+  const turnRequests = await fetchTurnRequestsForUser(role as UserRole, assignedProperties);
   const kpis = computePMKPIs(turnRequests);
 
   const avgTimeDisplay =
