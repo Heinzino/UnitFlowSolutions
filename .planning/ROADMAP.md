@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Executive Dashboard** - Read-only KPI dashboard with alert cards, validating data layer aggregations across all properties (completed 2026-03-13)
 - [x] **Phase 5: Property Manager View** - Core PM workflow with overdue-first turn lists, turn detail with linked jobs, inline status updates, and PM KPI cards (gap closure in progress) (completed 2026-03-14)
 - [x] **Phase 6: District Manager View** - Portfolio overview with per-property cards and drill-down reusing PM components (completed 2026-03-14)
-- [ ] **Phase 7: Notifications, Charts, and Vendor Metrics** - Smart notification panel, data visualizations (bar charts, gauges, trend indicators), and vendor performance table
+- [ ] **Phase 7: Notifications, Charts, and Vendor Metrics** - Data visualizations (health gauge, vendor bar chart), trend indicators on executive KPI cards, and vendor performance table. Notifications descoped.
 
 ## Phase Details
 
@@ -124,20 +124,21 @@ Plans:
 - [ ] 06-02-PLAN.md — Gap closure: rewrite DM-01 through DM-04 requirement descriptions to match delivered rm rename outcomes
 
 ### Phase 7: Notifications, Charts, and Vendor Metrics
-**Goal**: Users receive automatic attention alerts via the notification panel, see data visualizations on dashboards, and can review vendor performance metrics
+**Goal**: Executive dashboard enhanced with health gauge, vendor completion time chart, and trend indicators on KPI cards; vendor performance table on dedicated /vendors page. Notifications descoped (existing alert cards are sufficient).
 **Depends on**: Phase 5
 **Requirements**: NOTIF-01, NOTIF-02, NOTIF-03, NOTIF-04, VIZ-01, VIZ-02, VIZ-03, VIZ-04, VEND-01
 **Success Criteria** (what must be TRUE):
-  1. Notification panel (middle column) displays auto-derived alerts from Airtable data: NEEDS ATTENTION jobs (red), pending counter quotes (dollar), approaching deadlines (clock), past target turns (warning)
-  2. Each notification shows icon, description, and timestamp; clicking navigates to the relevant turn/job detail
-  3. Vendor performance bar chart renders with rounded-top bars and green fill; completion gauge renders as semi-circular arc with gradient
-  4. KPI cards display trend indicators (arrow direction, percentage, color coding)
-  5. Vendor metrics table shows: Vendor Name, Jobs Completed, Average Completion Time, Jobs Assigned, linked job badges
+  1. Notification UI removed from sidebar and bottom tab bar (NOTIF-01 through NOTIF-04 descoped)
+  2. Health gauge on executive dashboard shows on-time completion rate with green/amber/red coloring
+  3. Vendor completion time bar chart renders horizontal bars on executive dashboard
+  4. Executive KPI cards for Jobs Completed, Active Jobs Open, and Avg Time show trend arrows with correct color semantics
+  5. Vendor metrics table on /vendors page shows sortable columns: Vendor Name, Jobs Completed, Avg Completion Time, Jobs Assigned
 **Plans**: 3 plans
 
 Plans:
-- [ ] 07-01: TBD
-- [ ] 07-02: TBD
+- [ ] 07-01-PLAN.md — Install Recharts, remove notification UI, add /vendors route auth, enhance TrendIndicator with isGood prop, compute and wire KPI trends
+- [ ] 07-02-PLAN.md — Build /vendors page with client-side sortable vendor metrics table
+- [ ] 07-03-PLAN.md — Build health gauge (SVG) and vendor completion time bar chart (Recharts) on executive dashboard
 
 ## Progress
 
@@ -152,4 +153,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 4. Executive Dashboard | 3/3 | Complete   | 2026-03-13 |
 | 5. Property Manager View | 4/4 | Complete   | 2026-03-14 |
 | 6. District Manager View | 2/2 | Complete   | 2026-03-14 |
-| 7. Notifications, Charts, and Vendor Metrics | 0/TBD | Not started | - |
+| 7. Notifications, Charts, and Vendor Metrics | 0/3 | Not started | - |
