@@ -153,7 +153,10 @@ Plans:
   3. Sidebar/BottomTabBar Dashboard link navigates to role-appropriate route without extra redirect
   4. Sidebar/BottomTabBar Settings link removed or points to valid route
   5. 07-VERIFICATION.md corrected to reflect actual isGood state
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 08-01-PLAN.md — Fix isGood trend props, wire PropertySelector to URL params, remove broken nav items, correct 07-VERIFICATION.md
 
 ### Phase 9: Documentation & Verification Cleanup
 **Goal**: Close all documentation and verification gaps — create missing Phase 3 VERIFICATION.md, fix REQUIREMENTS.md descope markers, and correct stale descriptions
@@ -181,5 +184,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 5. Property Manager View | 4/4 | Complete   | 2026-03-14 |
 | 6. District Manager View | 2/2 | Complete   | 2026-03-14 |
 | 7. Notifications, Charts, and Vendor Metrics | 3/3 | Complete   | 2026-03-15 |
-| 8. Code Fixes & Integration Wiring | 0/0 | Not Started | — |
+| 8. Code Fixes & Integration Wiring | 0/1 | Not Started | — |
 | 9. Documentation & Verification Cleanup | 0/0 | Not Started | — |
