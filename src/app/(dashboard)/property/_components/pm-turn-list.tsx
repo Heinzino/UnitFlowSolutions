@@ -11,6 +11,7 @@ import {
   TableCell,
 } from '@/components/ui/table';
 import { MobileJobsList } from './mobile-jobs-list';
+import { MobileTurnCard } from './mobile-turn-card';
 import { ClickableTurnRow } from './clickable-turn-row';
 import { StopPropagation } from './stop-propagation';
 import { TurnStatusDropdown } from './turn-status-dropdown';
@@ -100,48 +101,6 @@ function TurnTableRows({ turns }: { turns: TurnRequest[] }) {
   );
 }
 
-// Mobile card list for a single turn
-function TurnCard({ turn }: { turn: TurnRequest }) {
-  return (
-    <Link href={`/property/turn/${turn.requestId}`} className="block">
-      <div className="p-4 border-b border-card-border last:border-b-0">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <Badge variant="emerald">{turn.propertyName}</Badge>
-          <StopPropagation>
-            <TurnStatusDropdown requestId={turn.requestId} currentStatus={turn.status} />
-          </StopPropagation>
-        </div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-          <span className="text-text-secondary text-xs">Unit</span>
-          <span className="text-text-primary font-medium">{turn.unitNumber}</span>
-
-          <span className="text-text-secondary text-xs">Ready To Lease</span>
-          <span className="text-text-primary">{formatDate(turn.readyToLeaseDate)}</span>
-
-          <span className="text-text-secondary text-xs">Vacant Date</span>
-          <span className="text-text-primary">{formatDate(turn.vacantDate)}</span>
-
-          <span className="text-text-secondary text-xs">Price</span>
-          <span className="text-text-primary">{formatPrice(turn.totalCost, turn.quotePrice)}</span>
-        </div>
-        {/* Jobs: dropdowns rendered via client component wrapper to handle stopPropagation */}
-        {turn.jobs && turn.jobs.length > 0 && (
-          <div className="mt-2">
-            <span className="text-text-secondary text-xs block mb-1">Jobs</span>
-            <MobileJobsList turn={turn} />
-          </div>
-        )}
-        {(!turn.jobs || turn.jobs.length === 0) && turn.jobIds.length > 0 && (
-          <div className="mt-2">
-            <Badge variant="default">
-              {turn.jobIds.length} job{turn.jobIds.length !== 1 ? 's' : ''}
-            </Badge>
-          </div>
-        )}
-      </div>
-    </Link>
-  );
-}
 
 function TurnSection({
   title,
@@ -191,7 +150,7 @@ function TurnSection({
           {/* Mobile card list — hidden on md+ */}
           <div className="md:hidden">
             {turns.map((turn) => (
-              <TurnCard key={turn.requestId} turn={turn} />
+              <MobileTurnCard key={turn.requestId} turn={turn} />
             ))}
           </div>
         </>
