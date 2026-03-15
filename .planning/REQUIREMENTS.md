@@ -71,7 +71,7 @@
 
 ### Vendor Metrics
 
-- [ ] **VEND-01**: Vendor table showing: Vendor Name, Num Jobs Completed, Average Completion Time (Days), Num Jobs Assigned, Jobs (linked ID badges)
+- [x] **VEND-01**: Vendor table showing: Vendor Name, Num Jobs Completed, Average Completion Time (Days), Num Jobs Assigned, Jobs (linked ID badges)
 
 ### Notification Panel
 
@@ -173,7 +173,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VIZ-02 | Phase 7 | Pending |
 | VIZ-03 | Phase 7 | Complete |
 | VIZ-04 | Phase 7 | Complete |
-| VEND-01 | Phase 7 | Pending |
+| VEND-01 | Phase 7 | Complete |
 
 **Coverage:**
 - v1 requirements: 50 total

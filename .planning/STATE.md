@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 07-01-PLAN.md
-last_updated: "2026-03-15T03:34:06.126Z"
+stopped_at: Completed 07-02-PLAN.md
+last_updated: "2026-03-15T03:39:23.667Z"
 last_activity: 2026-03-12 -- Plan 02-01 executed (Supabase auth infrastructure)
 progress:
   total_phases: 7
   completed_phases: 6
   total_plans: 21
-  completed_plans: 19
+  completed_plans: 20
   percent: 57
 ---
 
@@ -67,6 +67,7 @@ Progress: [████████░░] 57%
 | Phase 06-district-manager-view P01 | 2 | 2 tasks | 4 files |
 | Phase 06-district-manager-view P02 | 1 | 1 tasks | 1 files |
 | Phase 07-notifications-charts-and-vendor-metrics P01 | 5 | 2 tasks | 13 files |
+| Phase 07-notifications-charts-and-vendor-metrics P02 | 2 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -127,6 +128,8 @@ Recent decisions affecting current work:
 - [Phase 06-02]: DM requirement descriptions rewritten to match rm rename outcomes rather than the original portfolio UI spec
 - [Phase 07-notifications-charts-and-vendor-metrics]: computeKPITrends uses same-dataset date windowing since Airtable provides a single snapshot; current and prev arrays are the same jobs/TRs with internal date filtering
 - [Phase 07-notifications-charts-and-vendor-metrics]: recharts ^3.8.0 installed as dependency — prepares for Plan 03 chart components
+- [Phase 07-notifications-charts-and-vendor-metrics]: jobIds extraction uses dual-format defensive parsing: Array.isArray for Airtable API array, string split for CSV format
+- [Phase 07-notifications-charts-and-vendor-metrics]: Null avgCompletionTimeDays sorts to bottom regardless of sort direction by short-circuiting before comparison
 
 ### Pending Todos
 
@@ -139,6 +142,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-15T03:34:06.120Z
-Stopped at: Completed 07-01-PLAN.md
+Last session: 2026-03-15T03:39:23.661Z
+Stopped at: Completed 07-02-PLAN.md
 Resume file: None
