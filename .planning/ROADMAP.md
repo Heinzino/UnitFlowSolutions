@@ -19,6 +19,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Property Manager View** - Core PM workflow with overdue-first turn lists, turn detail with linked jobs, inline status updates, and PM KPI cards (gap closure in progress) (completed 2026-03-14)
 - [x] **Phase 6: District Manager View** - Portfolio overview with per-property cards and drill-down reusing PM components (completed 2026-03-14)
 - [x] **Phase 7: Notifications, Charts, and Vendor Metrics** - Data visualizations (health gauge, vendor bar chart), trend indicators on executive KPI cards, and vendor performance table. Notifications descoped. (completed 2026-03-15)
+- [ ] **Phase 8: Code Fixes & Integration Wiring** - Fix VIZ-03 trend arrow semantics, wire header PropertySelector to URL params, fix navigation hrefs, correct 07-VERIFICATION.md (gap closure)
+- [ ] **Phase 9: Documentation & Verification Cleanup** - Retroactive Phase 3 verification, mark NOTIF-01–04 as descoped, fix AUTH-02 description, update Phase 7 SUMMARY frontmatter (gap closure)
 
 ## Phase Details
 
@@ -140,6 +142,31 @@ Plans:
 - [ ] 07-02-PLAN.md — Build /vendors page with client-side sortable vendor metrics table
 - [ ] 07-03-PLAN.md — Build health gauge (SVG) and vendor completion time bar chart (Recharts) on executive dashboard
 
+### Phase 8: Code Fixes & Integration Wiring
+**Goal**: Close all code and integration gaps found by milestone audit — fix inverted trend arrows, wire header PropertySelector, and fix navigation issues
+**Depends on**: Phase 7
+**Requirements**: VIZ-03, DM-03, UI-01
+**Gap Closure:** Closes gaps from v1.0 audit
+**Success Criteria** (what must be TRUE):
+  1. Executive KPI cards for Active Jobs Open and Avg Time to Complete show trend arrows with `isGood: false` (red-up, green-down)
+  2. Header PropertySelectorWrapper pushes selected property as URL param, scoping dashboard data for RM users (Flow C complete)
+  3. Sidebar/BottomTabBar Dashboard link navigates to role-appropriate route without extra redirect
+  4. Sidebar/BottomTabBar Settings link removed or points to valid route
+  5. 07-VERIFICATION.md corrected to reflect actual isGood state
+**Plans**: TBD
+
+### Phase 9: Documentation & Verification Cleanup
+**Goal**: Close all documentation and verification gaps — create missing Phase 3 VERIFICATION.md, fix REQUIREMENTS.md descope markers, and correct stale descriptions
+**Depends on**: Phase 8
+**Requirements**: DATA-01, DATA-02, DATA-03, DATA-04, DATA-05, DATA-06, NOTIF-01, NOTIF-02, NOTIF-03, NOTIF-04, AUTH-02
+**Gap Closure:** Closes gaps from v1.0 audit
+**Success Criteria** (what must be TRUE):
+  1. Phase 3 VERIFICATION.md exists with verification of all 6 DATA requirements against running code
+  2. NOTIF-01 through NOTIF-04 marked as descoped (not `[x] Complete`) in REQUIREMENTS.md
+  3. AUTH-02 description updated to reflect `RM → /property` (not `DM → /district`)
+  4. Phase 7 SUMMARY frontmatter includes VIZ-01 through VIZ-04 in requirements_completed
+**Plans**: TBD
+
 ## Progress
 
 **Execution Order:**
@@ -154,3 +181,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 5. Property Manager View | 4/4 | Complete   | 2026-03-14 |
 | 6. District Manager View | 2/2 | Complete   | 2026-03-14 |
 | 7. Notifications, Charts, and Vendor Metrics | 3/3 | Complete   | 2026-03-15 |
+| 8. Code Fixes & Integration Wiring | 0/0 | Not Started | — |
+| 9. Documentation & Verification Cleanup | 0/0 | Not Started | — |

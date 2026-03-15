@@ -75,16 +75,16 @@
 
 ### Notification Panel
 
-- [x] **NOTIF-01**: Middle column displays auto-derived notifications from Airtable data
-- [x] **NOTIF-02**: Alert types: Job status "NEEDS ATTENTION" (red), Counter Quote pending (dollar icon), Job approaching deadline within 2 days (clock), Turn past target time (warning)
-- [x] **NOTIF-03**: Each notification shows icon, description text, and timestamp or amount
-- [x] **NOTIF-04**: Clicking a notification navigates to the relevant turn/job detail page
+- [ ] **NOTIF-01**: ~~Middle column displays auto-derived notifications from Airtable data~~ *Descoped — existing alert cards sufficient*
+- [ ] **NOTIF-02**: ~~Alert types: Job status "NEEDS ATTENTION" (red), Counter Quote pending (dollar icon), Job approaching deadline within 2 days (clock), Turn past target time (warning)~~ *Descoped*
+- [ ] **NOTIF-03**: ~~Each notification shows icon, description text, and timestamp or amount~~ *Descoped*
+- [ ] **NOTIF-04**: ~~Clicking a notification navigates to the relevant turn/job detail page~~ *Descoped*
 
 ### Charts & Visualization
 
 - [x] **VIZ-01**: Vendor performance bar chart (rounded-top bars, green fill, diagonal hatch for non-highlighted)
 - [x] **VIZ-02**: Completion gauge (semi-circular arc, dark-to-light green gradient, centered number)
-- [x] **VIZ-03**: Trend indicators on KPI cards (arrow up/down + percentage + color)
+- [ ] **VIZ-03**: Trend indicators on KPI cards (arrow up/down + percentage + color)
 - [x] **VIZ-04**: Color-coded alert cards: pink for past target, yellow for trending past target
 
 ## v2 Requirements
@@ -139,12 +139,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SCOPE-02 | Phase 2 | Complete |
 | SCOPE-03 | Phase 2 | Complete |
 | SCOPE-04 | Phase 2 | Complete |
-| DATA-01 | Phase 3 | Complete |
-| DATA-02 | Phase 3 | Complete |
-| DATA-03 | Phase 3 | Complete |
-| DATA-04 | Phase 3 | Complete |
-| DATA-05 | Phase 3 | Complete |
-| DATA-06 | Phase 3 | Complete |
+| DATA-01 | Phase 9 | Pending |
+| DATA-02 | Phase 9 | Pending |
+| DATA-03 | Phase 9 | Pending |
+| DATA-04 | Phase 9 | Pending |
+| DATA-05 | Phase 9 | Pending |
+| DATA-06 | Phase 9 | Pending |
 | EXEC-01 | Phase 4 | Complete |
 | EXEC-02 | Phase 4 | Complete |
 | EXEC-03 | Phase 4 | Complete |
@@ -165,18 +165,21 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DM-02 | Phase 6 | Complete |
 | DM-03 | Phase 6 | Complete |
 | DM-04 | Phase 6 | Complete |
-| NOTIF-01 | Phase 7 | Complete |
-| NOTIF-02 | Phase 7 | Complete |
-| NOTIF-03 | Phase 7 | Complete |
-| NOTIF-04 | Phase 7 | Complete |
+| NOTIF-01 | Phase 9 | Pending (descoped) |
+| NOTIF-02 | Phase 9 | Pending (descoped) |
+| NOTIF-03 | Phase 9 | Pending (descoped) |
+| NOTIF-04 | Phase 9 | Pending (descoped) |
 | VIZ-01 | Phase 7 | Complete |
 | VIZ-02 | Phase 7 | Complete |
-| VIZ-03 | Phase 7 | Complete |
+| VIZ-03 | Phase 8 | Pending |
 | VIZ-04 | Phase 7 | Complete |
 | VEND-01 | Phase 7 | Complete |
 
 **Coverage:**
 - v1 requirements: 50 total
+- Satisfied: 39
+- Pending (gap closure): 7 (VIZ-03, DATA-01–06)
+- Pending (descoped): 4 (NOTIF-01–04)
 - Mapped to phases: 50
 - Unmapped: 0
 
