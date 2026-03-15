@@ -1,5 +1,4 @@
-export const dynamic = 'force-dynamic'
-
+import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
@@ -14,6 +13,7 @@ export default async function PropertyPage({
 }: {
   searchParams: Promise<{ property?: string }>;
 }) {
+  await connection();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 

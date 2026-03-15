@@ -1,5 +1,4 @@
-export const dynamic = 'force-dynamic'
-
+import { connection } from 'next/server'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { fetchJobById } from '@/lib/airtable/tables/jobs'
@@ -10,6 +9,7 @@ interface JobDetailPageProps {
 }
 
 export default async function JobDetailPage({ params }: JobDetailPageProps) {
+  await connection()
   const { id } = await params
 
   const supabase = await createClient()
