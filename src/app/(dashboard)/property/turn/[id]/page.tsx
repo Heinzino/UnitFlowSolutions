@@ -1,4 +1,3 @@
-import { connection } from 'next/server'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { fetchTurnRequestById } from '@/lib/airtable/tables/turn-requests'
@@ -9,7 +8,6 @@ interface TurnDetailPageProps {
 }
 
 export default async function TurnDetailPage({ params }: TurnDetailPageProps) {
-  await connection()
   const { id } = await params
 
   const supabase = await createClient()

@@ -16,7 +16,7 @@ export default function DashboardLayout({
         </Suspense>
       }
     >
-      {children}
+      <Suspense>{children}</Suspense>
     </AppShell>
   );
 }

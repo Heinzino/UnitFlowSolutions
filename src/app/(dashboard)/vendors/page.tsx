@@ -1,4 +1,3 @@
-import { connection } from 'next/server'
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
@@ -12,7 +11,6 @@ async function VendorTableData() {
 }
 
 export default async function VendorsPage() {
-  await connection()
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 

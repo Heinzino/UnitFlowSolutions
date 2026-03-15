@@ -1,4 +1,3 @@
-import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
@@ -8,7 +7,6 @@ import { ExecutiveCharts } from './_components/executive-charts';
 import { ExecutiveChartsSkeleton } from './_components/executive-charts-skeleton';
 
 export default async function ExecutivePage() {
-  await connection();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
