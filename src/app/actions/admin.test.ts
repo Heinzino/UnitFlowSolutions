@@ -162,19 +162,33 @@ describe('createProperty', () => {
     mockRateLimiter.acquire.mockResolvedValue(undefined)
   })
 
-  it('calls base("Properties").create() with correct fields and returns { name, streetAddress }', async () => {
+  it('calls base("Properties").create() with full record fields and returns { name, streetAddress }', async () => {
     mockGetUser.mockResolvedValue({
       data: { user: { email: 'heinz@readymation.com' } },
     })
     mockCreate.mockResolvedValue({ id: 'rec123', fields: {} })
 
-    const result = await createProperty('Maple Apartments', '123 Main St')
+    const result = await createProperty({
+      name: 'Maple Apartments',
+      streetAddress: '123 Main St',
+      unitNumber: '101',
+      floorPlan: '2br 1ba',
+    })
 
     expect(mockBase).toHaveBeenCalledWith('Properties')
-    expect(mockCreate).toHaveBeenCalledWith({
-      'Property Name': 'Maple Apartments',
-      'Street Address': '123 Main St',
-    })
+    expect(mockCreate).toHaveBeenCalledWith(
+      {
+        'Property Name': 'Maple Apartments',
+        'Street Address': '123 Main St',
+        'Unit Number': '101',
+        'Floor Plan': '2br 1ba',
+        'Bedrooms': 2,
+        'Bathrooms': 1,
+        'City': 'Columbia',
+        'State': 'SC',
+      },
+      { typecast: true },
+    )
     expect(result).toEqual({ name: 'Maple Apartments', streetAddress: '123 Main St' })
   })
 
@@ -184,7 +198,12 @@ describe('createProperty', () => {
     })
     mockCreate.mockResolvedValue({ id: 'rec123', fields: {} })
 
-    await createProperty('Maple Apartments', '123 Main St')
+    await createProperty({
+      name: 'Maple Apartments',
+      streetAddress: '123 Main St',
+      unitNumber: '101',
+      floorPlan: '1br 1ba',
+    })
 
     expect(mockRevalidateTag).toHaveBeenCalledWith('properties')
   })

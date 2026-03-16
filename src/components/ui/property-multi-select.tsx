@@ -9,12 +9,29 @@ export interface PropertyOption {
   streetAddress: string
 }
 
+export interface NewPropertyData {
+  name: string
+  streetAddress: string
+  unitNumber: string
+  floorPlan: string
+}
+
+export const FLOOR_PLANS = [
+  'Studio / Loft',
+  '1br 1ba',
+  '1br 2ba',
+  '2br 1ba',
+  '2br 1.5ba',
+  '3br 2ba',
+  '3br 3ba',
+] as const
+
 export interface PropertyMultiSelectProps {
   properties: PropertyOption[]
   selected: PropertyOption[]
   onChange: (selected: PropertyOption[]) => void
   mode?: 'single' | 'multi'
-  onCreateProperty?: (name: string, address: string) => Promise<PropertyOption>
+  onCreateProperty?: (data: NewPropertyData) => Promise<PropertyOption>
   placeholder?: string
 }
 
@@ -31,6 +48,8 @@ export function PropertyMultiSelect({
   const [creating, setCreating] = useState(false)
   const [newName, setNewName] = useState('')
   const [newAddress, setNewAddress] = useState('')
+  const [newUnit, setNewUnit] = useState('')
+  const [newFloorPlan, setNewFloorPlan] = useState('')
   const [saving, setSaving] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -70,10 +89,15 @@ export function PropertyMultiSelect({
   }
 
   async function handleCreate() {
-    if (!onCreateProperty || !newName.trim()) return
+    if (!onCreateProperty || !newName.trim() || !newUnit.trim() || !newFloorPlan) return
     setSaving(true)
     try {
-      const created = await onCreateProperty(newName.trim(), newAddress.trim())
+      const created = await onCreateProperty({
+        name: newName.trim(),
+        streetAddress: newAddress.trim(),
+        unitNumber: newUnit.trim(),
+        floorPlan: newFloorPlan,
+      })
       if (mode === 'single') {
         onChange([created])
       } else {
@@ -81,6 +105,8 @@ export function PropertyMultiSelect({
       }
       setNewName('')
       setNewAddress('')
+      setNewUnit('')
+      setNewFloorPlan('')
       setCreating(false)
     } finally {
       setSaving(false)
@@ -221,6 +247,23 @@ export function PropertyMultiSelect({
                 onChange={(e) => setNewAddress(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-200 rounded-badge text-sm focus:outline-none focus:ring-2 focus:ring-emerald focus:border-transparent"
               />
+              <input
+                type="text"
+                placeholder="Vacant unit number"
+                value={newUnit}
+                onChange={(e) => setNewUnit(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-badge text-sm focus:outline-none focus:ring-2 focus:ring-emerald focus:border-transparent"
+              />
+              <select
+                value={newFloorPlan}
+                onChange={(e) => setNewFloorPlan(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-badge text-sm focus:outline-none focus:ring-2 focus:ring-emerald focus:border-transparent"
+              >
+                <option value="">Select floor plan...</option>
+                {FLOOR_PLANS.map((fp) => (
+                  <option key={fp} value={fp}>{fp}</option>
+                ))}
+              </select>
               <div className="flex gap-2 justify-end">
                 <button
                   type="button"
@@ -228,6 +271,8 @@ export function PropertyMultiSelect({
                     setCreating(false)
                     setNewName('')
                     setNewAddress('')
+                    setNewUnit('')
+                    setNewFloorPlan('')
                   }}
                   className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors"
                 >
@@ -236,7 +281,7 @@ export function PropertyMultiSelect({
                 <button
                   type="button"
                   onClick={handleCreate}
-                  disabled={saving || !newName.trim()}
+                  disabled={saving || !newName.trim() || !newUnit.trim() || !newFloorPlan}
                   className={cn(
                     'px-3 py-1.5 text-sm bg-emerald text-white rounded-pill transition-colors',
                     'hover:bg-emerald-dark disabled:opacity-50 disabled:pointer-events-none'

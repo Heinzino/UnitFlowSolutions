@@ -56,7 +56,20 @@ export async function createUser(prevState: unknown, formData: FormData) {
   return { success: true, email, role, password }
 }
 
-export async function createProperty(name: string, streetAddress: string) {
+// Parse bedrooms/bathrooms from floor plan string
+function parseFloorPlan(floorPlan: string): { bedrooms: number; bathrooms: number } {
+  if (floorPlan === 'Studio / Loft') return { bedrooms: 0, bathrooms: 1 }
+  const match = floorPlan.match(/^(\d+)br\s+(\d+(?:\.\d+)?)ba$/)
+  if (!match) return { bedrooms: 0, bathrooms: 0 }
+  return { bedrooms: Number(match[1]), bathrooms: Number(match[2]) }
+}
+
+export async function createProperty(data: {
+  name: string
+  streetAddress: string
+  unitNumber: string
+  floorPlan: string
+}) {
   // 1. Verify caller is admin
   const supabase = await createClient()
   const {
@@ -66,12 +79,33 @@ export async function createProperty(name: string, streetAddress: string) {
     return { error: 'Unauthorized' }
   }
 
-  // 2. Create property in Airtable
-  await rateLimiter.acquire()
-  await base('Properties').create({
-    'Property Name': name,
-    'Street Address': streetAddress,
-  })
+  const { name, streetAddress, unitNumber, floorPlan } = data
+  if (!name.trim()) return { error: 'Property name is required' }
+  if (!unitNumber.trim()) return { error: 'Unit number is required' }
+  if (!floorPlan) return { error: 'Floor plan is required' }
+
+  const { bedrooms, bathrooms } = parseFloorPlan(floorPlan)
+
+  // 2. Create full Properties record in Airtable (typecast auto-creates new select options)
+  try {
+    await rateLimiter.acquire()
+    await base('Properties').create(
+      {
+        'Property Name': name,
+        'Street Address': streetAddress,
+        'Unit Number': unitNumber,
+        'Floor Plan': floorPlan,
+        'Bedrooms': bedrooms,
+        'Bathrooms': bathrooms,
+        'City': 'Columbia',
+        'State': 'SC',
+      },
+      { typecast: true },
+    )
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    return { error: message || 'Failed to create property' }
+  }
 
   // 3. Invalidate properties cache
   revalidateTag(CACHE_TAGS.properties)

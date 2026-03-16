@@ -3,7 +3,7 @@
 import { useActionState, useState, useEffect } from 'react'
 import { createUser, createProperty } from '@/app/actions/admin'
 import { PropertyMultiSelect } from '@/components/ui/property-multi-select'
-import type { PropertyOption } from '@/components/ui/property-multi-select'
+import type { PropertyOption, NewPropertyData } from '@/components/ui/property-multi-select'
 import { ROLE_LABELS } from '@/lib/types/auth'
 import type { UserRole } from '@/lib/types/auth'
 import { toast } from 'sonner'
@@ -34,11 +34,11 @@ export function CreateUserForm({ properties }: CreateUserFormProps) {
     }
   }, [state])
 
-  async function handleCreateProperty(name: string, address: string): Promise<PropertyOption> {
-    const result = await createProperty(name, address)
+  async function handleCreateProperty(data: NewPropertyData): Promise<PropertyOption> {
+    const result = await createProperty(data)
     if ('error' in result) {
       toast.error(result.error)
-      throw new Error(result.error)
+      return { name: data.name, streetAddress: data.streetAddress }
     }
     const newProp: PropertyOption = { name: result.name, streetAddress: result.streetAddress }
     setAvailableProperties((prev) =>
@@ -82,46 +82,53 @@ export function CreateUserForm({ properties }: CreateUserFormProps) {
 
   if (showSuccess && successData) {
     return (
-      <div className="bg-emerald/5 border border-emerald/20 rounded-xl p-6">
-        <h2 className="text-lg font-heading font-bold text-emerald mb-4">User Created Successfully</h2>
+      <div className="bg-card rounded-card shadow-sm border border-card-border p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-8 h-8 rounded-full bg-emerald/10 flex items-center justify-center">
+            <Check size={16} className="text-emerald" />
+          </div>
+          <h2 className="text-lg font-heading font-bold text-text-primary">User Created Successfully</h2>
+        </div>
         <div className="space-y-3">
           <div>
             <span className="text-text-secondary text-sm">Email:</span>{' '}
-            <span className="font-medium">{successData.email}</span>
+            <span className="font-medium text-text-primary">{successData.email}</span>
           </div>
           <div>
             <span className="text-text-secondary text-sm">Role:</span>{' '}
-            <span className="font-medium">
+            <span className="font-medium text-text-primary">
               {ROLE_LABELS[successData.role as UserRole] ?? successData.role}
             </span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-text-secondary text-sm">Password:</span>
-            <code className="bg-white border border-gray-200 rounded px-2 py-1 font-mono text-sm">
-              {successData.password}
-            </code>
-            <button
-              type="button"
-              onClick={async () => {
-                await navigator.clipboard.writeText(successData.password)
-                setCopied(true)
-                setTimeout(() => setCopied(false), 2000)
-              }}
-              className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-              aria-label="Copy password"
-            >
-              {copied ? (
-                <Check size={16} className="text-emerald" />
-              ) : (
-                <Copy size={16} className="text-text-secondary" />
-              )}
-            </button>
+          <div>
+            <span className="text-text-secondary text-sm block mb-1.5">Password:</span>
+            <div className="flex items-center gap-2">
+              <code className="bg-forest text-chartreuse rounded-badge px-3 py-2 font-mono text-sm tracking-wider flex-1">
+                {successData.password}
+              </code>
+              <button
+                type="button"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(successData.password)
+                  setCopied(true)
+                  setTimeout(() => setCopied(false), 2000)
+                }}
+                className="p-2 rounded-badge bg-forest text-white hover:bg-forest-light transition-colors"
+                aria-label="Copy password"
+              >
+                {copied ? (
+                  <Check size={16} className="text-chartreuse" />
+                ) : (
+                  <Copy size={16} />
+                )}
+              </button>
+            </div>
           </div>
         </div>
         <button
           type="button"
           onClick={handleCreateAnother}
-          className="mt-6 px-4 py-2 bg-emerald text-white rounded-xl text-sm font-medium hover:bg-emerald/90 transition-colors"
+          className="mt-6 w-full py-2.5 bg-emerald text-white rounded-pill text-sm font-medium hover:bg-emerald/90 transition-colors"
         >
           Create Another User
         </button>
@@ -131,7 +138,7 @@ export function CreateUserForm({ properties }: CreateUserFormProps) {
 
   return (
     <form action={formAction} onSubmit={handleSubmit}>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-5">
+      <div className="bg-card rounded-card shadow-sm border border-card-border p-6 space-y-5">
         {/* First Name */}
         <div>
           <label htmlFor="first_name" className="block text-sm font-medium text-text-primary mb-1.5">
@@ -142,7 +149,7 @@ export function CreateUserForm({ properties }: CreateUserFormProps) {
             name="first_name"
             type="text"
             required
-            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald/30 focus:border-emerald"
+            className="w-full px-3 py-2 bg-card border border-gray-200 rounded-badge text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-emerald focus:border-transparent"
           />
           {clientErrors.first_name && (
             <p className="text-red-500 text-xs mt-1">{clientErrors.first_name}</p>
@@ -159,7 +166,7 @@ export function CreateUserForm({ properties }: CreateUserFormProps) {
             name="last_name"
             type="text"
             required
-            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald/30 focus:border-emerald"
+            className="w-full px-3 py-2 bg-card border border-gray-200 rounded-badge text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-emerald focus:border-transparent"
           />
           {clientErrors.last_name && (
             <p className="text-red-500 text-xs mt-1">{clientErrors.last_name}</p>
@@ -176,7 +183,7 @@ export function CreateUserForm({ properties }: CreateUserFormProps) {
             name="email"
             type="email"
             required
-            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald/30 focus:border-emerald"
+            className="w-full px-3 py-2 bg-card border border-gray-200 rounded-badge text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-emerald focus:border-transparent"
           />
           {clientErrors.email && (
             <p className="text-red-500 text-xs mt-1">{clientErrors.email}</p>
@@ -192,7 +199,7 @@ export function CreateUserForm({ properties }: CreateUserFormProps) {
             id="role"
             name="role"
             required
-            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald/30 focus:border-emerald bg-white"
+            className="w-full px-3 py-2 bg-card border border-gray-200 rounded-badge text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-emerald focus:border-transparent"
           >
             <option value="">Select a role...</option>
             <option value="pm">Property Manager</option>
@@ -227,7 +234,7 @@ export function CreateUserForm({ properties }: CreateUserFormProps) {
         <button
           type="submit"
           disabled={isPending}
-          className="w-full py-2.5 bg-emerald text-white rounded-xl text-sm font-medium hover:bg-emerald/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-2.5 bg-emerald text-white rounded-pill text-sm font-medium hover:bg-emerald/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isPending ? 'Creating User...' : 'Create User'}
         </button>

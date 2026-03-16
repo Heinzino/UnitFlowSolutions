@@ -30,7 +30,7 @@ export default async function CreateUserPage() {
   // 3. Render
   return (
     <div className="max-w-2xl mx-auto py-8 px-4">
-      <h1 className="text-2xl font-heading font-bold text-text-primary mb-6">Create New User</h1>
+      <h1 className="text-2xl font-heading font-bold text-white mb-6">Create New User</h1>
       <CreateUserForm properties={properties} />
     </div>
   )

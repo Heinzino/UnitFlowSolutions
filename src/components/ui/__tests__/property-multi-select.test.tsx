@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { PropertyMultiSelect, PropertyOption } from "../property-multi-select";
+import { PropertyMultiSelect, PropertyOption, FLOOR_PLANS } from "../property-multi-select";
 
 const testProperties: PropertyOption[] = [
   { name: "The Reserve", streetAddress: "123 Main St" },
@@ -191,7 +191,7 @@ describe("PropertyMultiSelect - inline create", () => {
     expect(screen.getByRole("button", { name: /create new property/i })).toBeInTheDocument();
   });
 
-  it("clicking Create new property shows name and street address input fields", async () => {
+  it("clicking Create new property shows name, street address, unit number, and floor plan fields", async () => {
     render(
       <PropertyMultiSelect
         properties={testProperties}
@@ -206,9 +206,11 @@ describe("PropertyMultiSelect - inline create", () => {
 
     expect(screen.getByPlaceholderText("Property name")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Street address")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Vacant unit number")).toBeInTheDocument();
+    expect(screen.getByText("Select floor plan...")).toBeInTheDocument();
   });
 
-  it("calls onCreateProperty and adds result to selected on Add click", async () => {
+  it("calls onCreateProperty with full object and adds result to selected on Add click", async () => {
     const newProperty: PropertyOption = { name: "New Place", streetAddress: "789 New St" };
     const onCreateProperty = vi.fn().mockResolvedValue(newProperty);
     const onChange = vi.fn();
@@ -227,11 +229,21 @@ describe("PropertyMultiSelect - inline create", () => {
     await userEvent.click(screen.getByRole("button", { name: /create new property/i }));
     await userEvent.type(screen.getByPlaceholderText("Property name"), "New Place");
     await userEvent.type(screen.getByPlaceholderText("Street address"), "789 New St");
+    await userEvent.type(screen.getByPlaceholderText("Vacant unit number"), "101");
+
+    // Select a floor plan from the dropdown
+    const floorPlanSelect = screen.getByDisplayValue("Select floor plan...");
+    await userEvent.selectOptions(floorPlanSelect, FLOOR_PLANS[1]); // '1br 1ba'
 
     await userEvent.click(screen.getByRole("button", { name: /^add$/i }));
 
     await waitFor(() => {
-      expect(onCreateProperty).toHaveBeenCalledWith("New Place", "789 New St");
+      expect(onCreateProperty).toHaveBeenCalledWith({
+        name: "New Place",
+        streetAddress: "789 New St",
+        unitNumber: "101",
+        floorPlan: FLOOR_PLANS[1],
+      });
       expect(onChange).toHaveBeenCalledWith([newProperty]);
     });
   });
