@@ -42,7 +42,7 @@
   2. Admin can fill out name, email, role, and select one or more properties from a searchable dropdown populated live from Airtable
   3. Admin can type a new property name and street address inline to create it if it does not appear in the dropdown
   4. Submitting the form creates a Supabase account and the new user can log in with the assigned role and property access
-**Plans:** 4 plans
+**Plans:** 3/4 plans executed
 Plans:
 - [ ] 10-01-PLAN.md — Admin Supabase client, constants, server actions + tests
 - [ ] 10-02-PLAN.md — PropertyMultiSelect shared component + tests
@@ -74,5 +74,5 @@ Plans:
 | 7. Notifications, Charts & Vendor Metrics | v1.0 | 3/3 | Complete | 2026-03-15 |
 | 8. Code Fixes & Integration Wiring | v1.0 | 1/1 | Complete | 2026-03-15 |
 | 9. Documentation & Verification Cleanup | v1.0 | 2/2 | Complete | 2026-03-15 |
-| 10. Admin User Creation | v1.1 | 0/4 | Planning | - |
+| 10. Admin User Creation | 3/4 | In Progress|  | - |
 | 11. Vacant Unit Entry | v1.1 | 0/? | Not started | - |

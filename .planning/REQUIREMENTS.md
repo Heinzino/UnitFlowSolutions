@@ -10,9 +10,9 @@ Requirements for milestone v1.1: Admin Tools & Unit Management.
 ### User Management
 
 - [ ] **USER-01**: Admin can create a new Supabase user with name, email, role, and assigned properties
-- [ ] **USER-02**: "Create New User" sidebar item is visible only to heinz@readymation.com and jgiles@cdvsolutions.com
-- [ ] **USER-03**: Properties dropdown is dynamically populated from Airtable Properties table (searchable)
-- [ ] **USER-04**: Admin can create a new property inline (with street address) if it doesn't exist in the list
+- [x] **USER-02**: "Create New User" sidebar item is visible only to heinz@readymation.com and jgiles@cdvsolutions.com
+- [x] **USER-03**: Properties dropdown is dynamically populated from Airtable Properties table (searchable)
+- [x] **USER-04**: Admin can create a new property inline (with street address) if it doesn't exist in the list
 
 ### Vacant Unit Entry
 
@@ -48,9 +48,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | USER-01 | Phase 10 | Pending |
-| USER-02 | Phase 10 | Pending |
-| USER-03 | Phase 10 | Pending |
-| USER-04 | Phase 10 | Pending |
+| USER-02 | Phase 10 | Complete |
+| USER-03 | Phase 10 | Complete |
+| USER-04 | Phase 10 | Complete |
 | UNIT-01 | Phase 11 | Pending |
 | UNIT-02 | Phase 11 | Pending |
 | UNIT-03 | Phase 11 | Pending |
