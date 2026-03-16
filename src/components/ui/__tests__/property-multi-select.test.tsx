@@ -111,7 +111,8 @@ describe("PropertyMultiSelect - multi-select mode", () => {
         onChange={onChange}
       />
     );
-    const trigger = screen.getByRole("button", { name: /The Reserve/i });
+    // The trigger has aria-expanded, so use that to distinguish it from chip buttons
+    const trigger = screen.getAllByRole("button", { name: /The Reserve/i })[0];
     await userEvent.click(trigger);
 
     const checkbox = screen.getByRole("checkbox", { name: "The Reserve" });
@@ -131,7 +132,8 @@ describe("PropertyMultiSelect - chips", () => {
         onChange={vi.fn()}
       />
     );
-    expect(screen.getByText("The Reserve")).toBeInTheDocument();
+    // The chip's remove button has aria-label "Remove The Reserve"
+    expect(screen.getByRole("button", { name: /remove the reserve/i })).toBeInTheDocument();
   });
 
   it("clicking remove (x) on a chip calls onChange with that property removed", async () => {
@@ -162,7 +164,8 @@ describe("PropertyMultiSelect - single mode", () => {
         mode="single"
       />
     );
-    const trigger = screen.getByRole("button", { name: /The Reserve/i });
+    // The trigger has aria-expanded, so use that to distinguish it from chip buttons
+    const trigger = screen.getAllByRole("button", { name: /The Reserve/i })[0];
     await userEvent.click(trigger);
 
     const checkbox = screen.getByRole("checkbox", { name: "Oakwood Apartments" });
