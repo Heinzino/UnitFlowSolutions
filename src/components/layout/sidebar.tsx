@@ -7,12 +7,15 @@ import {
   Users,
   LayoutDashboard,
   LogOut,
+  UserPlus,
 } from "lucide-react";
 import { clsx } from "clsx";
 import type { LucideIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { UserRole } from "@/lib/types/auth";
 import { useEffect, useState } from "react";
+
+const ADMIN_EMAILS = ["heinz@readymation.com", "jgiles@cdvsolutions.com"] as const;
 
 interface NavItem {
   icon: LucideIcon;
@@ -34,6 +37,7 @@ interface SidebarProps {
 export function Sidebar({ activePath }: SidebarProps) {
   const router = useRouter();
   const [role, setRole] = useState<UserRole>("pm");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     try {
@@ -41,6 +45,7 @@ export function Sidebar({ activePath }: SidebarProps) {
       supabase.auth.getUser().then(({ data: { user } }) => {
         if (user) {
           setRole((user.app_metadata?.role as UserRole) ?? "pm");
+          setIsAdmin(ADMIN_EMAILS.includes(user.email ?? ""));
         }
       }).catch(() => {});
     } catch {
@@ -92,6 +97,28 @@ export function Sidebar({ activePath }: SidebarProps) {
           );
         })}
       </nav>
+
+      {/* Admin Section */}
+      {isAdmin && (
+        <>
+          <div className="mx-3 border-t border-gray-100" />
+          <div className="px-3 py-1">
+            <Link
+              href="/admin/create-user"
+              className={clsx(
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors",
+                activePath === "/admin/create-user"
+                  ? "bg-emerald text-white"
+                  : "text-text-secondary hover:text-text-primary hover:bg-surface"
+              )}
+            >
+              <UserPlus size={18} />
+              <span>Create User</span>
+            </Link>
+          </div>
+          <div className="mx-3 border-t border-gray-100" />
+        </>
+      )}
 
       {/* Bottom */}
       <div className="px-3 pb-6">
