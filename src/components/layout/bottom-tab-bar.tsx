@@ -5,12 +5,15 @@ import {
   Building2,
   Users,
   LayoutDashboard,
+  UserPlus,
 } from "lucide-react";
 import { clsx } from "clsx";
 import type { LucideIcon } from "lucide-react";
 import type { UserRole } from "@/lib/types/auth";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
+
+const ADMIN_EMAILS = ["heinz@readymation.com", "jgiles@cdvsolutions.com"] as const;
 
 interface TabItem {
   icon: LucideIcon;
@@ -31,6 +34,7 @@ interface BottomTabBarProps {
 
 export function BottomTabBar({ activePath }: BottomTabBarProps) {
   const [role, setRole] = useState<UserRole>("pm");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     try {
@@ -38,6 +42,7 @@ export function BottomTabBar({ activePath }: BottomTabBarProps) {
       supabase.auth.getUser().then(({ data: { user } }) => {
         if (user) {
           setRole((user.app_metadata?.role as UserRole) ?? "pm");
+          setIsAdmin(ADMIN_EMAILS.includes(user.email ?? ""));
         }
       }).catch(() => {});
     } catch {
@@ -71,6 +76,20 @@ export function BottomTabBar({ activePath }: BottomTabBarProps) {
           </Link>
         );
       })}
+      {isAdmin && (
+        <Link
+          href="/admin/create-user"
+          className={clsx(
+            "flex items-center justify-center w-10 h-10 rounded-full transition-colors",
+            activePath === "/admin/create-user"
+              ? "bg-emerald text-white"
+              : "text-white/60"
+          )}
+          aria-label="Create User"
+        >
+          <UserPlus size={20} />
+        </Link>
+      )}
     </nav>
   );
 }
