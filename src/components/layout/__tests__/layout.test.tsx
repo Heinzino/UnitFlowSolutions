@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
@@ -26,6 +26,17 @@ vi.mock("radix-ui", () => ({
   },
 }));
 
+// Mock Supabase client — configurable per test via mockGetUser
+const mockGetUser = vi.fn();
+vi.mock("@/lib/supabase/client", () => ({
+  createClient: () => ({
+    auth: {
+      getUser: () => mockGetUser(),
+      signOut: vi.fn().mockResolvedValue({}),
+    },
+  }),
+}));
+
 import { Sidebar } from "@/components/layout/sidebar";
 import { BottomTabBar } from "@/components/layout/bottom-tab-bar";
 import { AppShell } from "@/components/layout/app-shell";
@@ -33,6 +44,7 @@ import { AppShell } from "@/components/layout/app-shell";
 /* ─── Sidebar ──────────────────────────────────────────────────── */
 describe("Sidebar", () => {
   it("renders exactly 2 navigation links (Properties and Vendors)", () => {
+    mockGetUser.mockResolvedValue({ data: { user: null } });
     render(<Sidebar activePath="/" />);
     const links = screen.getAllByRole("link");
     expect(links.length).toBe(2);
@@ -41,6 +53,7 @@ describe("Sidebar", () => {
   });
 
   it("does not render a Dashboard or Settings link", () => {
+    mockGetUser.mockResolvedValue({ data: { user: null } });
     render(<Sidebar activePath="/" />);
     const links = screen.getAllByRole("link");
     expect(links.some((link) => link.getAttribute("href") === "/")).toBe(false);
@@ -48,15 +61,39 @@ describe("Sidebar", () => {
   });
 
   it("does not render a Notifications link", () => {
+    mockGetUser.mockResolvedValue({ data: { user: null } });
     render(<Sidebar activePath="/" />);
     const links = screen.getAllByRole("link");
     expect(links.some((link) => link.getAttribute("href") === "/notifications")).toBe(false);
+  });
+
+  it("renders 'Create User' link when user email is in admin allowlist", async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { email: "heinz@readymation.com", app_metadata: { role: "exec" } } },
+    });
+    render(<Sidebar activePath="/" />);
+    await waitFor(() => {
+      const links = screen.getAllByRole("link");
+      expect(links.some((link) => link.getAttribute("href") === "/admin/create-user")).toBe(true);
+    });
+  });
+
+  it("does not render 'Create User' link for non-admin email", async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { email: "pm@example.com", app_metadata: { role: "pm" } } },
+    });
+    render(<Sidebar activePath="/" />);
+    await waitFor(() => {
+      const links = screen.getAllByRole("link");
+      expect(links.some((link) => link.getAttribute("href") === "/admin/create-user")).toBe(false);
+    });
   });
 });
 
 /* ─── BottomTabBar ─────────────────────────────────────────────── */
 describe("BottomTabBar", () => {
   it("renders exactly 2 tab items (Properties and Vendors)", () => {
+    mockGetUser.mockResolvedValue({ data: { user: null } });
     render(<BottomTabBar activePath="/" />);
     const links = screen.getAllByRole("link");
     expect(links.length).toBe(2);
@@ -65,6 +102,7 @@ describe("BottomTabBar", () => {
   });
 
   it("does not render a Dashboard or Settings tab", () => {
+    mockGetUser.mockResolvedValue({ data: { user: null } });
     render(<BottomTabBar activePath="/" />);
     const links = screen.getAllByRole("link");
     expect(links.some((link) => link.getAttribute("href") === "/")).toBe(false);
@@ -72,9 +110,32 @@ describe("BottomTabBar", () => {
   });
 
   it("does not render a Notifications link", () => {
+    mockGetUser.mockResolvedValue({ data: { user: null } });
     render(<BottomTabBar activePath="/" />);
     const links = screen.getAllByRole("link");
     expect(links.some((link) => link.getAttribute("href") === "/notifications")).toBe(false);
+  });
+
+  it("renders 'Create User' tab when user email is in admin allowlist", async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { email: "heinz@readymation.com", app_metadata: { role: "exec" } } },
+    });
+    render(<BottomTabBar activePath="/" />);
+    await waitFor(() => {
+      const links = screen.getAllByRole("link");
+      expect(links.some((link) => link.getAttribute("href") === "/admin/create-user")).toBe(true);
+    });
+  });
+
+  it("does not render 'Create User' tab for non-admin email", async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { email: "pm@example.com", app_metadata: { role: "pm" } } },
+    });
+    render(<BottomTabBar activePath="/" />);
+    await waitFor(() => {
+      const links = screen.getAllByRole("link");
+      expect(links.some((link) => link.getAttribute("href") === "/admin/create-user")).toBe(false);
+    });
   });
 });
 
