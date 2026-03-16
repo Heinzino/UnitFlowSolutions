@@ -1,5 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
+// Hoist mock variables so they are available at vi.mock factory time
+const { mockGetUser, mockAdminCreateUser, mockCreate, mockBase, mockRateLimiter, mockRevalidateTag } =
+  vi.hoisted(() => {
+    const mockCreate = vi.fn()
+    const mockBase = vi.fn(() => ({ create: mockCreate }))
+    const mockRateLimiter = { acquire: vi.fn().mockResolvedValue(undefined) }
+    const mockGetUser = vi.fn()
+    const mockAdminCreateUser = vi.fn()
+    const mockRevalidateTag = vi.fn()
+    return { mockGetUser, mockAdminCreateUser, mockCreate, mockBase, mockRateLimiter, mockRevalidateTag }
+  })
+
 // Mock server-only to be a no-op in tests
 vi.mock('server-only', () => ({}))
 
@@ -12,13 +24,11 @@ vi.mock('next/headers', () => ({
 }))
 
 // Mock next/cache
-const mockRevalidateTag = vi.fn()
 vi.mock('next/cache', () => ({
   revalidateTag: mockRevalidateTag,
 }))
 
 // Mock Supabase server client (for caller identity check)
-const mockGetUser = vi.fn()
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn(() =>
     Promise.resolve({
@@ -30,7 +40,6 @@ vi.mock('@/lib/supabase/server', () => ({
 }))
 
 // Mock Supabase admin client (for createUser API call)
-const mockAdminCreateUser = vi.fn()
 vi.mock('@/lib/supabase/admin', () => ({
   createAdminClient: vi.fn(() => ({
     auth: {
@@ -42,11 +51,6 @@ vi.mock('@/lib/supabase/admin', () => ({
 }))
 
 // Mock Airtable client
-const mockCreate = vi.fn()
-const mockBase = vi.fn(() => ({
-  create: mockCreate,
-}))
-const mockRateLimiter = { acquire: vi.fn().mockResolvedValue(undefined) }
 vi.mock('@/lib/airtable/client', () => ({
   base: mockBase,
   rateLimiter: mockRateLimiter,
