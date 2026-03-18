@@ -22,16 +22,16 @@ describe('auth type constants', () => {
     expect(Object.keys(ROLE_LABELS).includes('dm')).toBe(false)
   })
 
-  it('ROLE_ALLOWED_ROUTES.rm includes /property and /vendors', () => {
-    expect(ROLE_ALLOWED_ROUTES.rm).toEqual(['/property', '/vendors'])
+  it('ROLE_ALLOWED_ROUTES.rm includes /property, /vendors, and /vacant', () => {
+    expect(ROLE_ALLOWED_ROUTES.rm).toEqual(['/property', '/vendors', '/vacant'])
   })
 
-  it('ROLE_ALLOWED_ROUTES.pm includes /property and /vendors', () => {
-    expect(ROLE_ALLOWED_ROUTES.pm).toEqual(['/property', '/vendors'])
+  it('ROLE_ALLOWED_ROUTES.pm includes /property, /vendors, and /vacant', () => {
+    expect(ROLE_ALLOWED_ROUTES.pm).toEqual(['/property', '/vendors', '/vacant'])
   })
 
-  it('ROLE_ALLOWED_ROUTES.exec includes /executive, /property, and /vendors', () => {
-    expect(ROLE_ALLOWED_ROUTES.exec).toEqual(['/executive', '/property', '/vendors'])
+  it('ROLE_ALLOWED_ROUTES.exec includes /executive, /property, /vendors, and /vacant', () => {
+    expect(ROLE_ALLOWED_ROUTES.exec).toEqual(['/executive', '/property', '/vendors', '/vacant'])
   })
 
   it('ROLE_ALLOWED_ROUTES does not have a dm key', () => {
