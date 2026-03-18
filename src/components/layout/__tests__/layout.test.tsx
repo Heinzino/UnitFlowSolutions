@@ -43,13 +43,14 @@ import { AppShell } from "@/components/layout/app-shell";
 
 /* ─── Sidebar ──────────────────────────────────────────────────── */
 describe("Sidebar", () => {
-  it("renders exactly 2 navigation links (Properties and Vendors)", () => {
+  it("renders exactly 3 navigation links (Properties, Vendors, Add Vacant)", () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
     render(<Sidebar activePath="/" />);
     const links = screen.getAllByRole("link");
-    expect(links.length).toBe(2);
+    expect(links.length).toBe(3);
     expect(links.some((link) => link.getAttribute("href") === "/property")).toBe(true);
     expect(links.some((link) => link.getAttribute("href") === "/vendors")).toBe(true);
+    expect(links.some((link) => link.getAttribute("href") === "/vacant")).toBe(true);
   });
 
   it("does not render a Dashboard or Settings link", () => {
@@ -88,17 +89,29 @@ describe("Sidebar", () => {
       expect(links.some((link) => link.getAttribute("href") === "/admin/create-user")).toBe(false);
     });
   });
+
+  it("renders 'Add Vacant' link for PM user (non-admin, non-exec)", async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { email: "pm@example.com", app_metadata: { role: "pm" } } },
+    });
+    render(<Sidebar activePath="/" />);
+    await waitFor(() => {
+      const links = screen.getAllByRole("link");
+      expect(links.some((link) => link.getAttribute("href") === "/vacant")).toBe(true);
+    });
+  });
 });
 
 /* ─── BottomTabBar ─────────────────────────────────────────────── */
 describe("BottomTabBar", () => {
-  it("renders exactly 2 tab items (Properties and Vendors)", () => {
+  it("renders exactly 3 tab items (Properties, Vendors, Add Vacant)", () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
     render(<BottomTabBar activePath="/" />);
     const links = screen.getAllByRole("link");
-    expect(links.length).toBe(2);
+    expect(links.length).toBe(3);
     expect(links.some((link) => link.getAttribute("href") === "/property")).toBe(true);
     expect(links.some((link) => link.getAttribute("href") === "/vendors")).toBe(true);
+    expect(links.some((link) => link.getAttribute("href") === "/vacant")).toBe(true);
   });
 
   it("does not render a Dashboard or Settings tab", () => {
@@ -135,6 +148,17 @@ describe("BottomTabBar", () => {
     await waitFor(() => {
       const links = screen.getAllByRole("link");
       expect(links.some((link) => link.getAttribute("href") === "/admin/create-user")).toBe(false);
+    });
+  });
+
+  it("renders 'Add Vacant' tab for PM user (non-admin, non-exec)", async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { email: "pm@example.com", app_metadata: { role: "pm" } } },
+    });
+    render(<BottomTabBar activePath="/" />);
+    await waitFor(() => {
+      const links = screen.getAllByRole("link");
+      expect(links.some((link) => link.getAttribute("href") === "/vacant")).toBe(true);
     });
   });
 });
