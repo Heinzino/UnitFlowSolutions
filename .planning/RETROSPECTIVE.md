@@ -46,6 +46,47 @@
 
 ---
 
+## Milestone: v1.1 — Admin Tools & Unit Management
+
+**Shipped:** 2026-03-18
+**Phases:** 2 | **Plans:** 7 | **Sessions:** ~4
+
+### What Was Built
+- Admin user creation form with Supabase Admin API (service-role key), password generation, role/property assignment
+- Shared PropertyMultiSelect component with searchable dropdown, multi-select chips, and inline property creation
+- Off market unit entry form with repeatable unit cards, PM-scoped property filtering, partial failure recovery
+- Server action for Airtable record creation with per-unit error isolation and rate limiting
+
+### What Worked
+- Reusing PropertyMultiSelect across both admin and off market features saved significant effort
+- Per-unit error isolation in addVacantUnits enabled partial failure handling — users don't lose successful units
+- User feedback during verification checkpoint ("Vacant" → "Off Market", card layout fix) caught real UX issues before shipping
+- Wave-based parallel execution: plans 11-01 and 11-02 ran simultaneously, cutting wall-clock time
+
+### What Was Inefficient
+- Verification checkpoint for 11-03 required manual browser testing — no E2E tests for Airtable write path
+- "Vacant" terminology was used throughout and had to be renamed late — earlier domain language alignment would have avoided rework
+- auth-types.test.ts assertions went stale when 11-01 added /vacant to routes but didn't update the test file — needed auto-fix in 11-03
+
+### Patterns Established
+- Repeatable row state pattern: `UnitRow[]` with `crypto.randomUUID()` keys, per-row error/warning booleans
+- Direct async server action calls for typed array payloads (vs useActionState + FormData)
+- Single-card form layout on dark backgrounds (matching create-user-form pattern)
+- Admin email allowlist as simple constant — no RBAC table needed for 2 admins
+
+### Key Lessons
+1. Domain terminology should be confirmed before coding — "Vacant" vs "Off Market" caused a late rename
+2. Shared components (PropertyMultiSelect) pay dividends quickly when features overlap
+3. Server action return types should be structured for partial failure from day one
+4. Form contrast issues on dark backgrounds are easy to miss in component-level testing — visual verification catches them
+
+### Cost Observations
+- Model mix: ~15% opus (orchestration), ~85% sonnet (execution, verification)
+- Sessions: ~4 across 3 days
+- Notable: 7 plans completed in 3 days — smaller milestone scope enabled faster iteration
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
@@ -53,14 +94,18 @@
 | Milestone | Sessions | Phases | Key Change |
 |-----------|----------|--------|------------|
 | v1.0 | ~15 | 9 | Established GSD workflow with research → plan → verify → execute cycle |
+| v1.1 | ~4 | 2 | Smaller scope, reused shared components, user feedback during verification |
 
 ### Cumulative Quality
 
 | Milestone | Tests | Coverage | Tech Debt Items |
 |-----------|-------|----------|-----------------|
 | v1.0 | 158 | Unit + Integration | 4 |
+| v1.1 | 202 | Unit + Integration | 3 (reduced — Properties fetch now consumed) |
 
 ### Top Lessons (Verified Across Milestones)
 
 1. Phase-based execution with verification loops catches integration issues before they compound
 2. Documentation phases (cleanup/verification) are worth the investment — they close audit gaps cleanly
+3. Shared components across features pay off quickly — PropertyMultiSelect reused in 2 phases
+4. Domain terminology should be confirmed with stakeholders before building — rename rework is avoidable
