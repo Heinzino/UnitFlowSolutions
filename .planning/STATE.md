@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: null
-milestone_name: null
-status: complete
+milestone: v1.2
+milestone_name: Dashboard Redesign
+status: defining-requirements
 stopped_at: null
 last_updated: "2026-03-18"
-last_activity: 2026-03-18 — Completed v1.1 milestone (Admin Tools & Unit Management)
+last_activity: 2026-03-18 — Milestone v1.2 started
 progress:
   total_phases: 0
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
-  percent: 100
+  percent: 0
 ---
 
 # Project State
@@ -21,13 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Property Managers can instantly see which turns are overdue, which jobs are stuck, and take action without hunting through Airtable — fewer clicks to the information that matters.
-**Current focus:** Planning next milestone
+**Current focus:** Defining requirements for v1.2 Dashboard Redesign
 
 ## Current Position
 
-Milestone: v1.1 shipped 2026-03-18
-Status: Between milestones — ready for next milestone planning
-Last activity: 2026-03-18 — Completed v1.1 milestone (Admin Tools & Unit Management)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-18 — Milestone v1.2 started
 
 Progress: [██████████] 100% (v1.0 + v1.1 shipped)
 

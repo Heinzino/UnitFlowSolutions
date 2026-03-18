@@ -29,7 +29,11 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 
 ### Active
 
-(None — next milestone not yet planned)
+- [ ] Dashboard terminology rename (Make Ready → Turns/Jobs, Vacant → Off Market)
+- [ ] PM dashboard with 6 KPI boxes, Open Turns list with lease-ready date entry, Active Jobs table, Revenue Exposure
+- [ ] RM dashboard with 6 aggregated boxes, Property Insights list, Avg Turn Time bar graph, plus PM-level drill-down
+- [ ] Executive dashboard redesigned with 6 boxes and Top 10 Properties by Revenue Exposure
+- [ ] Completed Jobs page with property filter
 
 ### Future
 
@@ -84,5 +88,16 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 | "Vacant" → "Off Market" rename (v1.1) | User feedback during verification | ✓ Good — aligned with business terminology |
 | Shared PropertyMultiSelect (v1.1) | Reusable across admin + off market features | ✓ Good — DRY, 13 tests |
 
+## Current Milestone: v1.2 Dashboard Redesign
+
+**Goal:** Redesign all three role dashboards with clearer Turn vs Job separation, updated terminology, new KPI calculations, detailed Active Jobs table, and property-level drill-down for RM.
+
+**Target features:**
+- Terminology rename across all dashboards (Make Ready → Turns/Jobs, Vacant → Off Market)
+- PM dashboard: 6 KPI boxes, Open Turns with lease-ready date entry + manual Done, detailed Active Jobs table, Revenue Exposure
+- RM dashboard: 6 aggregated boxes, Property Insights list, Avg Turn Time bar graph, PM-level drill-down with property filter
+- Executive dashboard: 6 redesigned boxes, Top 10 Properties by Revenue Exposure
+- Completed Jobs page with property filter
+
 ---
-*Last updated: 2026-03-18 after v1.1 milestone completion*
+*Last updated: 2026-03-18 after v1.2 milestone start*
