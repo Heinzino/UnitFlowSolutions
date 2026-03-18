@@ -16,7 +16,7 @@ Requirements for milestone v1.1: Admin Tools & Unit Management.
 
 ### Vacant Unit Entry
 
-- [ ] **UNIT-01**: User can access "Add Vacant Units" from the sidebar
+- [x] **UNIT-01**: User can access "Add Vacant Units" from the sidebar
 - [ ] **UNIT-02**: User can select a property from a searchable dropdown (dynamic from Airtable)
 - [ ] **UNIT-03**: PM users only see properties they are assigned to in the dropdown
 - [ ] **UNIT-04**: User can add multiple units via a repeatable sub-form (unit number + floor plan)
@@ -51,7 +51,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | USER-02 | Phase 10 | Complete |
 | USER-03 | Phase 10 | Complete |
 | USER-04 | Phase 10 | Complete |
-| UNIT-01 | Phase 11 | Pending |
+| UNIT-01 | Phase 11 | Complete |
 | UNIT-02 | Phase 11 | Pending |
 | UNIT-03 | Phase 11 | Pending |
 | UNIT-04 | Phase 11 | Pending |

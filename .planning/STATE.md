@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Admin Tools & Unit Management
-status: completed
-stopped_at: Phase 11 context gathered
-last_updated: "2026-03-17T04:22:23.910Z"
-last_activity: 2026-03-16 — Completed plan 10-04 (admin create user page + form)
+status: in_progress
+stopped_at: "Completed 11-01-PLAN.md"
+last_updated: "2026-03-18T01:50:00Z"
+last_activity: 2026-03-18 — Completed plan 11-01 (Add Vacant navigation + ROLE_ALLOWED_ROUTES)
 progress:
   total_phases: 2
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
-  percent: 50
+  total_plans: 7
+  completed_plans: 5
+  percent: 57
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 
 ## Current Position
 
-Phase: 10 of 11 (Admin User Creation)
-Plan: 4 of 4 in current phase (10-04 complete — PHASE COMPLETE)
-Status: Phase 10 complete, Phase 11 next
-Last activity: 2026-03-16 — Completed plan 10-04 (admin create user page + form)
+Phase: 11 of 11 (Vacant Unit Entry)
+Plan: 1 of 3 in current phase (11-01 complete)
+Status: Phase 11 in progress
+Last activity: 2026-03-18 — Completed plan 11-01 (Add Vacant navigation + ROLE_ALLOWED_ROUTES)
 
-Progress: [█████░░░░░] 50%
+Progress: [██████░░░░] 57%
 
 ## Performance Metrics
 
@@ -47,6 +47,7 @@ Progress: [█████░░░░░] 50%
 
 **Recent Trend:**
 - Trend: —
+| Phase 11-vacant-unit-entry P01 | ~2min | 2 tasks | 4 files |
 | Phase 10-admin-user-creation P04 | ~35min | 3 tasks | 6 files |
 | Phase 10-admin-user-creation P02 | 3 | 1 tasks | 2 files |
 | Phase 10-admin-user-creation P01 | 4 | 2 tasks | 5 files |
@@ -69,6 +70,7 @@ Recent decisions affecting current work:
 - [10-04]: createProperty accepts full {name, streetAddress, unitNumber, floorPlan} object and creates complete Airtable unit record with typecast:true
 - [10-04]: Success card uses local showSuccess + successData state instead of window.location.reload for clean form reset
 - [10-04]: FLOOR_PLANS constant and NewPropertyData interface exported from property-multi-select.tsx for reuse in Phase 11
+- [11-01]: Add Vacant nav item uses no roles filter — visible to all authenticated users (pm, rm, exec); /vacant added to ROLE_ALLOWED_ROUTES for all three roles
 
 ### Pending Todos
 
@@ -81,6 +83,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-17T04:22:23.905Z
-Stopped at: Phase 11 context gathered
-Resume file: .planning/phases/11-vacant-unit-entry/11-CONTEXT.md
+Last session: 2026-03-18T01:50:00Z
+Stopped at: Completed 11-01-PLAN.md
+Resume file: .planning/phases/11-vacant-unit-entry/11-02-PLAN.md
