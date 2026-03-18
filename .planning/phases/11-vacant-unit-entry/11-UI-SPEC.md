@@ -53,10 +53,10 @@ Exceptions:
 |------|------|--------|-------------|-------------|-------|
 | Page heading | 24px (text-2xl) | 700 (bold) | 1.2 | font-heading (Plus Jakarta Sans) | `<h1>Add Vacant Units</h1>` — matches `create-user/page.tsx:33` pattern |
 | Section / success card heading | 18px (text-lg) | 700 (bold) | 1.2 | font-heading | Success card "Units Added" header; matches `create-user-form.tsx:90` |
-| Label / field label | 14px (text-sm) | 500 (medium) | 1.4 | font-body (Geist Sans) | Form labels above inputs; matches `create-user-form.tsx:144` |
+| Label / field label | 14px (text-sm) | 700 (bold) | 1.4 | font-body (Geist Sans) | Form labels above inputs; matches `create-user-form.tsx:144` |
 | Body / input text | 14px (text-sm) | 400 (regular) | 1.5 | font-body | Input values, dropdown text, toast copy, success card body text |
 
-Two weights in use: **400 regular** (body, input text) and **700 bold** (page heading, section heading). Labels use 500 medium as a supporting weight within the label role.
+Two weights in use: **400 regular** (body, input text) and **700 bold** (page heading, section heading, field labels).
 
 Source: Direct inspection of `create-user-form.tsx`, `create-user/page.tsx`, `executive/page.tsx`.
 
