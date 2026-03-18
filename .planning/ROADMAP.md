@@ -3,7 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-9 (shipped 2026-03-15)
-- 🚧 **v1.1 Admin Tools & Unit Management** — Phases 10-11 (in progress)
+- ✅ **v1.1 Admin Tools & Unit Management** — Phases 10-11 (shipped 2026-03-18)
 
 ## Phases
 
@@ -24,46 +24,15 @@
 
 </details>
 
-### v1.1 Admin Tools & Unit Management (In Progress)
+<details>
+<summary>✅ v1.1 Admin Tools & Unit Management (Phases 10-11) — SHIPPED 2026-03-18</summary>
 
-**Milestone Goal:** Enable admins to create users with role/property assignments, and allow all roles to add vacant units directly into Airtable — eliminating the need to go through Airtable's native interface for these two operational tasks.
+- [x] Phase 10: Admin User Creation (4/4 plans) — completed 2026-03-16
+- [x] Phase 11: Vacant Unit Entry (3/3 plans) — completed 2026-03-18
 
-- [x] **Phase 10: Admin User Creation** - Authorized admins can create new Supabase users with role and property assignments (completed 2026-03-16)
-- [x] **Phase 11: Vacant Unit Entry** - All roles can add vacant units to Airtable through a repeatable, property-scoped form (completed 2026-03-18)
+**Archive:** `.planning/milestones/v1.1-ROADMAP.md`
 
-## Phase Details
-
-### Phase 10: Admin User Creation
-**Goal**: Authorized admins can create new Supabase users with name, email, role, and property assignments without leaving the dashboard
-**Depends on**: Phase 9 (v1.0 foundation)
-**Requirements**: USER-01, USER-02, USER-03, USER-04
-**Success Criteria** (what must be TRUE):
-  1. User logged in as heinz@readymation.com or jgiles@cdvsolutions.com sees "Create New User" in the sidebar; no other users see it
-  2. Admin can fill out name, email, role, and select one or more properties from a searchable dropdown populated live from Airtable
-  3. Admin can type a new property name and street address inline to create it if it does not appear in the dropdown
-  4. Submitting the form creates a Supabase account and the new user can log in with the assigned role and property access
-**Plans:** 4/4 plans complete
-Plans:
-- [ ] 10-01-PLAN.md — Admin Supabase client, constants, server actions + tests
-- [ ] 10-02-PLAN.md — PropertyMultiSelect shared component + tests
-- [ ] 10-03-PLAN.md — Sidebar and BottomTabBar admin nav item + test updates
-- [ ] 10-04-PLAN.md — Create User page, form wiring, and end-to-end verification
-
-### Phase 11: Vacant Unit Entry
-**Goal**: All roles can add one or more vacant units to Airtable using a repeatable sub-form scoped to their accessible properties
-**Depends on**: Phase 10
-**Requirements**: UNIT-01, UNIT-02, UNIT-03, UNIT-04, UNIT-05, UNIT-06, UNIT-07, UNIT-08
-**Success Criteria** (what must be TRUE):
-  1. "Add Vacant Units" appears in the sidebar and is accessible to all roles (PM, RM, Executive)
-  2. PM users see only their assigned properties in the property dropdown; RM and Executive users see all properties
-  3. User can add multiple units in one submission using a repeatable sub-form, each with a unit number and floor plan selected from the exact allowed values
-  4. User can create a new property inline with a street address if it does not exist in the dropdown
-  5. Submitting creates records in the Airtable Properties table with all required fields (property name, unit number, floor plan, bedrooms, bathrooms, city, state, street address)
-**Plans:** 3/3 plans complete
-Plans:
-- [ ] 11-01-PLAN.md — Navigation (sidebar + bottom tab bar + ROLE_ALLOWED_ROUTES) + layout tests
-- [ ] 11-02-PLAN.md — addVacantUnits server action + unit tests
-- [ ] 11-03-PLAN.md — Vacant page, AddVacantForm client component, form tests + visual verification
+</details>
 
 ## Progress
 
@@ -79,4 +48,4 @@ Plans:
 | 8. Code Fixes & Integration Wiring | v1.0 | 1/1 | Complete | 2026-03-15 |
 | 9. Documentation & Verification Cleanup | v1.0 | 2/2 | Complete | 2026-03-15 |
 | 10. Admin User Creation | v1.1 | 4/4 | Complete | 2026-03-16 |
-| 11. Vacant Unit Entry | 3/3 | Complete    | 2026-03-18 | - |
+| 11. Vacant Unit Entry | v1.1 | 3/3 | Complete | 2026-03-18 |

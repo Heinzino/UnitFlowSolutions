@@ -23,11 +23,13 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 - ✓ Charts and data visualization (vendor bar charts, health gauge, trend indicators) — v1.0
 - ✓ Vendor metrics page (completion rates, job assignments, sortable table) — v1.0
 - ✓ Responsive layout — desktop sidebar + mobile bottom tabs — v1.0
+- ✓ Admin-only user creation form (restricted to allowlisted emails) — v1.1
+- ✓ Add Off Market Units form (all roles, creates records in Airtable Properties table) — v1.1
+- ✓ Shared PropertyMultiSelect component with inline property creation — v1.1
 
 ### Active
 
-- [ ] Admin-only user creation form (restricted to heinz@readymation.com and jgiles@cdvsolutions.com)
-- [ ] Add Vacant Units form (all roles, creates records in Airtable Properties table)
+(None — next milestone not yet planned)
 
 ### Future
 
@@ -42,17 +44,20 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 - Video/photo uploads — defer to v2 (storage complexity)
 - OAuth/social login — email/password via Supabase sufficient
 - Mobile native app — web-first, responsive design covers mobile
-- Admin panel for user creation — Supabase accounts created manually for now
+- Editing/deleting existing users — v1.1 is create-only
+- Bulk CSV user import — one-at-a-time creation sufficient
+- Unit editing/deletion — v1.1 is create-only for off market units
 - Airtable schema changes — dashboard reads existing schema as-is
 
 ## Context
 
 - ~6-15 active users across PM, RM, and Executive roles
-- Shipped v1.0 with 6,567 LOC TypeScript/TSX/CSS across 210 files
+- Shipped v1.1 with 8,753 LOC TypeScript/TSX across 11 phases
 - Tech stack: Next.js 16 (Turbopack), Tailwind v4, Supabase Auth, Airtable API, Recharts, Vitest
-- 158 tests passing (unit + integration)
-- 4 tech debt items tracked (orphaned logout action, unused fetch functions, duplicate status constants, build pre-render issue)
-- 5 of 9 Airtable table fetch functions are defined but not yet consumed by UI (Properties, Quotes, Executives, PropertyManagers, MaintenanceManagers)
+- 202 tests passing (unit + integration)
+- Admin user creation and off market unit entry fully operational
+- Properties fetch function now consumed by both admin and off market features
+- 4 of 9 Airtable table fetch functions still unused by UI (Quotes, Executives, PropertyManagers, MaintenanceManagers)
 
 ## Constraints
 
@@ -73,15 +78,11 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 | Three role-based views (not one configurable view) | Each role has distinct needs; simpler UX | ✓ Good — RM shares PM layout, exec gets own |
 | `use cache` with 60s revalidation + tag busting | Balance between freshness and API rate limits | ✓ Good — 5-tag cascade on writes |
 | DM → RM rename (Phase 6) | Client uses "Regional Manager" not "District Manager" | ✓ Good — aligned with real org |
-| NOTIF-01..04 descoped | Alert cards on KPI dashboard sufficient for v1.0 | ⚠️ Revisit — may need middle column for v1.1 |
-
-## Current Milestone: v1.1 Admin Tools & Unit Management
-
-**Goal:** Enable admin user creation and allow all roles to add vacant units directly into Airtable.
-
-**Target features:**
-- Admin-only "Create New User" form (Supabase account + role/property assignment)
-- "Add Vacant Units" form for all roles (property selection, repeatable unit sub-form, Airtable write)
+| NOTIF-01..04 descoped | Alert cards on KPI dashboard sufficient for v1.0 | ⚠️ Revisit — may need middle column for v1.2+ |
+| Admin email allowlist (v1.1) | Simple gate for two known admins | ✓ Good — no RBAC overhead needed |
+| Supabase Admin API for user creation (v1.1) | Service-role key server-side only | ✓ Good — secure isolation |
+| "Vacant" → "Off Market" rename (v1.1) | User feedback during verification | ✓ Good — aligned with business terminology |
+| Shared PropertyMultiSelect (v1.1) | Reusable across admin + off market features | ✓ Good — DRY, 13 tests |
 
 ---
-*Last updated: 2026-03-15 after v1.1 milestone start*
+*Last updated: 2026-03-18 after v1.1 milestone completion*
