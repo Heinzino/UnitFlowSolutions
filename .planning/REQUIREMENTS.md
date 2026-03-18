@@ -21,9 +21,9 @@ Requirements for milestone v1.1: Admin Tools & Unit Management.
 - [ ] **UNIT-03**: PM users only see properties they are assigned to in the dropdown
 - [ ] **UNIT-04**: User can add multiple units via a repeatable sub-form (unit number + floor plan)
 - [ ] **UNIT-05**: Floor plan is a dropdown with exact values: Studio / Loft, 1br 1ba, 1br 2ba, 2br 1ba, 2br 1.5ba, 3br 2ba, 3br 3ba
-- [ ] **UNIT-06**: Submitting creates records in Airtable Properties table with property name, unit number, floor plan, parsed bedrooms/bathrooms, city (Columbia), state (SC), and street address
-- [ ] **UNIT-07**: User can create a new property inline (with street address) if it doesn't exist
-- [ ] **UNIT-08**: Street address is looked up from existing property; required only when creating a new property
+- [x] **UNIT-06**: Submitting creates records in Airtable Properties table with property name, unit number, floor plan, parsed bedrooms/bathrooms, city (Columbia), state (SC), and street address
+- [x] **UNIT-07**: User can create a new property inline (with street address) if it doesn't exist
+- [x] **UNIT-08**: Street address is looked up from existing property; required only when creating a new property
 
 ## Future Requirements
 
@@ -56,9 +56,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UNIT-03 | Phase 11 | Pending |
 | UNIT-04 | Phase 11 | Pending |
 | UNIT-05 | Phase 11 | Pending |
-| UNIT-06 | Phase 11 | Pending |
-| UNIT-07 | Phase 11 | Pending |
-| UNIT-08 | Phase 11 | Pending |
+| UNIT-06 | Phase 11 | Complete |
+| UNIT-07 | Phase 11 | Complete |
+| UNIT-08 | Phase 11 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 12 total

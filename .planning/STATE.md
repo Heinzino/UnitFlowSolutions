@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Admin Tools & Unit Management
 status: in_progress
-stopped_at: "Completed 11-01-PLAN.md"
-last_updated: "2026-03-18T01:50:00Z"
-last_activity: 2026-03-18 — Completed plan 11-01 (Add Vacant navigation + ROLE_ALLOWED_ROUTES)
+stopped_at: "Completed 11-02-PLAN.md"
+last_updated: "2026-03-18T01:50:03Z"
+last_activity: 2026-03-18 — Completed plan 11-02 (addVacantUnits server action)
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 7
-  completed_plans: 5
-  percent: 57
+  completed_plans: 6
+  percent: 64
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 ## Current Position
 
 Phase: 11 of 11 (Vacant Unit Entry)
-Plan: 1 of 3 in current phase (11-01 complete)
+Plan: 2 of 3 in current phase (11-02 complete)
 Status: Phase 11 in progress
-Last activity: 2026-03-18 — Completed plan 11-01 (Add Vacant navigation + ROLE_ALLOWED_ROUTES)
+Last activity: 2026-03-18 — Completed plan 11-02 (addVacantUnits server action)
 
-Progress: [██████░░░░] 57%
+Progress: [███████░░░] 64%
 
 ## Performance Metrics
 
@@ -47,6 +47,7 @@ Progress: [██████░░░░] 57%
 
 **Recent Trend:**
 - Trend: —
+| Phase 11-vacant-unit-entry P02 | ~2min | 1 task | 2 files |
 | Phase 11-vacant-unit-entry P01 | ~2min | 2 tasks | 4 files |
 | Phase 10-admin-user-creation P04 | ~35min | 3 tasks | 6 files |
 | Phase 10-admin-user-creation P02 | 3 | 1 tasks | 2 files |
@@ -71,6 +72,7 @@ Recent decisions affecting current work:
 - [10-04]: Success card uses local showSuccess + successData state instead of window.location.reload for clean form reset
 - [10-04]: FLOOR_PLANS constant and NewPropertyData interface exported from property-multi-select.tsx for reuse in Phase 11
 - [11-01]: Add Vacant nav item uses no roles filter — visible to all authenticated users (pm, rm, exec); /vacant added to ROLE_ALLOWED_ROUTES for all three roles
+- [11-02]: addVacantUnits is not admin-gated; parseFloorPlan copied locally (not imported from admin.ts) to keep vacant.ts independent; sequential per-unit creates for error isolation
 
 ### Pending Todos
 
