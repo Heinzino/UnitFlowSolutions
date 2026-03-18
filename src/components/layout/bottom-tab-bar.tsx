@@ -27,7 +27,7 @@ const tabItems: TabItem[] = [
   { icon: LayoutDashboard, label: "Executive", href: "/executive", roles: ["exec"] },
   { icon: Building2, label: "Properties", href: "/property" },
   { icon: Users, label: "Vendors", href: "/vendors" },
-  { icon: DoorOpen, label: "Add Vacant", href: "/vacant" },
+  { icon: DoorOpen, label: "Add Off Market", href: "/vacant" },
 ];
 
 interface BottomTabBarProps {

@@ -125,7 +125,7 @@ describe('AddVacantForm', () => {
 
     // Now validUnitCount = 1 (only first row is complete), so button is enabled
     // Click submit — second row has empty unit number, should show error
-    const submitButton = screen.getByRole('button', { name: 'Add 1 Vacant Unit' })
+    const submitButton = screen.getByRole('button', { name: 'Add 1 Off Market Unit' })
     fireEvent.click(submitButton)
 
     // Validation error on the second row
@@ -134,12 +134,12 @@ describe('AddVacantForm', () => {
     })
   })
 
-  /* UNIT-02: Submit button shows 'Add 1 Vacant Unit' when one unit is fully filled */
-  it("shows 'Add 1 Vacant Unit' when one unit row is fully filled", () => {
+  /* UNIT-02: Submit button shows 'Add 1 Off Market Unit' when one unit is fully filled */
+  it("shows 'Add 1 Off Market Unit' when one unit row is fully filled", () => {
     render(<AddVacantForm properties={testProperties} />)
 
-    // Initially disabled with "Add Vacant Units"
-    const submitButton = screen.getByRole('button', { name: /Add Vacant Units/i })
+    // Initially disabled with "Add Off Market Units"
+    const submitButton = screen.getByRole('button', { name: /Add Off Market Units/i })
     expect(submitButton).toBeDisabled()
 
     // Fill in unit number
@@ -150,11 +150,11 @@ describe('AddVacantForm', () => {
     fireEvent.change(selects[0], { target: { value: '1br 1ba' } })
 
     // Button label should update
-    expect(screen.getByRole('button', { name: 'Add 1 Vacant Unit' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Add 1 Off Market Unit' })).toBeEnabled()
   })
 
-  /* Dynamic label: shows 'Add 2 Vacant Units' when two rows are fully filled */
-  it("shows 'Add 2 Vacant Units' when two unit rows are fully filled", () => {
+  /* Dynamic label: shows 'Add 2 Off Market Units' when two rows are fully filled */
+  it("shows 'Add 2 Off Market Units' when two unit rows are fully filled", () => {
     render(<AddVacantForm properties={testProperties} />)
 
     // Fill in first row
@@ -173,7 +173,7 @@ describe('AddVacantForm', () => {
     fireEvent.change(allSelects[1], { target: { value: '2br 1ba' } })
 
     // Button label should update to 2 units
-    expect(screen.getByRole('button', { name: 'Add 2 Vacant Units' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Add 2 Off Market Units' })).toBeEnabled()
   })
 
   /* UNIT-08: Shows street address below property selector when a property is selected */

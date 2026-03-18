@@ -37,7 +37,7 @@ export default async function VacantPage() {
   // 4. Render
   return (
     <div className="max-w-2xl mx-auto py-8 px-4">
-      <h1 className="text-2xl font-heading font-bold text-white mb-6">Add Vacant Units</h1>
+      <h1 className="text-2xl font-heading font-bold text-white mb-6">Add Off Market Units</h1>
       <AddVacantForm properties={properties} />
     </div>
   )

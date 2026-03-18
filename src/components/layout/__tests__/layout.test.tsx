@@ -43,7 +43,7 @@ import { AppShell } from "@/components/layout/app-shell";
 
 /* ─── Sidebar ──────────────────────────────────────────────────── */
 describe("Sidebar", () => {
-  it("renders exactly 3 navigation links (Properties, Vendors, Add Vacant)", () => {
+  it("renders exactly 3 navigation links (Properties, Vendors, Add Off Market)", () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
     render(<Sidebar activePath="/" />);
     const links = screen.getAllByRole("link");
@@ -90,7 +90,7 @@ describe("Sidebar", () => {
     });
   });
 
-  it("renders 'Add Vacant' link for PM user (non-admin, non-exec)", async () => {
+  it("renders 'Add Off Market' link for PM user (non-admin, non-exec)", async () => {
     mockGetUser.mockResolvedValue({
       data: { user: { email: "pm@example.com", app_metadata: { role: "pm" } } },
     });
@@ -104,7 +104,7 @@ describe("Sidebar", () => {
 
 /* ─── BottomTabBar ─────────────────────────────────────────────── */
 describe("BottomTabBar", () => {
-  it("renders exactly 3 tab items (Properties, Vendors, Add Vacant)", () => {
+  it("renders exactly 3 tab items (Properties, Vendors, Add Off Market)", () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
     render(<BottomTabBar activePath="/" />);
     const links = screen.getAllByRole("link");
@@ -151,7 +151,7 @@ describe("BottomTabBar", () => {
     });
   });
 
-  it("renders 'Add Vacant' tab for PM user (non-admin, non-exec)", async () => {
+  it("renders 'Add Off Market' tab for PM user (non-admin, non-exec)", async () => {
     mockGetUser.mockResolvedValue({
       data: { user: { email: "pm@example.com", app_metadata: { role: "pm" } } },
     });

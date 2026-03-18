@@ -162,10 +162,10 @@ export function AddVacantForm({ properties }: AddVacantFormProps) {
   const buttonLabel = submitting
     ? 'Adding units...'
     : validUnitCount === 0
-      ? 'Add Vacant Units'
+      ? 'Add Off Market Units'
       : validUnitCount === 1
-        ? 'Add 1 Vacant Unit'
-        : `Add ${validUnitCount} Vacant Units`
+        ? 'Add 1 Off Market Unit'
+        : `Add ${validUnitCount} Off Market Units`
   const buttonDisabled = submitting || validUnitCount === 0
 
   // Success card
@@ -177,7 +177,7 @@ export function AddVacantForm({ properties }: AddVacantFormProps) {
             <Check size={16} className="text-emerald" />
           </div>
           <h2 className="text-lg font-heading font-bold text-text-primary">
-            {successData.created.length} Vacant Unit
+            {successData.created.length} Off Market Unit
             {successData.created.length !== 1 ? 's' : ''} Added to {successData.property}
           </h2>
         </div>
@@ -224,7 +224,7 @@ export function AddVacantForm({ properties }: AddVacantFormProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="bg-card rounded-card shadow-sm border border-card-border p-6 space-y-5">
       {/* Property selector */}
       <div>
         <label className="block text-sm font-bold text-text-primary mb-1.5">Property</label>
@@ -250,12 +250,12 @@ export function AddVacantForm({ properties }: AddVacantFormProps) {
         )}
       </div>
 
-      {/* Unit card stack */}
+      {/* Unit rows */}
       <div className="flex flex-col gap-4">
         {rows.map((row, index) => (
           <div
             key={row.id}
-            className="bg-card rounded-card shadow-sm border border-card-border p-4 sm:p-6"
+            className="border border-card-border rounded-card p-4"
           >
             <div className="flex flex-col sm:flex-row gap-3 items-start">
               {/* Unit number */}
@@ -342,7 +342,7 @@ export function AddVacantForm({ properties }: AddVacantFormProps) {
         type="button"
         onClick={addRow}
         disabled={submitting}
-        className="w-full mt-2 py-2.5 border border-emerald text-emerald rounded-pill text-sm font-medium hover:bg-emerald/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-2.5 border border-emerald text-emerald rounded-pill text-sm font-medium hover:bg-emerald/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         + Add Another Unit
       </button>
@@ -352,7 +352,7 @@ export function AddVacantForm({ properties }: AddVacantFormProps) {
         type="button"
         onClick={handleSubmit}
         disabled={buttonDisabled}
-        className="w-full mt-6 py-2.5 bg-emerald text-white rounded-pill text-sm font-medium hover:bg-emerald/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-2.5 bg-emerald text-white rounded-pill text-sm font-medium hover:bg-emerald/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {buttonLabel}
       </button>
