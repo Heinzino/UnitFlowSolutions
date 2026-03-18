@@ -109,15 +109,30 @@ completed: 2026-03-17
 
 - Validation test required adjustment: submit button is disabled when validUnitCount === 0, so triggering per-row validation required a test setup with at least one complete row plus one incomplete row. Test updated to add a second row with only floor plan filled.
 
+### User-Requested Changes (Post-Checkpoint)
+
+**2. [User feedback] Renamed "Vacant" to "Off Market" in all user-facing labels**
+- Nav items: "Add Vacant" → "Add Off Market" (sidebar + bottom tab bar)
+- Page heading: "Add Vacant Units" → "Add Off Market Units"
+- Button labels: "Add Vacant Units" / "Add 1 Vacant Unit" → "Add Off Market Units" / "Add 1 Off Market Unit"
+- Success card: "N Vacant Unit(s) Added" → "N Off Market Unit(s) Added"
+- All test descriptions and assertions updated
+- **Committed in:** `6ad46ae`
+
+**3. [User feedback] Fixed form card layout — dark text on dark background**
+- Wrapped entire form in single `bg-card rounded-card` container (matching create-user-form pattern)
+- Unit rows changed from standalone cards to bordered sections within the card
+- **Committed in:** `6ad46ae`
+
+## Self-Check: PASSED
+
+- All 10 AddVacantForm tests pass
+- All 13 layout tests pass
+- Visual verification approved by user
+
 ## User Setup Required
 
 None - no external service configuration required.
-
-## Next Phase Readiness
-
-- /vacant page complete with full add-vacant-units workflow
-- All automated tasks done; awaiting human visual verification (Task 4 checkpoint)
-- 202 tests passing including 10 new tests for this plan
 
 ---
 *Phase: 11-vacant-unit-entry*
