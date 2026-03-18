@@ -94,6 +94,15 @@ None - no external service configuration required.
 - Phase 11-03 (server component page) can import this action as-is
 - No blockers
 
+## Self-Check: PASSED
+
+- FOUND: src/app/actions/vacant.ts
+- FOUND: src/app/actions/vacant.test.ts
+- FOUND: .planning/phases/11-vacant-unit-entry/11-02-SUMMARY.md
+- FOUND commit: e046dba (feat — task commit)
+- FOUND commit: ea418e4 (docs — metadata commit)
+- All 9 tests pass (vitest exit 0)
+
 ---
 *Phase: 11-vacant-unit-entry*
 *Completed: 2026-03-18*
