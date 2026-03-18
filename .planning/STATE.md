@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Admin Tools & Unit Management
-status: in_progress
-stopped_at: "Completed 11-02-PLAN.md"
-last_updated: "2026-03-18T01:50:03Z"
+status: executing
+stopped_at: "Checkpoint: Task 4 visual verification of /vacant flow"
+last_updated: "2026-03-18T02:00:25.973Z"
 last_activity: 2026-03-18 — Completed plan 11-02 (addVacantUnits server action)
 progress:
   total_phases: 2
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 7
-  completed_plans: 6
+  completed_plans: 7
   percent: 64
 ---
 
@@ -52,6 +52,7 @@ Progress: [███████░░░] 64%
 | Phase 10-admin-user-creation P04 | ~35min | 3 tasks | 6 files |
 | Phase 10-admin-user-creation P02 | 3 | 1 tasks | 2 files |
 | Phase 10-admin-user-creation P01 | 4 | 2 tasks | 5 files |
+| Phase 11-vacant-unit-entry P03 | 20 | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -73,6 +74,8 @@ Recent decisions affecting current work:
 - [10-04]: FLOOR_PLANS constant and NewPropertyData interface exported from property-multi-select.tsx for reuse in Phase 11
 - [11-01]: Add Vacant nav item uses no roles filter — visible to all authenticated users (pm, rm, exec); /vacant added to ROLE_ALLOWED_ROUTES for all three roles
 - [11-02]: addVacantUnits is not admin-gated; parseFloorPlan copied locally (not imported from admin.ts) to keep vacant.ts independent; sequential per-unit creates for error isolation
+- [Phase 11-vacant-unit-entry]: handleAddMore keeps property selected; resets rows only on full success; partial failure keeps pre-populated failed rows for retry
+- [Phase 11-vacant-unit-entry]: Direct async server action call for typed array payloads (not useActionState + FormData) — cleaner types for UnitInput[]
 
 ### Pending Todos
 
@@ -85,6 +88,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-18T01:50:00Z
-Stopped at: Completed 11-01-PLAN.md
-Resume file: .planning/phases/11-vacant-unit-entry/11-02-PLAN.md
+Last session: 2026-03-18T02:00:25.967Z
+Stopped at: Checkpoint: Task 4 visual verification of /vacant flow
+Resume file: None

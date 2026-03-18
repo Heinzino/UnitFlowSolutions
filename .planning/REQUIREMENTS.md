@@ -17,10 +17,10 @@ Requirements for milestone v1.1: Admin Tools & Unit Management.
 ### Vacant Unit Entry
 
 - [x] **UNIT-01**: User can access "Add Vacant Units" from the sidebar
-- [ ] **UNIT-02**: User can select a property from a searchable dropdown (dynamic from Airtable)
-- [ ] **UNIT-03**: PM users only see properties they are assigned to in the dropdown
-- [ ] **UNIT-04**: User can add multiple units via a repeatable sub-form (unit number + floor plan)
-- [ ] **UNIT-05**: Floor plan is a dropdown with exact values: Studio / Loft, 1br 1ba, 1br 2ba, 2br 1ba, 2br 1.5ba, 3br 2ba, 3br 3ba
+- [x] **UNIT-02**: User can select a property from a searchable dropdown (dynamic from Airtable)
+- [x] **UNIT-03**: PM users only see properties they are assigned to in the dropdown
+- [x] **UNIT-04**: User can add multiple units via a repeatable sub-form (unit number + floor plan)
+- [x] **UNIT-05**: Floor plan is a dropdown with exact values: Studio / Loft, 1br 1ba, 1br 2ba, 2br 1ba, 2br 1.5ba, 3br 2ba, 3br 3ba
 - [x] **UNIT-06**: Submitting creates records in Airtable Properties table with property name, unit number, floor plan, parsed bedrooms/bathrooms, city (Columbia), state (SC), and street address
 - [x] **UNIT-07**: User can create a new property inline (with street address) if it doesn't exist
 - [x] **UNIT-08**: Street address is looked up from existing property; required only when creating a new property
@@ -52,10 +52,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | USER-03 | Phase 10 | Complete |
 | USER-04 | Phase 10 | Complete |
 | UNIT-01 | Phase 11 | Complete |
-| UNIT-02 | Phase 11 | Pending |
-| UNIT-03 | Phase 11 | Pending |
-| UNIT-04 | Phase 11 | Pending |
-| UNIT-05 | Phase 11 | Pending |
+| UNIT-02 | Phase 11 | Complete |
+| UNIT-03 | Phase 11 | Complete |
+| UNIT-04 | Phase 11 | Complete |
+| UNIT-05 | Phase 11 | Complete |
 | UNIT-06 | Phase 11 | Complete |
 | UNIT-07 | Phase 11 | Complete |
 | UNIT-08 | Phase 11 | Complete |
