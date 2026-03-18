@@ -206,7 +206,7 @@ describe("PropertyMultiSelect - inline create", () => {
 
     expect(screen.getByPlaceholderText("Property name")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Street address")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Vacant unit number")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Off-market unit number")).toBeInTheDocument();
     expect(screen.getByText("Select floor plan...")).toBeInTheDocument();
   });
 
@@ -229,7 +229,7 @@ describe("PropertyMultiSelect - inline create", () => {
     await userEvent.click(screen.getByRole("button", { name: /create new property/i }));
     await userEvent.type(screen.getByPlaceholderText("Property name"), "New Place");
     await userEvent.type(screen.getByPlaceholderText("Street address"), "789 New St");
-    await userEvent.type(screen.getByPlaceholderText("Vacant unit number"), "101");
+    await userEvent.type(screen.getByPlaceholderText("Off-market unit number"), "101");
 
     // Select a floor plan from the dropdown
     const floorPlanSelect = screen.getByDisplayValue("Select floor plan...");

@@ -249,7 +249,7 @@ export function PropertyMultiSelect({
               />
               <input
                 type="text"
-                placeholder="Vacant unit number"
+                placeholder="Off-market unit number"
                 value={newUnit}
                 onChange={(e) => setNewUnit(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-200 rounded-badge text-sm focus:outline-none focus:ring-2 focus:ring-emerald focus:border-transparent"
