@@ -8,9 +8,9 @@ export const ROLE_ROUTES: Record<UserRole, string> = {
 
 /** Routes each role is allowed to access (beyond their own ROLE_ROUTES entry) */
 export const ROLE_ALLOWED_ROUTES: Partial<Record<UserRole, string[]>> = {
-  exec: ['/executive', '/property', '/vendors'],
-  rm: ['/property', '/vendors'],
-  pm: ['/property', '/vendors'],
+  exec: ['/executive', '/property', '/vendors', '/vacant'],
+  rm: ['/property', '/vendors', '/vacant'],
+  pm: ['/property', '/vendors', '/vacant'],
 }
 
 export interface AppMetadata {

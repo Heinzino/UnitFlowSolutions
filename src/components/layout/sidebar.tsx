@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   LogOut,
   UserPlus,
+  DoorOpen,
 } from "lucide-react";
 import { clsx } from "clsx";
 import type { LucideIcon } from "lucide-react";
@@ -28,6 +29,7 @@ const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: "Executive", href: "/executive", roles: ["exec"] },
   { icon: Building2, label: "Properties", href: "/property" },
   { icon: Users, label: "Vendors", href: "/vendors" },
+  { icon: DoorOpen, label: "Add Vacant", href: "/vacant" },
 ];
 
 interface SidebarProps {

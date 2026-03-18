@@ -6,6 +6,7 @@ import {
   Users,
   LayoutDashboard,
   UserPlus,
+  DoorOpen,
 } from "lucide-react";
 import { clsx } from "clsx";
 import type { LucideIcon } from "lucide-react";
@@ -26,6 +27,7 @@ const tabItems: TabItem[] = [
   { icon: LayoutDashboard, label: "Executive", href: "/executive", roles: ["exec"] },
   { icon: Building2, label: "Properties", href: "/property" },
   { icon: Users, label: "Vendors", href: "/vendors" },
+  { icon: DoorOpen, label: "Add Vacant", href: "/vacant" },
 ];
 
 interface BottomTabBarProps {
