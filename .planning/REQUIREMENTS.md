@@ -1,0 +1,106 @@
+# Requirements: UnitFlowSolutions v1.2 Dashboard Redesign
+
+**Defined:** 2026-03-18
+**Core Value:** Property Managers can instantly see which turns are overdue, which jobs are stuck, and take action without hunting through Airtable — fewer clicks to the information that matters.
+
+## v1.2 Requirements
+
+### Terminology
+
+- [ ] **TERM-01**: All dashboard views display "Turns" instead of "Make Ready" for unit turnover events
+- [ ] **TERM-02**: All dashboard views display "Jobs" instead of "Make Ready" for vendor work items
+- [ ] **TERM-03**: All dashboard views display "Off Market" instead of "Vacant" for unit status
+- [ ] **TERM-04**: TypeScript identifiers updated to match new terminology (types, variables, file names)
+
+### PM Dashboard
+
+- [ ] **PMDB-01**: PM dashboard displays 6 KPI boxes (active turns, avg turn time, revenue exposure, completed this period, jobs in progress, turns near deadline)
+- [ ] **PMDB-02**: PM can view Open Turns list with turn age and status visible
+- [ ] **PMDB-03**: PM can enter a lease-ready date inline on each Open Turn row (blur-triggered server action with optimistic UI)
+- [ ] **PMDB-04**: PM can mark a turn as "Done" via inline button on the Open Turns list
+- [ ] **PMDB-05**: PM can view Active Jobs table showing all in-flight jobs across their turns (sortable by vendor, status, days open)
+- [ ] **PMDB-06**: Revenue Exposure KPI displays dollar amount ($60/day × days over target) with count of excluded turns (no target date)
+
+### RM Dashboard
+
+- [ ] **RMDB-01**: RM dashboard served at /regional route with middleware routing rm role to /regional
+- [ ] **RMDB-02**: RM dashboard displays 6 aggregated KPI boxes (cross-property metrics)
+- [ ] **RMDB-03**: RM can view Property Insights list showing per-property stats (active turns, avg turn time, revenue exposure)
+- [ ] **RMDB-04**: RM can drill down from Property Insights to PM-level view scoped to selected property
+- [ ] **RMDB-05**: RM can view Avg Turn Time bar graph with per-property bars color-coded by threshold (green <7d, amber 7-14d, red >14d)
+
+### Executive Dashboard
+
+- [ ] **EXEC-01**: Executive dashboard displays 6 redesigned KPI boxes (portfolio-level metrics)
+- [ ] **EXEC-02**: Executive can view Top 10 Properties by Revenue Exposure ranked table
+
+### Completed Jobs
+
+- [ ] **COMP-01**: User can navigate to Completed Jobs page at /property/completed-jobs
+- [ ] **COMP-02**: User can filter completed jobs by property via PropertyMultiSelect
+- [ ] **COMP-03**: Completed Jobs table reuses Active Jobs table component with server-side isCompleted filter
+
+## Future Requirements
+
+### Notifications
+
+- **NOTF-01**: Middle column notification/alert system
+- **NOTF-02**: Derived alerts matching actual user needs
+
+### Inline Operations
+
+- **INLN-01**: Inline pricing approval (accept/flag vendor quotes from turn detail)
+- **INLN-02**: Notes on turn requests (add/view notes per unit turnover)
+
+### Roles
+
+- **ROLE-01**: Maintenance Manager role view
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Configurable KPI boxes | Fixed per-role sets sufficient for 6-15 users |
+| Date range filtering on Completed Jobs | Property filter covers primary use case |
+| Revenue Exposure forecasting | Requires historical data storage not in scope |
+| Avg Turn Time historical trending | Point-in-time metric only; no snapshot storage |
+| Editable job fields in Active Jobs table | Read-only except status; edit in Airtable |
+| Real-time push updates (WebSocket/SSE) | Airtable has no WebSocket API; 60s cache sufficient |
+| Multi-column sort on tables | Single-column sort covers 95% of use cases |
+| Per-user notification preferences | Role-based scoping already limits noise |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| TERM-01 | — | Pending |
+| TERM-02 | — | Pending |
+| TERM-03 | — | Pending |
+| TERM-04 | — | Pending |
+| PMDB-01 | — | Pending |
+| PMDB-02 | — | Pending |
+| PMDB-03 | — | Pending |
+| PMDB-04 | — | Pending |
+| PMDB-05 | — | Pending |
+| PMDB-06 | — | Pending |
+| RMDB-01 | — | Pending |
+| RMDB-02 | — | Pending |
+| RMDB-03 | — | Pending |
+| RMDB-04 | — | Pending |
+| RMDB-05 | — | Pending |
+| EXEC-01 | — | Pending |
+| EXEC-02 | — | Pending |
+| COMP-01 | — | Pending |
+| COMP-02 | — | Pending |
+| COMP-03 | — | Pending |
+
+**Coverage:**
+- v1.2 requirements: 20 total
+- Mapped to phases: 0
+- Unmapped: 20 ⚠️
+
+---
+*Requirements defined: 2026-03-18*
+*Last updated: 2026-03-18 after initial definition*
