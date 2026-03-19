@@ -2,16 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Dashboard Redesign
-status: planning
-stopped_at: Phase 12 context gathered
-last_updated: "2026-03-19T01:58:55.362Z"
-last_activity: 2026-03-18 — Roadmap created for v1.2 Dashboard Redesign
+status: unknown
+stopped_at: Completed 12-01-PLAN.md
+last_updated: "2026-03-19T02:26:09.829Z"
 progress:
   total_phases: 5
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_plans: 2
+  completed_plans: 1
 ---
 
 # Project State
@@ -21,18 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Property Managers can instantly see which turns are overdue, which jobs are stuck, and take action without hunting through Airtable — fewer clicks to the information that matters.
-**Current focus:** v1.2 Dashboard Redesign — Phase 12: Terminology Rename (ready to plan)
+**Current focus:** Phase 12 — terminology-rename
 
 ## Current Position
 
-Phase: 12 — Terminology Rename (not started)
-Plan: —
-Status: Roadmap defined, ready for phase planning
-Last activity: 2026-03-18 — Roadmap created for v1.2 Dashboard Redesign
-
-Progress: [__________] 0% v1.2 (phases 12-16, 0/5 complete)
-
-Prior milestones: v1.0 (phases 1-9) + v1.1 (phases 10-11) = 11 phases shipped
+Phase: 12 (terminology-rename) — EXECUTING
+Plan: 1 of 2
 
 ## Performance Metrics
 
@@ -56,6 +48,8 @@ All v1.0 and v1.1 decisions archived — see `.planning/milestones/` for details
 - PM KPI box definitions 4-6: Exact fields for turns near deadline, jobs in progress, completed this period not yet confirmed with client
 - Executive KPI box definitions: All 6 v1.2 Executive KPI definitions not yet specified
 - Revenue Exposure rate/target confirmation: $60/day and 10-day target treated as business rules — confirm with client or define as named constants
+- [Phase 12-terminology-rename]: Airtable field strings ('Vacant Date', 'Days Vacant Until Ready') remain frozen; only TypeScript property names renamed
+- [Phase 12-terminology-rename]: Type-layer rename creates intentional TypeScript compile errors in consumers, making Plan 02 self-verifying via tsc --noEmit
 
 ### Pending Todos
 
@@ -69,6 +63,6 @@ None blocking roadmap. Phase 13 and Phase 16 each have open product questions (s
 
 ## Session Continuity
 
-Last session: 2026-03-19T01:58:55.356Z
-Stopped at: Phase 12 context gathered
+Last session: 2026-03-19T02:26:09.824Z
+Stopped at: Completed 12-01-PLAN.md
 Resume with: `/gsd:plan-phase 12`

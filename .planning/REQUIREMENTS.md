@@ -7,10 +7,10 @@
 
 ### Terminology
 
-- [ ] **TERM-01**: All dashboard views display "Turns" instead of "Make Ready" for unit turnover events
-- [ ] **TERM-02**: All dashboard views display "Jobs" instead of "Make Ready" for vendor work items
+- [x] **TERM-01**: All dashboard views display "Turns" instead of "Make Ready" for unit turnover events
+- [x] **TERM-02**: All dashboard views display "Jobs" instead of "Make Ready" for vendor work items
 - [ ] **TERM-03**: All dashboard views display "Off Market" instead of "Vacant" for unit status
-- [ ] **TERM-04**: TypeScript identifiers updated to match new terminology (types, variables, file names)
+- [x] **TERM-04**: TypeScript identifiers updated to match new terminology (types, variables, file names)
 
 ### PM Dashboard
 
@@ -75,10 +75,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TERM-01 | Phase 12 | Pending |
-| TERM-02 | Phase 12 | Pending |
+| TERM-01 | Phase 12 | Complete |
+| TERM-02 | Phase 12 | Complete |
 | TERM-03 | Phase 12 | Pending |
-| TERM-04 | Phase 12 | Pending |
+| TERM-04 | Phase 12 | Complete |
 | PMDB-01 | Phase 13 | Pending |
 | PMDB-02 | Phase 13 | Pending |
 | PMDB-03 | Phase 13 | Pending |
