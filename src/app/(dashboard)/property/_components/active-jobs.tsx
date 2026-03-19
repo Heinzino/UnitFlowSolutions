@@ -25,11 +25,12 @@ export async function ActiveJobs({ assignedProperties, role }: ActiveJobsProps) 
 
   // Filter to in-flight jobs: exclude Completed, Invoice Sent, and Scheduled
   // Ready status IS included per user decision -- it represents in-flight workload
+  // Cast to string for comparison — JOB_STATUSES type is narrower than Airtable's actual field values
   const inflightJobs = uniqueJobs.filter(
-    (j) =>
-      j.status !== 'Completed' &&
-      j.status !== 'Invoice Sent' &&
-      j.status !== 'Scheduled'
+    (j) => {
+      const s = j.status as string
+      return s !== 'Completed' && s !== 'Invoice Sent' && s !== 'Scheduled'
+    }
   )
 
   return <ActiveJobsTable jobs={inflightJobs} />

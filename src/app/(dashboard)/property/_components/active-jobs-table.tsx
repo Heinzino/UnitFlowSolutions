@@ -4,8 +4,9 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ChevronUp, ChevronDown } from 'lucide-react'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
-import { StatusBadge, type Status } from '@/components/ui/status-badge'
 import { Card } from '@/components/ui/card'
+import { JobStatusDropdown } from './job-status-dropdown'
+import { JobDateInput } from './job-date-input'
 import type { Job } from '@/lib/types/airtable'
 
 type SortCol = 'vendor' | 'status' | 'daysOpen'
@@ -16,17 +17,6 @@ function getDaysOpen(job: Job): number | null {
     return Math.floor((Date.now() - new Date(job.startDate).getTime()) / (1000 * 60 * 60 * 24))
   }
   return null
-}
-
-function toStatusBadgeStatus(jobStatus: string): Status {
-  switch (jobStatus) {
-    case 'Completed': return 'completed'
-    case 'Ready': return 'ready'
-    case 'NEEDS ATTENTION': return 'attention'
-    case 'Blocked': return 'blocked'
-    case 'In Progress': return 'in-progress'
-    default: return 'in-progress'
-  }
 }
 
 interface ActiveJobsTableProps {
@@ -105,6 +95,8 @@ export function ActiveJobsTable({ jobs }: ActiveJobsTableProps) {
                 <SortIcon col="daysOpen" />
               </button>
             </TableHead>
+            <TableHead>Start Date</TableHead>
+            <TableHead>End Date</TableHead>
             <TableHead>Unit</TableHead>
             <TableHead>Turn</TableHead>
           </TableRow>
@@ -112,28 +104,71 @@ export function ActiveJobsTable({ jobs }: ActiveJobsTableProps) {
         <TableBody>
           {sorted.map((job) => {
             const daysOpen = getDaysOpen(job)
+            const turnId = job.turnRequestId
             return (
               <TableRow key={job.jobId}>
                 <TableCell>{job.vendorName ?? '---'}</TableCell>
-                <TableCell>
-                  <StatusBadge status={toStatusBadgeStatus(job.status)} />
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  {turnId !== undefined ? (
+                    <JobStatusDropdown
+                      jobId={job.jobId}
+                      turnRequestId={turnId}
+                      currentStatus={job.status}
+                    />
+                  ) : (
+                    <span className="text-xs text-text-secondary">{job.status}</span>
+                  )}
                 </TableCell>
                 <TableCell>{daysOpen !== null ? `${daysOpen} days` : '---'}</TableCell>
-                <TableCell>
-                  <Link
-                    href={`/property/turn/${job.turnRequestId}`}
-                    className="text-emerald hover:underline"
-                  >
-                    {job.unitNumber ?? '---'}
-                  </Link>
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  {turnId !== undefined ? (
+                    <JobDateInput
+                      jobId={job.jobId}
+                      turnRequestId={turnId}
+                      field="startDate"
+                      currentStartDate={job.startDate}
+                      currentEndDate={job.endDate}
+                    />
+                  ) : (
+                    <span className="text-xs text-text-secondary">{job.startDate ?? '---'}</span>
+                  )}
+                </TableCell>
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  {turnId !== undefined ? (
+                    <JobDateInput
+                      jobId={job.jobId}
+                      turnRequestId={turnId}
+                      field="endDate"
+                      currentStartDate={job.startDate}
+                      currentEndDate={job.endDate}
+                    />
+                  ) : (
+                    <span className="text-xs text-text-secondary">{job.endDate ?? '---'}</span>
+                  )}
                 </TableCell>
                 <TableCell>
-                  <Link
-                    href={`/property/turn/${job.turnRequestId}`}
-                    className="text-emerald hover:underline"
-                  >
-                    #{job.turnRequestId}
-                  </Link>
+                  {turnId !== undefined ? (
+                    <Link
+                      href={`/property/turn/${turnId}`}
+                      className="text-emerald hover:underline"
+                    >
+                      {job.unitNumber ?? '---'}
+                    </Link>
+                  ) : (
+                    <span>{job.unitNumber ?? '---'}</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {turnId !== undefined ? (
+                    <Link
+                      href={`/property/turn/${turnId}`}
+                      className="text-emerald hover:underline"
+                    >
+                      #{turnId}
+                    </Link>
+                  ) : (
+                    <span className="text-xs text-text-secondary">---</span>
+                  )}
                 </TableCell>
               </TableRow>
             )
