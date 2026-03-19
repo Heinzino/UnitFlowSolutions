@@ -5,10 +5,10 @@
 import type { TurnRequest } from '@/lib/types/airtable'
 
 export interface PMKPIResult {
-  activeMakeReadys: number
+  activeTurns: number
   completedLast30d: number
   completedLast7d: number
-  avgMakeReadyTime: number | null // null when no Done turn requests
+  avgTurnTime: number | null // null when no Done turn requests
   projectedSpendMTD: number
   pastTargetCount: number
 }
@@ -27,10 +27,10 @@ export function computePMKPIs(turnRequests: TurnRequest[]): PMKPIResult {
   const startOfMonth = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1))
 
   // ---------------------------------------------------------------------------
-  // PM-01: Active Make Readys — TRs where status !== "Done"
+  // PM-01: Active Turns — TRs where status !== "Done"
   // Safer than allowlist: catches any non-Done status including future values
   // ---------------------------------------------------------------------------
-  const activeMakeReadys = turnRequests.filter((tr) => tr.status !== 'Done').length
+  const activeTurns = turnRequests.filter((tr) => tr.status !== 'Done').length
 
   // ---------------------------------------------------------------------------
   // PM-02: Completed Last 30d — Done TRs with readyToLeaseDate in past 30 days
@@ -51,11 +51,11 @@ export function computePMKPIs(turnRequests: TurnRequest[]): PMKPIResult {
   }).length
 
   // ---------------------------------------------------------------------------
-  // PM-04: Avg Make Ready Time — average timeToCompleteUnit for Done TRs
+  // PM-04: Avg Turn Time — average timeToCompleteUnit for Done TRs
   // Returns null when no Done turn requests exist
   // ---------------------------------------------------------------------------
   const doneTurnRequests = turnRequests.filter((tr) => tr.status === 'Done')
-  const avgMakeReadyTime =
+  const avgTurnTime =
     doneTurnRequests.length === 0
       ? null
       : doneTurnRequests.reduce((sum, tr) => sum + (tr.timeToCompleteUnit ?? 0), 0) /
@@ -77,17 +77,17 @@ export function computePMKPIs(turnRequests: TurnRequest[]): PMKPIResult {
     }, 0)
 
   // ---------------------------------------------------------------------------
-  // PM-06: Past Target Count — TRs where daysVacantUntilReady > 10
+  // PM-06: Past Target Count — TRs where daysOffMarketUntilReady > 10
   // ---------------------------------------------------------------------------
   const pastTargetCount = turnRequests.filter(
-    (tr) => (tr.daysVacantUntilReady ?? 0) > 10
+    (tr) => (tr.daysOffMarketUntilReady ?? 0) > 10
   ).length
 
   return {
-    activeMakeReadys,
+    activeTurns,
     completedLast30d,
     completedLast7d,
-    avgMakeReadyTime,
+    avgTurnTime,
     projectedSpendMTD,
     pastTargetCount,
   }

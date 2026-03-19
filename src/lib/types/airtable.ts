@@ -14,7 +14,7 @@ export type JobStatus = keyof typeof JOB_STATUSES
 export interface TurnRequest {
   requestId: number
   readyToLeaseDate: string | null
-  vacantDate: string | null
+  offMarketDate: string | null
   targetDate: string | null
   status: string
   jobIds: number[]
@@ -33,7 +33,7 @@ export interface TurnRequest {
   state: string | null
   bedrooms: number | null
   bathrooms: number | null
-  daysVacantUntilReady: number | null
+  daysOffMarketUntilReady: number | null
   created: string
 }
 

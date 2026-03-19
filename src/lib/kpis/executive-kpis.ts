@@ -10,7 +10,7 @@ export interface ExecutiveKPIResult {
   backlogDelta: number
   avgTimeToComplete: number | null // null when no Done turn requests
   projectedCostExposure: number
-  activeMakeReadysOpen: number
+  activeTurnsOpen: number
   pastTargetAlerts: { propertyName: string; unitNumber: string }[]
   trendingAlerts: { propertyName: string; unitNumber: string }[]
 }
@@ -92,20 +92,20 @@ export function computeExecutiveKPIs(
   }, 0)
 
   // ---------------------------------------------------------------------------
-  // EXEC-04: Active Make Readys Open — status !== 'Done'
+  // EXEC-04: Active Turns Open — status !== 'Done'
   // Safer than allowlist: catches any non-Done status including future values
   // ---------------------------------------------------------------------------
-  const activeMakeReadysOpen = turnRequests.filter((tr) => tr.status !== 'Done').length
+  const activeTurnsOpen = turnRequests.filter((tr) => tr.status !== 'Done').length
 
   // ---------------------------------------------------------------------------
-  // EXEC-05: Alert arrays — filtered by daysVacantUntilReady threshold
+  // EXEC-05: Alert arrays — filtered by daysOffMarketUntilReady threshold
   // ---------------------------------------------------------------------------
   const pastTargetAlerts = turnRequests
-    .filter((tr) => (tr.daysVacantUntilReady ?? 0) > 10)
+    .filter((tr) => (tr.daysOffMarketUntilReady ?? 0) > 10)
     .map((tr) => ({ propertyName: tr.propertyName, unitNumber: tr.unitNumber }))
 
   const trendingAlerts = turnRequests
-    .filter((tr) => (tr.daysVacantUntilReady ?? 0) > 8)
+    .filter((tr) => (tr.daysOffMarketUntilReady ?? 0) > 8)
     .map((tr) => ({ propertyName: tr.propertyName, unitNumber: tr.unitNumber }))
 
   return {
@@ -115,7 +115,7 @@ export function computeExecutiveKPIs(
     backlogDelta,
     avgTimeToComplete,
     projectedCostExposure,
-    activeMakeReadysOpen,
+    activeTurnsOpen,
     pastTargetAlerts,
     trendingAlerts,
   }
