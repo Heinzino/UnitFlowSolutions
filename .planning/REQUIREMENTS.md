@@ -14,12 +14,12 @@
 
 ### PM Dashboard
 
-- [ ] **PMDB-01**: PM dashboard displays 6 KPI boxes (active turns, avg turn time, revenue exposure, completed this period, jobs in progress, turns near deadline)
+- [x] **PMDB-01**: PM dashboard displays 6 KPI boxes (active turns, avg turn time, revenue exposure, completed this period, jobs in progress, turns near deadline)
 - [ ] **PMDB-02**: PM can view Open Turns list with turn age and status visible
 - [ ] **PMDB-03**: PM can enter a lease-ready date inline on each Open Turn row (blur-triggered server action with optimistic UI)
 - [ ] **PMDB-04**: PM can mark a turn as "Done" via inline button on the Open Turns list
 - [ ] **PMDB-05**: PM can view Active Jobs table showing all in-flight jobs across their turns (sortable by vendor, status, days open)
-- [ ] **PMDB-06**: Revenue Exposure KPI displays dollar amount ($60/day × days over target) with count of excluded turns (no target date)
+- [x] **PMDB-06**: Revenue Exposure KPI displays dollar amount ($60/day × days over target) with count of excluded turns (no target date)
 
 ### RM Dashboard
 
@@ -79,12 +79,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TERM-02 | Phase 12 | Complete |
 | TERM-03 | Phase 12 | Complete |
 | TERM-04 | Phase 12 | Complete |
-| PMDB-01 | Phase 13 | Pending |
+| PMDB-01 | Phase 13 | Complete |
 | PMDB-02 | Phase 13 | Pending |
 | PMDB-03 | Phase 13 | Pending |
 | PMDB-04 | Phase 13 | Pending |
 | PMDB-05 | Phase 13 | Pending |
-| PMDB-06 | Phase 13 | Pending |
+| PMDB-06 | Phase 13 | Complete |
 | COMP-01 | Phase 14 | Pending |
 | COMP-02 | Phase 14 | Pending |
 | COMP-03 | Phase 14 | Pending |
