@@ -10,7 +10,7 @@ function makeTurnRequest(overrides: Partial<TurnRequest> = {}): TurnRequest {
   return {
     requestId: 1,
     readyToLeaseDate: null,
-    vacantDate: null,
+    offMarketDate: null,
     targetDate: null,
     status: 'In progress',
     jobIds: [],
@@ -28,7 +28,7 @@ function makeTurnRequest(overrides: Partial<TurnRequest> = {}): TurnRequest {
     state: null,
     bedrooms: null,
     bathrooms: null,
-    daysVacantUntilReady: null,
+    daysOffMarketUntilReady: null,
     created: '2024-02-01T00:00:00.000Z',
     ...overrides,
   }
@@ -54,8 +54,8 @@ afterEach(() => {
 // ---------------------------------------------------------------------------
 
 describe('computePMKPIs', () => {
-  // PM-01: activeMakeReadys
-  describe('activeMakeReadys', () => {
+  // PM-01: activeTurns
+  describe('activeTurns', () => {
     it('counts TRs where status !== "Done"', () => {
       const trs = [
         makeTurnRequest({ status: 'In progress' }),
@@ -64,19 +64,19 @@ describe('computePMKPIs', () => {
         makeTurnRequest({ status: 'Done' }), // excluded
         makeTurnRequest({ status: 'Done' }), // excluded
       ]
-      const { activeMakeReadys } = computePMKPIs(trs)
-      expect(activeMakeReadys).toBe(3)
+      const { activeTurns } = computePMKPIs(trs)
+      expect(activeTurns).toBe(3)
     })
 
     it('returns 0 for empty array', () => {
-      const { activeMakeReadys } = computePMKPIs([])
-      expect(activeMakeReadys).toBe(0)
+      const { activeTurns } = computePMKPIs([])
+      expect(activeTurns).toBe(0)
     })
 
     it('returns 0 when all are Done', () => {
       const trs = [makeTurnRequest({ status: 'Done' }), makeTurnRequest({ status: 'Done' })]
-      const { activeMakeReadys } = computePMKPIs(trs)
-      expect(activeMakeReadys).toBe(0)
+      const { activeTurns } = computePMKPIs(trs)
+      expect(activeTurns).toBe(0)
     })
   })
 
@@ -124,26 +124,26 @@ describe('computePMKPIs', () => {
     })
   })
 
-  // PM-04: avgMakeReadyTime
-  describe('avgMakeReadyTime', () => {
+  // PM-04: avgTurnTime
+  describe('avgTurnTime', () => {
     it('returns average of timeToCompleteUnit for Done TRs', () => {
       const trs = [
         makeTurnRequest({ status: 'Done', timeToCompleteUnit: 10 }),
         makeTurnRequest({ status: 'Done', timeToCompleteUnit: 20 }),
         makeTurnRequest({ status: 'In progress', timeToCompleteUnit: 5 }), // excluded
       ]
-      const { avgMakeReadyTime } = computePMKPIs(trs)
-      expect(avgMakeReadyTime).toBe(15)
+      const { avgTurnTime } = computePMKPIs(trs)
+      expect(avgTurnTime).toBe(15)
     })
 
     it('returns null when no Done TRs exist', () => {
       const trs = [makeTurnRequest({ status: 'In progress', timeToCompleteUnit: 5 })]
-      const { avgMakeReadyTime } = computePMKPIs(trs)
-      expect(avgMakeReadyTime).toBeNull()
+      const { avgTurnTime } = computePMKPIs(trs)
+      expect(avgTurnTime).toBeNull()
     })
 
     it('returns null for empty array', () => {
-      expect(computePMKPIs([]).avgMakeReadyTime).toBeNull()
+      expect(computePMKPIs([]).avgTurnTime).toBeNull()
     })
 
     it('treats null timeToCompleteUnit as 0 in average', () => {
@@ -151,8 +151,8 @@ describe('computePMKPIs', () => {
         makeTurnRequest({ status: 'Done', timeToCompleteUnit: 10 }),
         makeTurnRequest({ status: 'Done', timeToCompleteUnit: null }),
       ]
-      const { avgMakeReadyTime } = computePMKPIs(trs)
-      expect(avgMakeReadyTime).toBe(5)
+      const { avgTurnTime } = computePMKPIs(trs)
+      expect(avgTurnTime).toBe(5)
     })
   })
 
@@ -208,13 +208,13 @@ describe('computePMKPIs', () => {
 
   // PM-06: pastTargetCount
   describe('pastTargetCount', () => {
-    it('counts TRs where daysVacantUntilReady > 10', () => {
+    it('counts TRs where daysOffMarketUntilReady > 10', () => {
       const trs = [
-        makeTurnRequest({ daysVacantUntilReady: 11 }), // INCLUDE
-        makeTurnRequest({ daysVacantUntilReady: 10 }), // EXCLUDE (not >10)
-        makeTurnRequest({ daysVacantUntilReady: 15 }), // INCLUDE
-        makeTurnRequest({ daysVacantUntilReady: null }), // EXCLUDE
-        makeTurnRequest({ daysVacantUntilReady: 0 }),   // EXCLUDE
+        makeTurnRequest({ daysOffMarketUntilReady: 11 }), // INCLUDE
+        makeTurnRequest({ daysOffMarketUntilReady: 10 }), // EXCLUDE (not >10)
+        makeTurnRequest({ daysOffMarketUntilReady: 15 }), // INCLUDE
+        makeTurnRequest({ daysOffMarketUntilReady: null }), // EXCLUDE
+        makeTurnRequest({ daysOffMarketUntilReady: 0 }),   // EXCLUDE
       ]
       const { pastTargetCount } = computePMKPIs(trs)
       expect(pastTargetCount).toBe(2)
@@ -242,12 +242,12 @@ describe('computePMKPIs', () => {
 
   // Edge case: empty array
   describe('empty array returns safe defaults', () => {
-    it('returns all zeros and null avgMakeReadyTime for empty input', () => {
+    it('returns all zeros and null avgTurnTime for empty input', () => {
       const kpis = computePMKPIs([])
-      expect(kpis.activeMakeReadys).toBe(0)
+      expect(kpis.activeTurns).toBe(0)
       expect(kpis.completedLast30d).toBe(0)
       expect(kpis.completedLast7d).toBe(0)
-      expect(kpis.avgMakeReadyTime).toBeNull()
+      expect(kpis.avgTurnTime).toBeNull()
       expect(kpis.projectedSpendMTD).toBe(0)
       expect(kpis.pastTargetCount).toBe(0)
     })

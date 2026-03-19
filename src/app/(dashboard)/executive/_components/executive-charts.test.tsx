@@ -42,7 +42,7 @@ function makeTurnRequest(overrides: Partial<TurnRequest> = {}): TurnRequest {
   return {
     requestId: 1,
     readyToLeaseDate: null,
-    vacantDate: null,
+    offMarketDate: null,
     targetDate: null,
     status: 'In progress',
     jobIds: [],
@@ -60,7 +60,7 @@ function makeTurnRequest(overrides: Partial<TurnRequest> = {}): TurnRequest {
     state: null,
     bedrooms: null,
     bathrooms: null,
-    daysVacantUntilReady: null,
+    daysOffMarketUntilReady: null,
     created: '2024-01-01T00:00:00.000Z',
     ...overrides,
   }
@@ -92,8 +92,8 @@ describe('ExecutiveCharts', () => {
 
   it('renders without throwing (smoke test)', async () => {
     vi.mocked(fetchTurnRequests).mockResolvedValue([
-      makeTurnRequest({ daysVacantUntilReady: 5 }),
-      makeTurnRequest({ daysVacantUntilReady: 15 }),
+      makeTurnRequest({ daysOffMarketUntilReady: 5 }),
+      makeTurnRequest({ daysOffMarketUntilReady: 15 }),
     ])
     vi.mocked(fetchVendors).mockResolvedValue([
       makeVendor({ vendorName: 'Acme Painting', avgCompletionTimeDays: 8 }),
@@ -105,7 +105,7 @@ describe('ExecutiveCharts', () => {
 
   it('renders "Turn Health Score" heading from HealthGauge', async () => {
     vi.mocked(fetchTurnRequests).mockResolvedValue([
-      makeTurnRequest({ daysVacantUntilReady: 5 }),
+      makeTurnRequest({ daysOffMarketUntilReady: 5 }),
     ])
     vi.mocked(fetchVendors).mockResolvedValue([
       makeVendor({ vendorName: 'Acme Painting', avgCompletionTimeDays: 8 }),
@@ -118,7 +118,7 @@ describe('ExecutiveCharts', () => {
 
   it('renders "Avg Completion Time by Vendor (Days)" heading', async () => {
     vi.mocked(fetchTurnRequests).mockResolvedValue([
-      makeTurnRequest({ daysVacantUntilReady: 10 }),
+      makeTurnRequest({ daysOffMarketUntilReady: 10 }),
     ])
     vi.mocked(fetchVendors).mockResolvedValue([
       makeVendor({ vendorName: 'Acme', avgCompletionTimeDays: 12 }),
@@ -131,7 +131,7 @@ describe('ExecutiveCharts', () => {
 
   it('renders "No vendor data available" when all vendors have null avgCompletionTimeDays', async () => {
     vi.mocked(fetchTurnRequests).mockResolvedValue([
-      makeTurnRequest({ daysVacantUntilReady: 5 }),
+      makeTurnRequest({ daysOffMarketUntilReady: 5 }),
     ])
     vi.mocked(fetchVendors).mockResolvedValue([
       makeVendor({ vendorName: 'Acme', avgCompletionTimeDays: null }),

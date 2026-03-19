@@ -10,7 +10,7 @@ function makeTurnRequest(overrides: Partial<TurnRequest> = {}): TurnRequest {
   return {
     requestId: 1,
     readyToLeaseDate: null,
-    vacantDate: null,
+    offMarketDate: null,
     targetDate: null,
     status: 'In progress',
     jobIds: [],
@@ -28,7 +28,7 @@ function makeTurnRequest(overrides: Partial<TurnRequest> = {}): TurnRequest {
     state: null,
     bedrooms: null,
     bathrooms: null,
-    daysVacantUntilReady: null,
+    daysOffMarketUntilReady: null,
     created: '2024-01-01T00:00:00.000Z',
     ...overrides,
   }
@@ -39,44 +39,44 @@ function makeTurnRequest(overrides: Partial<TurnRequest> = {}): TurnRequest {
 // ---------------------------------------------------------------------------
 
 describe('computeHealthScore', () => {
-  it('returns 100 when all TRs have daysVacantUntilReady <= 10', () => {
+  it('returns 100 when all TRs have daysOffMarketUntilReady <= 10', () => {
     const trs = [
-      makeTurnRequest({ daysVacantUntilReady: 5 }),
-      makeTurnRequest({ daysVacantUntilReady: 10 }),
-      makeTurnRequest({ daysVacantUntilReady: 3 }),
+      makeTurnRequest({ daysOffMarketUntilReady: 5 }),
+      makeTurnRequest({ daysOffMarketUntilReady: 10 }),
+      makeTurnRequest({ daysOffMarketUntilReady: 3 }),
     ]
     expect(computeHealthScore(trs)).toBe(100)
   })
 
-  it('returns 50 when half of TRs have daysVacantUntilReady <= 10', () => {
+  it('returns 50 when half of TRs have daysOffMarketUntilReady <= 10', () => {
     const trs = [
-      makeTurnRequest({ daysVacantUntilReady: 5 }),  // on time
-      makeTurnRequest({ daysVacantUntilReady: 15 }), // over
+      makeTurnRequest({ daysOffMarketUntilReady: 5 }),  // on time
+      makeTurnRequest({ daysOffMarketUntilReady: 15 }), // over
     ]
     expect(computeHealthScore(trs)).toBe(50)
   })
 
-  it('returns 0 when all TRs have daysVacantUntilReady > 10', () => {
+  it('returns 0 when all TRs have daysOffMarketUntilReady > 10', () => {
     const trs = [
-      makeTurnRequest({ daysVacantUntilReady: 11 }),
-      makeTurnRequest({ daysVacantUntilReady: 20 }),
+      makeTurnRequest({ daysOffMarketUntilReady: 11 }),
+      makeTurnRequest({ daysOffMarketUntilReady: 20 }),
     ]
     expect(computeHealthScore(trs)).toBe(0)
   })
 
-  it('returns null when no TRs have non-null daysVacantUntilReady', () => {
+  it('returns null when no TRs have non-null daysOffMarketUntilReady', () => {
     const trs = [
-      makeTurnRequest({ daysVacantUntilReady: null }),
-      makeTurnRequest({ daysVacantUntilReady: null }),
+      makeTurnRequest({ daysOffMarketUntilReady: null }),
+      makeTurnRequest({ daysOffMarketUntilReady: null }),
     ]
     expect(computeHealthScore(trs)).toBeNull()
   })
 
-  it('ignores TRs with null daysVacantUntilReady (does not count them in denominator)', () => {
+  it('ignores TRs with null daysOffMarketUntilReady (does not count them in denominator)', () => {
     const trs = [
-      makeTurnRequest({ daysVacantUntilReady: 5 }),   // on time
-      makeTurnRequest({ daysVacantUntilReady: null }), // ignored
-      makeTurnRequest({ daysVacantUntilReady: 15 }),   // over
+      makeTurnRequest({ daysOffMarketUntilReady: 5 }),   // on time
+      makeTurnRequest({ daysOffMarketUntilReady: null }), // ignored
+      makeTurnRequest({ daysOffMarketUntilReady: 15 }),   // over
     ]
     // 1 on-time out of 2 with data = 50%
     expect(computeHealthScore(trs)).toBe(50)

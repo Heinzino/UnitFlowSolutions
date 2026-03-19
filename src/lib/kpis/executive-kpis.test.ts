@@ -34,7 +34,7 @@ function makeTurnRequest(overrides: Partial<TurnRequest> = {}): TurnRequest {
   return {
     requestId: 1,
     readyToLeaseDate: null,
-    vacantDate: null,
+    offMarketDate: null,
     targetDate: null,
     status: 'In progress',
     jobIds: [],
@@ -52,7 +52,7 @@ function makeTurnRequest(overrides: Partial<TurnRequest> = {}): TurnRequest {
     state: null,
     bedrooms: null,
     bathrooms: null,
-    daysVacantUntilReady: null,
+    daysOffMarketUntilReady: null,
     created: '2024-01-01T00:00:00.000Z',
     ...overrides,
   }
@@ -259,8 +259,8 @@ describe('computeExecutiveKPIs', () => {
     })
   })
 
-  // EXEC-04: activeMakeReadysOpen
-  describe('activeMakeReadysOpen', () => {
+  // EXEC-04: activeTurnsOpen
+  describe('activeTurnsOpen', () => {
     it('counts turn requests where status !== Done', () => {
       const trs = [
         makeTurnRequest({ status: 'In progress' }),
@@ -268,30 +268,30 @@ describe('computeExecutiveKPIs', () => {
         makeTurnRequest({ status: 'To Do' }),
         makeTurnRequest({ status: 'Done' }), // excluded
       ]
-      const { activeMakeReadysOpen } = computeExecutiveKPIs([], trs)
-      expect(activeMakeReadysOpen).toBe(3)
+      const { activeTurnsOpen } = computeExecutiveKPIs([], trs)
+      expect(activeTurnsOpen).toBe(3)
     })
 
     it('returns 0 for empty turn requests', () => {
-      const { activeMakeReadysOpen } = computeExecutiveKPIs([], [])
-      expect(activeMakeReadysOpen).toBe(0)
+      const { activeTurnsOpen } = computeExecutiveKPIs([], [])
+      expect(activeTurnsOpen).toBe(0)
     })
 
     it('returns 0 when all are Done', () => {
       const trs = [makeTurnRequest({ status: 'Done' })]
-      const { activeMakeReadysOpen } = computeExecutiveKPIs([], trs)
-      expect(activeMakeReadysOpen).toBe(0)
+      const { activeTurnsOpen } = computeExecutiveKPIs([], trs)
+      expect(activeTurnsOpen).toBe(0)
     })
   })
 
   // EXEC-05: pastTargetAlerts
   describe('pastTargetAlerts', () => {
-    it('returns items with daysVacantUntilReady > 10', () => {
+    it('returns items with daysOffMarketUntilReady > 10', () => {
       const trs = [
-        makeTurnRequest({ propertyName: 'Oak Ridge', unitNumber: '204', daysVacantUntilReady: 11 }),
-        makeTurnRequest({ propertyName: 'Sunrise', unitNumber: '101', daysVacantUntilReady: 10 }), // excluded (not >10)
-        makeTurnRequest({ propertyName: 'Park View', unitNumber: '305', daysVacantUntilReady: 15 }),
-        makeTurnRequest({ propertyName: 'Test', unitNumber: '001', daysVacantUntilReady: null }), // excluded
+        makeTurnRequest({ propertyName: 'Oak Ridge', unitNumber: '204', daysOffMarketUntilReady: 11 }),
+        makeTurnRequest({ propertyName: 'Sunrise', unitNumber: '101', daysOffMarketUntilReady: 10 }), // excluded (not >10)
+        makeTurnRequest({ propertyName: 'Park View', unitNumber: '305', daysOffMarketUntilReady: 15 }),
+        makeTurnRequest({ propertyName: 'Test', unitNumber: '001', daysOffMarketUntilReady: null }), // excluded
       ]
       const { pastTargetAlerts } = computeExecutiveKPIs([], trs)
       expect(pastTargetAlerts).toHaveLength(2)
@@ -300,7 +300,7 @@ describe('computeExecutiveKPIs', () => {
     })
 
     it('returns empty array when no TR exceeds 10 days', () => {
-      const trs = [makeTurnRequest({ daysVacantUntilReady: 5 })]
+      const trs = [makeTurnRequest({ daysOffMarketUntilReady: 5 })]
       const { pastTargetAlerts } = computeExecutiveKPIs([], trs)
       expect(pastTargetAlerts).toEqual([])
     })
@@ -308,11 +308,11 @@ describe('computeExecutiveKPIs', () => {
 
   // EXEC-05: trendingAlerts
   describe('trendingAlerts', () => {
-    it('returns items with daysVacantUntilReady > 8', () => {
+    it('returns items with daysOffMarketUntilReady > 8', () => {
       const trs = [
-        makeTurnRequest({ propertyName: 'Oak Ridge', unitNumber: '204', daysVacantUntilReady: 9 }),
-        makeTurnRequest({ propertyName: 'Sunrise', unitNumber: '101', daysVacantUntilReady: 8 }), // excluded (not >8)
-        makeTurnRequest({ propertyName: 'Park View', unitNumber: '305', daysVacantUntilReady: 11 }),
+        makeTurnRequest({ propertyName: 'Oak Ridge', unitNumber: '204', daysOffMarketUntilReady: 9 }),
+        makeTurnRequest({ propertyName: 'Sunrise', unitNumber: '101', daysOffMarketUntilReady: 8 }), // excluded (not >8)
+        makeTurnRequest({ propertyName: 'Park View', unitNumber: '305', daysOffMarketUntilReady: 11 }),
       ]
       const { trendingAlerts } = computeExecutiveKPIs([], trs)
       expect(trendingAlerts).toHaveLength(2)
@@ -320,7 +320,7 @@ describe('computeExecutiveKPIs', () => {
     })
 
     it('returns empty array when no TR exceeds 8 days', () => {
-      const trs = [makeTurnRequest({ daysVacantUntilReady: 5 })]
+      const trs = [makeTurnRequest({ daysOffMarketUntilReady: 5 })]
       const { trendingAlerts } = computeExecutiveKPIs([], trs)
       expect(trendingAlerts).toEqual([])
     })
@@ -341,7 +341,7 @@ describe('computeExecutiveKPIs', () => {
       const kpis = computeExecutiveKPIs(jobs, trs)
       expect(kpis.activeJobsOpen).toBe(2)
       expect(kpis.jobsCompleted30d).toBe(1)
-      expect(kpis.activeMakeReadysOpen).toBe(2)
+      expect(kpis.activeTurnsOpen).toBe(2)
     })
   })
 
@@ -355,7 +355,7 @@ describe('computeExecutiveKPIs', () => {
       expect(kpis.backlogDelta).toBe(0)
       expect(kpis.avgTimeToComplete).toBeNull()
       expect(kpis.projectedCostExposure).toBe(0)
-      expect(kpis.activeMakeReadysOpen).toBe(0)
+      expect(kpis.activeTurnsOpen).toBe(0)
       expect(kpis.pastTargetAlerts).toEqual([])
       expect(kpis.trendingAlerts).toEqual([])
     })

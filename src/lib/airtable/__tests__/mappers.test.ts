@@ -173,7 +173,7 @@ describe('mapTurnRequest', () => {
 
     expect(tr.requestId).toBe(12)
     expect(tr.readyToLeaseDate).toBe('2024-02-01')
-    expect(tr.vacantDate).toBe('2024-01-25')
+    expect(tr.offMarketDate).toBe('2024-01-25')
     expect(tr.targetDate).toBe('2024-01-30')
     expect(tr.status).toBe('In progress')
     expect(tr.propertyName).toBe('Sunrise Apartments')
@@ -185,7 +185,7 @@ describe('mapTurnRequest', () => {
     expect(tr.bedrooms).toBe(2)
     expect(tr.bathrooms).toBe(1)
     expect(tr.timeToCompleteUnit).toBe(6)
-    expect(tr.daysVacantUntilReady).toBe(7)
+    expect(tr.daysOffMarketUntilReady).toBe(7)
     expect(tr.notes).toBe('Needs painting')
     expect(tr.quotePrice).toBe('$600.00')
     expect(tr.totalCost).toBe('$1200.00')
@@ -238,7 +238,7 @@ describe('mapTurnRequest', () => {
     const tr = mapTurnRequest(record as unknown as Parameters<typeof mapTurnRequest>[0])
 
     expect(tr.readyToLeaseDate).toBeNull()
-    expect(tr.vacantDate).toBeNull()
+    expect(tr.offMarketDate).toBeNull()
     expect(tr.targetDate).toBeNull()
     expect(tr.notes).toBeNull()
     expect(tr.quotePrice).toBeNull()
@@ -250,7 +250,7 @@ describe('mapTurnRequest', () => {
     expect(tr.bedrooms).toBeNull()
     expect(tr.bathrooms).toBeNull()
     expect(tr.timeToCompleteUnit).toBeNull()
-    expect(tr.daysVacantUntilReady).toBeNull()
+    expect(tr.daysOffMarketUntilReady).toBeNull()
   })
 
   it('initializes jobs as undefined (not yet resolved)', () => {
