@@ -1,3 +1,4 @@
+import type React from "react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "./skeleton";
@@ -11,6 +12,7 @@ export interface KPICardProps {
   variant?: "default" | "highlighted" | "alert-past" | "alert-trending";
   loading?: boolean;
   className?: string;
+  footer?: React.ReactNode;
 }
 
 const variantStyles = {
@@ -28,6 +30,7 @@ export function KPICard({
   variant = "default",
   loading = false,
   className,
+  footer,
 }: KPICardProps) {
   if (loading) {
     return (
@@ -74,6 +77,11 @@ export function KPICard({
           percentage={trend.percentage}
           isGood={trend.isGood}
         />
+      )}
+      {footer && (
+        <div className="mt-2 pt-2 border-t border-black/10">
+          {footer}
+        </div>
       )}
     </div>
   );

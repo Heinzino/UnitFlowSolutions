@@ -44,19 +44,19 @@ export async function PMKPIs({ assignedProperties, role = 'pm' }: PMKPIsProps) {
         label="Avg Turn Time"
         value={avgTimeDisplay}
       />
-      <div className="flex flex-col gap-1">
-        <KPICard
-          icon={DollarSign}
-          label="Revenue Exposure"
-          value={revenueDisplay}
-          variant={kpis.revenueExposure > 0 ? 'alert-past' : 'default'}
-        />
-        {kpis.revenueExposureExcludedCount > 0 && (
-          <p className="text-xs text-text-secondary px-1">
-            {kpis.revenueExposureExcludedCount} turn{kpis.revenueExposureExcludedCount !== 1 ? 's' : ''} excluded (no target date)
-          </p>
-        )}
-      </div>
+      <KPICard
+        icon={DollarSign}
+        label="Revenue Exposure"
+        value={revenueDisplay}
+        variant={kpis.revenueExposure > 0 ? 'alert-past' : 'default'}
+        footer={
+          kpis.revenueExposureExcludedCount > 0 ? (
+            <p className="text-xs text-text-secondary">
+              {kpis.revenueExposureExcludedCount} turn{kpis.revenueExposureExcludedCount !== 1 ? 's' : ''} excluded (no target date)
+            </p>
+          ) : undefined
+        }
+      />
 
       {/* Row 2: Action */}
       <KPICard
