@@ -6,6 +6,7 @@ import { PMKPIs } from './_components/pm-kpis';
 import { PMKPISkeleton } from './_components/pm-kpi-skeleton';
 import { PMTurnList } from './_components/pm-turn-list';
 import { PMTurnListSkeleton } from './_components/pm-turn-list-skeleton';
+import { ActiveJobs } from './_components/active-jobs';
 
 export default async function PropertyPage({
   searchParams,
@@ -43,6 +44,10 @@ export default async function PropertyPage({
 
       <Suspense key={`turns-${filterKey}`} fallback={<PMTurnListSkeleton />}>
         <PMTurnList assignedProperties={effectiveProperties} role={role} />
+      </Suspense>
+
+      <Suspense key={`jobs-${filterKey}`} fallback={<PMTurnListSkeleton />}>
+        <ActiveJobs assignedProperties={effectiveProperties} role={role} />
       </Suspense>
     </PMDashboard>
   );
