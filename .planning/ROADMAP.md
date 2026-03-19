@@ -37,7 +37,7 @@
 
 ### v1.2 Dashboard Redesign
 
-- [ ] **Phase 12: Terminology Rename** — All dashboards use correct Turns/Jobs/Off Market labels and TypeScript identifiers
+- [x] **Phase 12: Terminology Rename** — All dashboards use correct Turns/Jobs/Off Market labels and TypeScript identifiers (completed 2026-03-19)
 - [ ] **Phase 13: PM Dashboard Redesign** — PM gets 6 KPI boxes, Open Turns with inline date entry, Active Jobs table, and Revenue Exposure
 - [ ] **Phase 14: Completed Jobs Page** — Auditable completed jobs history with property filter at its own route
 - [ ] **Phase 15: RM Dashboard** — Regional Managers get a dedicated /regional route with aggregated KPIs, property insights, drill-down, and turn time chart
@@ -54,7 +54,7 @@
   2. No unit status label reads "Vacant" — units show "Off Market" wherever status is surfaced
   3. A search of `src/` for "Make Ready", "makeReady", and "Vacant" (as a unit status) returns zero results
   4. TypeScript types, variable names, and file names consistently use `turn`/`job` vocabulary with no legacy identifiers remaining
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 Plans:
 - [ ] 12-01-PLAN.md — Rename type definitions, KPI interfaces, and Airtable mapper properties
 - [ ] 12-02-PLAN.md — Update all UI component labels and test files to match new vocabulary
@@ -117,7 +117,7 @@ Plans:
 | 9. Documentation & Verification Cleanup | v1.0 | 2/2 | Complete | 2026-03-15 |
 | 10. Admin User Creation | v1.1 | 4/4 | Complete | 2026-03-16 |
 | 11. Off Market Unit Entry | v1.1 | 3/3 | Complete | 2026-03-18 |
-| 12. Terminology Rename | 1/2 | In Progress|  | - |
+| 12. Terminology Rename | 2/2 | Complete   | 2026-03-19 | - |
 | 13. PM Dashboard Redesign | v1.2 | 0/TBD | Not started | - |
 | 14. Completed Jobs Page | v1.2 | 0/TBD | Not started | - |
 | 15. RM Dashboard | v1.2 | 0/TBD | Not started | - |
