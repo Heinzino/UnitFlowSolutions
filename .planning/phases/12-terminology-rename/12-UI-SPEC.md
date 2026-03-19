@@ -56,10 +56,10 @@ Source: `THEME.md` ("~24px" card padding), `src/app/globals.css` (@theme tokens)
 |------|------|--------|-------------|------|
 | Body | 14px | 400 (regular) | 1.5 | Geist Sans (font-body) |
 | Label | 14px | 400 (regular) | 1.4 | Geist Sans (font-body) |
-| Heading | 20px | 600 (semibold) | 1.2 | Plus Jakarta Sans (font-heading) |
+| Heading | 20px | 700 (bold) | 1.2 | Plus Jakarta Sans (font-heading) |
 | Display (KPI values) | 30px (text-3xl) | 700 (bold) | 1.0 | Plus Jakarta Sans (font-heading, tabular-nums) |
 
-Weights in use: 400 (regular) and 700 (bold). Semibold (600) is available but used only for section headings.
+Weights in use: 400 (regular) and 700 (bold).
 
 Source: `src/components/ui/kpi-card.tsx` (text-3xl font-heading font-bold tabular-nums), `THEME.md` (Numbers/stats: weight 700-800), `src/app/layout.tsx`
 
