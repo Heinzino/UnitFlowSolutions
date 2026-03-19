@@ -77,7 +77,7 @@ export function mapTurnRequest(record: AirtableRecord<FieldSet>): TurnRequest {
     readyToLeaseDate: f['Ready To Lease Date']
       ? String(f['Ready To Lease Date'])
       : null,
-    vacantDate: f['Vacant Date'] ? String(f['Vacant Date']) : null,
+    offMarketDate: f['Vacant Date'] ? String(f['Vacant Date']) : null,
     targetDate: f['Target Date'] ? String(f['Target Date']) : null,
     status: String(f['Status'] ?? ''),
     jobIds,
@@ -113,7 +113,7 @@ export function mapTurnRequest(record: AirtableRecord<FieldSet>): TurnRequest {
       f['Bathrooms (from Properties)'] != null
         ? Number(f['Bathrooms (from Properties)']) || null
         : null,
-    daysVacantUntilReady:
+    daysOffMarketUntilReady:
       f['Days Vacant Until Ready'] != null
         ? Number(f['Days Vacant Until Ready']) || null
         : null,
