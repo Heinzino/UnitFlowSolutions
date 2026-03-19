@@ -45,7 +45,7 @@ Declared values (multiples of 4):
 Exceptions:
 - KPI card internal padding: `p-4` (16px) — matches existing `KPICard` component; do not change.
 - Interactive table cells (`LeaseReadyDateInput`, `DoneButton`): minimum 44px touch target height via `py-3 px-4` on the `TableCell` wrapper.
-- Pill badge horizontal padding: `px-2.5` (10px) — established pattern in `pm-turn-list.tsx`; retained as-is.
+- Pill badge horizontal padding: `px-2` (8px) — standard `sm` scale value; applied to DoneButton and job pill chips.
 
 Source: `src/components/ui/kpi-card.tsx`, `src/components/ui/table.tsx`, `src/app/(dashboard)/property/_components/pm-turn-list.tsx`
 
@@ -56,14 +56,15 @@ Source: `src/components/ui/kpi-card.tsx`, `src/components/ui/table.tsx`, `src/ap
 | Role | Size | Weight | Line Height | Font | Usage |
 |------|------|--------|-------------|------|-------|
 | Body | 14px (`text-sm`) | 400 (regular) | 1.5 | Geist Sans | Table cell content, badge labels, form field text |
-| Label | 12px (`text-xs`) | 500 (medium) | 1.4 | Geist Sans | Table column headers (uppercase + tracking-wider), footnote disclosures, sort indicators |
+| Label | 12px (`text-xs`) | 400 (regular) | 1.4 | Geist Sans | Table column headers (uppercase + tracking-wider), footnote disclosures, sort indicators |
 | Heading | 20px (`text-xl`) | 700 (bold) | 1.2 | Plus Jakarta Sans | Card section headings ("Open Turns", "Active Jobs") |
 | Display | 30px (`text-3xl`) | 700 (bold) | 1.1 | Plus Jakarta Sans | KPI card values (`tabular-nums`) |
 
 Notes:
 - `tabular-nums` (`font-variant-numeric: tabular-nums`) is mandatory on all numeric KPI values — already enforced by `KPICard` component.
-- Table column headers must use `text-xs uppercase tracking-wider` — already enforced by `TableHead` component.
+- Table column headers must use `text-xs uppercase tracking-wider` — the uppercase and letter-spacing treatment provides sufficient visual distinction from body text without requiring a separate weight. Already enforced by `TableHead` component.
 - Revenue Exposure footnote (excluded turn count) uses `text-xs text-text-secondary` — 12px, weight 400.
+- Two weights total: 400 (regular) and 700 (bold). No intermediate weights are used in this phase.
 
 Source: `THEME.md`, `src/components/ui/kpi-card.tsx`, `src/components/ui/table.tsx`
 
@@ -136,6 +137,28 @@ All components that Phase 13 touches or creates. Executor must not duplicate exi
 
 ---
 
+## Layout Structure
+
+The PM dashboard page at `/property` renders in this top-to-bottom order after Phase 13:
+
+```
+[Property selector / header]
+[KPI Row — 6 boxes in a responsive grid: 1 col mobile, 3 col sm+]  ← PRIMARY FOCAL POINT
+  └─ Revenue Exposure KPI: wrapped in <div flex-col gap-1> for footnote
+[Open Turns section — Card]
+  └─ Table: Unit | Age | Status | Lease Ready | Jobs | Done
+[Active Jobs section — Card]
+  └─ Table: Vendor (sortable) | Status (sortable) | Days Open (sortable) | Unit | Turn
+```
+
+**Primary focal point:** The KPI row is the primary visual anchor of the dashboard. It sits at the top of the content area, spans full width, and presents the six at-a-glance metrics that drive all downstream action. The two alert-state KPI cards (Revenue Exposure, Turns Near Deadline) use color to draw the eye immediately when action is required. All other content below the KPI row is secondary detail.
+
+Section headings within cards: `text-xl font-heading font-bold text-text-primary mb-4`
+
+KPI grid: `grid grid-cols-1 sm:grid-cols-3 gap-4` — unchanged from existing `PMKPIs` layout.
+
+---
+
 ## Interaction Contracts
 
 ### PMDB-03: LeaseReadyDateInput
@@ -161,7 +184,7 @@ All components that Phase 13 touches or creates. Executor must not duplicate exi
 - Disabled state: `disabled={isPending}` with `opacity-50`
 - Success feedback: `toast.success("Turn #${requestId} marked as Done", { duration: 3000 })`
 - Error feedback: `toast.error("Failed to mark turn as Done. Please try again.")`
-- Styling: `text-xs bg-emerald text-white rounded-pill px-2.5 py-1 hover:bg-emerald-dark transition-colors disabled:opacity-50`
+- Styling: `text-xs bg-emerald text-white rounded-pill px-2 py-1 hover:bg-emerald-dark transition-colors disabled:opacity-50`
 - Confirmation: No modal confirmation — the action is immediately reversible via Airtable; optimistic hide is sufficient UX
 - This button is the only emerald-filled action on the Open Turns table
 
@@ -187,26 +210,6 @@ All components that Phase 13 touches or creates. Executor must not duplicate exi
 - Value: `daysOffMarketUntilReady` from `TurnRequest`, formatted as `"{N} days"`
 - If null: display `"---"`
 - Position: Second column in the Open Turns table, immediately after "Unit"
-
----
-
-## Layout Structure
-
-The PM dashboard page at `/property` renders in this top-to-bottom order after Phase 13:
-
-```
-[Property selector / header]
-[KPI Row — 6 boxes in a responsive grid: 1 col mobile, 3 col sm+]
-  └─ Revenue Exposure KPI: wrapped in <div flex-col gap-1> for footnote
-[Open Turns section — Card]
-  └─ Table: Unit | Age | Status | Lease Ready | Jobs | Done
-[Active Jobs section — Card]
-  └─ Table: Vendor (sortable) | Status (sortable) | Days Open (sortable) | Unit | Turn
-```
-
-Section headings within cards: `text-xl font-heading font-bold text-text-primary mb-4`
-
-KPI grid: `grid grid-cols-1 sm:grid-cols-3 gap-4` — unchanged from existing `PMKPIs` layout.
 
 ---
 
