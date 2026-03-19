@@ -1,10 +1,38 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { computePMKPIs } from './pm-kpis'
-import type { TurnRequest } from '@/lib/types/airtable'
+import {
+  computePMKPIs,
+  REVENUE_EXPOSURE_RATE_PER_DAY,
+  NEAR_DEADLINE_DAYS,
+  COMPLETED_PERIOD_DAYS,
+} from './pm-kpis'
+import type { TurnRequest, Job } from '@/lib/types/airtable'
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+function makeJob(overrides: Partial<Job> = {}): Job {
+  return {
+    jobId: 1,
+    requestType: null,
+    status: 'In Progress',
+    startDate: null,
+    endDate: null,
+    vendorName: null,
+    vendorType: null,
+    contactName: null,
+    email: null,
+    phone: null,
+    quotePrice: null,
+    turnRequestId: null,
+    propertyName: null,
+    durationDays: null,
+    delta: null,
+    isCompleted: false,
+    created: '2024-02-01T00:00:00.000Z',
+    ...overrides,
+  }
+}
 
 function makeTurnRequest(overrides: Partial<TurnRequest> = {}): TurnRequest {
   return {
@@ -15,6 +43,7 @@ function makeTurnRequest(overrides: Partial<TurnRequest> = {}): TurnRequest {
     status: 'In progress',
     jobIds: [],
     jobRecordIds: [],
+    jobs: [],
     timeToCompleteUnit: null,
     notes: null,
     quotePrice: null,
@@ -36,8 +65,7 @@ function makeTurnRequest(overrides: Partial<TurnRequest> = {}): TurnRequest {
 
 // Fixed date: 2024-02-15T12:00:00Z
 // thirtyDaysAgo: 2024-01-16T12:00:00Z
-// sevenDaysAgo:  2024-02-08T12:00:00Z
-// startOfMonth:  2024-02-01T00:00:00Z
+// todayStart (UTC midnight): 2024-02-15T00:00:00Z
 const FIXED_NOW = new Date('2024-02-15T12:00:00Z').getTime()
 
 beforeEach(() => {
@@ -47,6 +75,24 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.useRealTimers()
+})
+
+// ---------------------------------------------------------------------------
+// Named constants
+// ---------------------------------------------------------------------------
+
+describe('named constants', () => {
+  it('exports REVENUE_EXPOSURE_RATE_PER_DAY = 60', () => {
+    expect(REVENUE_EXPOSURE_RATE_PER_DAY).toBe(60)
+  })
+
+  it('exports NEAR_DEADLINE_DAYS = 3', () => {
+    expect(NEAR_DEADLINE_DAYS).toBe(3)
+  })
+
+  it('exports COMPLETED_PERIOD_DAYS = 30', () => {
+    expect(COMPLETED_PERIOD_DAYS).toBe(30)
+  })
 })
 
 // ---------------------------------------------------------------------------
@@ -80,8 +126,8 @@ describe('computePMKPIs', () => {
     })
   })
 
-  // PM-02: completedLast30d
-  describe('completedLast30d', () => {
+  // completedThisPeriod (replaces old completedLast30d)
+  describe('completedThisPeriod', () => {
     it('counts Done TRs with readyToLeaseDate in past 30 days', () => {
       // thirtyDaysAgo = 2024-01-16T12:00:00Z
       // '2024-01-17' = 2024-01-17T00:00:00Z — after thirtyDaysAgo (INCLUDE)
@@ -93,38 +139,16 @@ describe('computePMKPIs', () => {
         makeTurnRequest({ status: 'In progress', readyToLeaseDate: '2024-02-01' }), // EXCLUDE: not Done
         makeTurnRequest({ status: 'Done', readyToLeaseDate: null }), // EXCLUDE: no date
       ]
-      const { completedLast30d } = computePMKPIs(trs)
-      expect(completedLast30d).toBe(2)
+      const { completedThisPeriod } = computePMKPIs(trs)
+      expect(completedThisPeriod).toBe(2)
     })
 
     it('returns 0 for empty array', () => {
-      expect(computePMKPIs([]).completedLast30d).toBe(0)
+      expect(computePMKPIs([]).completedThisPeriod).toBe(0)
     })
   })
 
-  // PM-03: completedLast7d
-  describe('completedLast7d', () => {
-    it('counts Done TRs with readyToLeaseDate in past 7 days', () => {
-      // sevenDaysAgo = 2024-02-08T12:00:00Z
-      // '2024-02-09' = 2024-02-09T00:00:00Z — after sevenDaysAgo (INCLUDE)
-      // '2024-02-08' = 2024-02-08T00:00:00Z — before sevenDaysAgo noon (EXCLUDE)
-      const trs = [
-        makeTurnRequest({ status: 'Done', readyToLeaseDate: '2024-02-09' }), // INCLUDE
-        makeTurnRequest({ status: 'Done', readyToLeaseDate: '2024-02-14' }), // INCLUDE
-        makeTurnRequest({ status: 'Done', readyToLeaseDate: '2024-02-08' }), // EXCLUDE: before noon
-        makeTurnRequest({ status: 'Done', readyToLeaseDate: '2024-01-20' }), // EXCLUDE: too old
-        makeTurnRequest({ status: 'In progress', readyToLeaseDate: '2024-02-12' }), // EXCLUDE: not Done
-      ]
-      const { completedLast7d } = computePMKPIs(trs)
-      expect(completedLast7d).toBe(2)
-    })
-
-    it('returns 0 for empty array', () => {
-      expect(computePMKPIs([]).completedLast7d).toBe(0)
-    })
-  })
-
-  // PM-04: avgTurnTime
+  // avgTurnTime (unchanged behavior)
   describe('avgTurnTime', () => {
     it('returns average of timeToCompleteUnit for Done TRs', () => {
       const trs = [
@@ -156,100 +180,297 @@ describe('computePMKPIs', () => {
     })
   })
 
-  // PM-05: projectedSpendMTD
-  describe('projectedSpendMTD', () => {
-    it('sums totalCost for TRs created this calendar month', () => {
-      // startOfMonth = 2024-02-01T00:00:00Z
-      // FIXED_NOW = 2024-02-15T12:00:00Z
+  // jobsInProgress
+  describe('jobsInProgress', () => {
+    it('counts non-completed jobs from active turns only', () => {
+      // 3 active turns, each with 1 Completed + 1 In Progress job -> 3 non-completed
       const trs = [
-        makeTurnRequest({ created: '2024-02-01T00:00:00.000Z', totalCost: '$600.00' }), // INCLUDE
-        makeTurnRequest({ created: '2024-02-10T00:00:00.000Z', totalCost: '$400.00' }), // INCLUDE
-        makeTurnRequest({ created: '2024-01-31T00:00:00.000Z', totalCost: '$500.00' }), // EXCLUDE: prior month
-        makeTurnRequest({ created: '2024-02-05T00:00:00.000Z', totalCost: null, quotePrice: '$300.00' }), // INCLUDE: fallback
+        makeTurnRequest({
+          requestId: 1,
+          status: 'In progress',
+          jobs: [
+            makeJob({ jobId: 1, isCompleted: true }),
+            makeJob({ jobId: 2, isCompleted: false, status: 'In Progress' }),
+          ],
+        }),
+        makeTurnRequest({
+          requestId: 2,
+          status: 'In progress',
+          jobs: [
+            makeJob({ jobId: 3, isCompleted: true }),
+            makeJob({ jobId: 4, isCompleted: false, status: 'In Progress' }),
+          ],
+        }),
+        makeTurnRequest({
+          requestId: 3,
+          status: 'In progress',
+          jobs: [
+            makeJob({ jobId: 5, isCompleted: true }),
+            makeJob({ jobId: 6, isCompleted: false, status: 'In Progress' }),
+          ],
+        }),
       ]
-      const { projectedSpendMTD } = computePMKPIs(trs)
-      expect(projectedSpendMTD).toBe(1300)
+      const { jobsInProgress } = computePMKPIs(trs)
+      expect(jobsInProgress).toBe(3)
     })
 
-    it('falls back to quotePrice when totalCost is null', () => {
+    it('excludes jobs from Done turns', () => {
       const trs = [
-        makeTurnRequest({ created: '2024-02-05T00:00:00.000Z', totalCost: null, quotePrice: '$250.00' }),
+        makeTurnRequest({
+          requestId: 1,
+          status: 'Done',
+          jobs: [makeJob({ jobId: 1, isCompleted: false, status: 'In Progress' })],
+        }),
       ]
-      const { projectedSpendMTD } = computePMKPIs(trs)
-      expect(projectedSpendMTD).toBe(250)
+      const { jobsInProgress } = computePMKPIs(trs)
+      expect(jobsInProgress).toBe(0)
     })
 
-    it('handles $1,234.56 currency format', () => {
+    it('deduplicates jobs by jobId across turns', () => {
+      const sharedJob = makeJob({ jobId: 99, isCompleted: false, status: 'In Progress' })
       const trs = [
-        makeTurnRequest({ created: '2024-02-05T00:00:00.000Z', totalCost: '$1,234.56' }),
+        makeTurnRequest({ requestId: 1, status: 'In progress', jobs: [sharedJob] }),
+        makeTurnRequest({ requestId: 2, status: 'In progress', jobs: [sharedJob] }),
       ]
-      const { projectedSpendMTD } = computePMKPIs(trs)
-      expect(projectedSpendMTD).toBe(1234.56)
+      const { jobsInProgress } = computePMKPIs(trs)
+      expect(jobsInProgress).toBe(1)
+    })
+
+    it('counts NEEDS ATTENTION jobs as in-progress workload', () => {
+      const trs = [
+        makeTurnRequest({
+          status: 'In progress',
+          jobs: [makeJob({ jobId: 1, isCompleted: false, status: 'NEEDS ATTENTION' })],
+        }),
+      ]
+      const { jobsInProgress } = computePMKPIs(trs)
+      expect(jobsInProgress).toBe(1)
+    })
+
+    it('counts Blocked jobs as in-progress workload', () => {
+      const trs = [
+        makeTurnRequest({
+          status: 'In progress',
+          jobs: [makeJob({ jobId: 1, isCompleted: false, status: 'Blocked' })],
+        }),
+      ]
+      const { jobsInProgress } = computePMKPIs(trs)
+      expect(jobsInProgress).toBe(1)
+    })
+
+    it('counts Ready jobs as in-progress workload (per locked decision)', () => {
+      const trs = [
+        makeTurnRequest({
+          status: 'In progress',
+          jobs: [makeJob({ jobId: 1, isCompleted: false, status: 'Ready' })],
+        }),
+      ]
+      const { jobsInProgress } = computePMKPIs(trs)
+      expect(jobsInProgress).toBe(1)
+    })
+
+    it('does NOT count Completed (isCompleted=true) jobs', () => {
+      const trs = [
+        makeTurnRequest({
+          status: 'In progress',
+          jobs: [makeJob({ jobId: 1, isCompleted: true, status: 'Completed' })],
+        }),
+      ]
+      const { jobsInProgress } = computePMKPIs(trs)
+      expect(jobsInProgress).toBe(0)
     })
 
     it('returns 0 for empty array', () => {
-      expect(computePMKPIs([]).projectedSpendMTD).toBe(0)
-    })
-
-    it('returns 0 when both totalCost and quotePrice are null', () => {
-      const trs = [makeTurnRequest({ created: '2024-02-05T00:00:00.000Z', totalCost: null, quotePrice: null })]
-      const { projectedSpendMTD } = computePMKPIs(trs)
-      expect(projectedSpendMTD).toBe(0)
-    })
-
-    it('excludes TRs from prior month even when done this month', () => {
-      const trs = [
-        makeTurnRequest({ created: '2024-01-15T00:00:00.000Z', totalCost: '$999.00', status: 'Done', readyToLeaseDate: '2024-02-10' }),
-      ]
-      const { projectedSpendMTD } = computePMKPIs(trs)
-      expect(projectedSpendMTD).toBe(0)
+      expect(computePMKPIs([]).jobsInProgress).toBe(0)
     })
   })
 
-  // PM-06: pastTargetCount
-  describe('pastTargetCount', () => {
-    it('counts TRs where daysOffMarketUntilReady > 10', () => {
+  // revenueExposure
+  describe('revenueExposure', () => {
+    it('calculates $60/day over target correctly', () => {
+      // offMarketDate='2024-01-01', targetDate='2024-01-11' -> targetDays=10
+      // daysOffMarketUntilReady=15 -> daysOver=5 -> exposure=$300
       const trs = [
-        makeTurnRequest({ daysOffMarketUntilReady: 11 }), // INCLUDE
-        makeTurnRequest({ daysOffMarketUntilReady: 10 }), // EXCLUDE (not >10)
-        makeTurnRequest({ daysOffMarketUntilReady: 15 }), // INCLUDE
-        makeTurnRequest({ daysOffMarketUntilReady: null }), // EXCLUDE
-        makeTurnRequest({ daysOffMarketUntilReady: 0 }),   // EXCLUDE
+        makeTurnRequest({
+          status: 'In progress',
+          offMarketDate: '2024-01-01',
+          targetDate: '2024-01-11',
+          daysOffMarketUntilReady: 15,
+        }),
       ]
-      const { pastTargetCount } = computePMKPIs(trs)
-      expect(pastTargetCount).toBe(2)
+      const { revenueExposure } = computePMKPIs(trs)
+      expect(revenueExposure).toBe(300)
+    })
+
+    it('returns 0 when turn is not over target', () => {
+      // targetDays=10, daysOffMarketUntilReady=8 -> daysOver=0
+      const trs = [
+        makeTurnRequest({
+          status: 'In progress',
+          offMarketDate: '2024-01-01',
+          targetDate: '2024-01-11',
+          daysOffMarketUntilReady: 8,
+        }),
+      ]
+      const { revenueExposure } = computePMKPIs(trs)
+      expect(revenueExposure).toBe(0)
+    })
+
+    it('excludes turns with targetDate=null from sum (contributes $0)', () => {
+      const trs = [
+        makeTurnRequest({
+          status: 'In progress',
+          offMarketDate: '2024-01-01',
+          targetDate: null,
+          daysOffMarketUntilReady: 20,
+        }),
+      ]
+      const { revenueExposure } = computePMKPIs(trs)
+      expect(revenueExposure).toBe(0)
+    })
+
+    it('returns 0 exposure when offMarketDate is null', () => {
+      const trs = [
+        makeTurnRequest({
+          status: 'In progress',
+          offMarketDate: null,
+          targetDate: '2024-01-11',
+          daysOffMarketUntilReady: 20,
+        }),
+      ]
+      const { revenueExposure } = computePMKPIs(trs)
+      expect(revenueExposure).toBe(0)
+    })
+
+    it('sums exposure across multiple turns', () => {
+      const trs = [
+        makeTurnRequest({
+          requestId: 1,
+          status: 'In progress',
+          offMarketDate: '2024-01-01',
+          targetDate: '2024-01-11',
+          daysOffMarketUntilReady: 15, // 5 days over -> $300
+        }),
+        makeTurnRequest({
+          requestId: 2,
+          status: 'In progress',
+          offMarketDate: '2024-01-01',
+          targetDate: '2024-01-11',
+          daysOffMarketUntilReady: 12, // 2 days over -> $120
+        }),
+      ]
+      const { revenueExposure } = computePMKPIs(trs)
+      expect(revenueExposure).toBe(420)
+    })
+
+    it('returns 0 when all turns have no targetDate', () => {
+      const trs = [
+        makeTurnRequest({ status: 'In progress', targetDate: null }),
+        makeTurnRequest({ status: 'In progress', targetDate: null }),
+      ]
+      const { revenueExposure } = computePMKPIs(trs)
+      expect(revenueExposure).toBe(0)
     })
 
     it('returns 0 for empty array', () => {
-      expect(computePMKPIs([]).pastTargetCount).toBe(0)
+      expect(computePMKPIs([]).revenueExposure).toBe(0)
     })
   })
 
-  // parseCurrency edge cases
-  describe('parseCurrency (via projectedSpendMTD)', () => {
-    it('handles empty string as 0', () => {
-      const trs = [makeTurnRequest({ created: '2024-02-05T00:00:00.000Z', totalCost: '' })]
-      const { projectedSpendMTD } = computePMKPIs(trs)
-      expect(projectedSpendMTD).toBe(0)
+  // revenueExposureExcludedCount
+  describe('revenueExposureExcludedCount', () => {
+    it('counts active turns with targetDate=null', () => {
+      const trs = [
+        makeTurnRequest({ requestId: 1, status: 'In progress', targetDate: '2024-01-11' }),
+        makeTurnRequest({ requestId: 2, status: 'In progress', targetDate: null }), // excluded
+        makeTurnRequest({ requestId: 3, status: 'In progress', targetDate: null }), // excluded
+        makeTurnRequest({ requestId: 4, status: 'In progress', targetDate: null }), // excluded
+      ]
+      const { revenueExposureExcludedCount } = computePMKPIs(trs)
+      expect(revenueExposureExcludedCount).toBe(3)
     })
 
-    it('handles undefined-like null as 0', () => {
-      const trs = [makeTurnRequest({ created: '2024-02-05T00:00:00.000Z', totalCost: null, quotePrice: null })]
-      const { projectedSpendMTD } = computePMKPIs(trs)
-      expect(projectedSpendMTD).toBe(0)
+    it('does not count Done turns in excluded count', () => {
+      const trs = [
+        makeTurnRequest({ requestId: 1, status: 'Done', targetDate: null }), // Done — not counted
+        makeTurnRequest({ requestId: 2, status: 'In progress', targetDate: null }), // active, excluded
+      ]
+      const { revenueExposureExcludedCount } = computePMKPIs(trs)
+      expect(revenueExposureExcludedCount).toBe(1)
+    })
+
+    it('returns 0 when all active turns have targetDate', () => {
+      const trs = [
+        makeTurnRequest({ status: 'In progress', targetDate: '2024-01-11' }),
+        makeTurnRequest({ status: 'In progress', targetDate: '2024-02-01' }),
+      ]
+      const { revenueExposureExcludedCount } = computePMKPIs(trs)
+      expect(revenueExposureExcludedCount).toBe(0)
+    })
+
+    it('returns 0 for empty array', () => {
+      expect(computePMKPIs([]).revenueExposureExcludedCount).toBe(0)
     })
   })
 
-  // Edge case: empty array
+  // turnsNearDeadline
+  describe('turnsNearDeadline', () => {
+    // FIXED_NOW = 2024-02-15T12:00:00Z
+    // todayStart = 2024-02-15T00:00:00Z (midnight UTC)
+    // deadline window: [2024-02-15, 2024-02-18] inclusive (today + 3 days)
+
+    it('counts active turn with targetDate = today', () => {
+      const trs = [makeTurnRequest({ status: 'In progress', targetDate: '2024-02-15' })]
+      const { turnsNearDeadline } = computePMKPIs(trs)
+      expect(turnsNearDeadline).toBe(1)
+    })
+
+    it('counts active turn with targetDate = today+3', () => {
+      const trs = [makeTurnRequest({ status: 'In progress', targetDate: '2024-02-18' })]
+      const { turnsNearDeadline } = computePMKPIs(trs)
+      expect(turnsNearDeadline).toBe(1)
+    })
+
+    it('does NOT count active turn with targetDate = today+4', () => {
+      const trs = [makeTurnRequest({ status: 'In progress', targetDate: '2024-02-19' })]
+      const { turnsNearDeadline } = computePMKPIs(trs)
+      expect(turnsNearDeadline).toBe(0)
+    })
+
+    it('does NOT count active turn with targetDate = yesterday', () => {
+      const trs = [makeTurnRequest({ status: 'In progress', targetDate: '2024-02-14' })]
+      const { turnsNearDeadline } = computePMKPIs(trs)
+      expect(turnsNearDeadline).toBe(0)
+    })
+
+    it('does NOT count Done turn with targetDate = today', () => {
+      const trs = [makeTurnRequest({ status: 'Done', targetDate: '2024-02-15' })]
+      const { turnsNearDeadline } = computePMKPIs(trs)
+      expect(turnsNearDeadline).toBe(0)
+    })
+
+    it('does NOT count active turn with targetDate = null', () => {
+      const trs = [makeTurnRequest({ status: 'In progress', targetDate: null })]
+      const { turnsNearDeadline } = computePMKPIs(trs)
+      expect(turnsNearDeadline).toBe(0)
+    })
+
+    it('returns 0 for empty array', () => {
+      expect(computePMKPIs([]).turnsNearDeadline).toBe(0)
+    })
+  })
+
+  // Edge case: empty array returns safe defaults for all new fields
   describe('empty array returns safe defaults', () => {
     it('returns all zeros and null avgTurnTime for empty input', () => {
       const kpis = computePMKPIs([])
       expect(kpis.activeTurns).toBe(0)
-      expect(kpis.completedLast30d).toBe(0)
-      expect(kpis.completedLast7d).toBe(0)
+      expect(kpis.completedThisPeriod).toBe(0)
+      expect(kpis.jobsInProgress).toBe(0)
       expect(kpis.avgTurnTime).toBeNull()
-      expect(kpis.projectedSpendMTD).toBe(0)
-      expect(kpis.pastTargetCount).toBe(0)
+      expect(kpis.revenueExposure).toBe(0)
+      expect(kpis.revenueExposureExcludedCount).toBe(0)
+      expect(kpis.turnsNearDeadline).toBe(0)
     })
   })
 })
