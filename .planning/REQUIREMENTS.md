@@ -75,32 +75,32 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TERM-01 | — | Pending |
-| TERM-02 | — | Pending |
-| TERM-03 | — | Pending |
-| TERM-04 | — | Pending |
-| PMDB-01 | — | Pending |
-| PMDB-02 | — | Pending |
-| PMDB-03 | — | Pending |
-| PMDB-04 | — | Pending |
-| PMDB-05 | — | Pending |
-| PMDB-06 | — | Pending |
-| RMDB-01 | — | Pending |
-| RMDB-02 | — | Pending |
-| RMDB-03 | — | Pending |
-| RMDB-04 | — | Pending |
-| RMDB-05 | — | Pending |
-| EXEC-01 | — | Pending |
-| EXEC-02 | — | Pending |
-| COMP-01 | — | Pending |
-| COMP-02 | — | Pending |
-| COMP-03 | — | Pending |
+| TERM-01 | Phase 12 | Pending |
+| TERM-02 | Phase 12 | Pending |
+| TERM-03 | Phase 12 | Pending |
+| TERM-04 | Phase 12 | Pending |
+| PMDB-01 | Phase 13 | Pending |
+| PMDB-02 | Phase 13 | Pending |
+| PMDB-03 | Phase 13 | Pending |
+| PMDB-04 | Phase 13 | Pending |
+| PMDB-05 | Phase 13 | Pending |
+| PMDB-06 | Phase 13 | Pending |
+| COMP-01 | Phase 14 | Pending |
+| COMP-02 | Phase 14 | Pending |
+| COMP-03 | Phase 14 | Pending |
+| RMDB-01 | Phase 15 | Pending |
+| RMDB-02 | Phase 15 | Pending |
+| RMDB-03 | Phase 15 | Pending |
+| RMDB-04 | Phase 15 | Pending |
+| RMDB-05 | Phase 15 | Pending |
+| EXEC-01 | Phase 16 | Pending |
+| EXEC-02 | Phase 16 | Pending |
 
 **Coverage:**
 - v1.2 requirements: 20 total
-- Mapped to phases: 0
-- Unmapped: 20 ⚠️
+- Mapped to phases: 20
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-18*
-*Last updated: 2026-03-18 after initial definition*
+*Last updated: 2026-03-18 — traceability populated after roadmap creation*
