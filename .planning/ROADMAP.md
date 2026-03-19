@@ -69,7 +69,11 @@ Plans:
   3. A PM can click "Done" on any Open Turn row to close the turn inline without navigating away
   4. The Active Jobs table shows all in-flight vendor jobs across the PM's turns and can be sorted by vendor, status, or days open
   5. The Revenue Exposure KPI displays a dollar amount calculated at $60/day over target, and discloses how many turns are excluded because they have no target date set
-**Plans**: TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 13-01-PLAN.md — TDD: Update PMKPIResult interface and computePMKPIs with new KPI fields
+- [ ] 13-02-PLAN.md — Create server action and client components (LeaseReadyDateInput, ActiveJobsTable)
+- [ ] 13-03-PLAN.md — Wire new KPIs, inline date input, and Active Jobs into PM dashboard UI
 
 ### Phase 14: Completed Jobs Page
 **Goal**: Any user can review the full history of completed jobs filtered by property, on a dedicated page separate from active work
@@ -117,8 +121,8 @@ Plans:
 | 9. Documentation & Verification Cleanup | v1.0 | 2/2 | Complete | 2026-03-15 |
 | 10. Admin User Creation | v1.1 | 4/4 | Complete | 2026-03-16 |
 | 11. Off Market Unit Entry | v1.1 | 3/3 | Complete | 2026-03-18 |
-| 12. Terminology Rename | 2/2 | Complete    | 2026-03-19 | - |
-| 13. PM Dashboard Redesign | v1.2 | 0/TBD | Not started | - |
+| 12. Terminology Rename | v1.2 | 2/2 | Complete | 2026-03-19 |
+| 13. PM Dashboard Redesign | v1.2 | 0/3 | Not started | - |
 | 14. Completed Jobs Page | v1.2 | 0/TBD | Not started | - |
 | 15. RM Dashboard | v1.2 | 0/TBD | Not started | - |
 | 16. Executive Dashboard Redesign | v1.2 | 0/TBD | Not started | - |
