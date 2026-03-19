@@ -15,6 +15,7 @@ import { MobileTurnCard } from './mobile-turn-card';
 import { ClickableTurnRow } from './clickable-turn-row';
 import { StopPropagation } from './stop-propagation';
 import { TurnStatusDropdown } from './turn-status-dropdown';
+import { LeaseReadyDateInput } from './lease-ready-date-input';
 import type { UserRole } from '@/lib/types/auth';
 import type { TurnRequest } from '@/lib/types/airtable';
 
@@ -89,7 +90,11 @@ function TurnTableRows({ turns }: { turns: TurnRequest[] }) {
               <TurnStatusDropdown requestId={turn.requestId} currentStatus={turn.status} />
             </StopPropagation>
           </TableCell>
-          <TableCell>{formatDate(turn.readyToLeaseDate)}</TableCell>
+          <TableCell>
+            <StopPropagation>
+              <LeaseReadyDateInput requestId={turn.requestId} currentDate={turn.readyToLeaseDate} />
+            </StopPropagation>
+          </TableCell>
           <TableCell>{formatDate(turn.offMarketDate)}</TableCell>
           <TableCell>
             <JobsCell turn={turn} />
@@ -122,8 +127,9 @@ function TurnSection({
       </div>
 
       {turns.length === 0 ? (
-        <div className="px-6 py-8 text-center text-text-secondary text-sm">
-          No turns in this category.
+        <div className="px-6 py-8 text-center">
+          <h3 className="font-heading font-semibold text-text-primary mb-1">No open turns</h3>
+          <p className="text-sm text-text-secondary">All turns for your properties are either done or not yet started.</p>
         </div>
       ) : (
         <>
