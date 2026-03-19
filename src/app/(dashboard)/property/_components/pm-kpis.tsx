@@ -1,7 +1,7 @@
 import {
   Home,
   CheckCircle,
-  Activity,
+  Briefcase,
   Clock,
   DollarSign,
   AlertTriangle,
@@ -25,46 +25,55 @@ export async function PMKPIs({ assignedProperties, role = 'pm' }: PMKPIsProps) {
       ? `${Math.round(kpis.avgTurnTime)} days`
       : 'N/A';
 
-  const spendDisplay = new Intl.NumberFormat('en-US', {
+  const revenueDisplay = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     maximumFractionDigits: 0,
-  }).format(kpis.projectedSpendMTD);
+  }).format(kpis.revenueExposure);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      {/* Row 1 */}
+      {/* Row 1: Overview */}
       <KPICard
         icon={Home}
         label="Active Turns"
         value={kpis.activeTurns}
       />
       <KPICard
-        icon={CheckCircle}
-        label="Completed (30d)"
-        value={kpis.completedLast30d}
-      />
-      <KPICard
-        icon={Activity}
-        label="Completed (7d)"
-        value={kpis.completedLast7d}
-      />
-      {/* Row 2 */}
-      <KPICard
         icon={Clock}
         label="Avg Turn Time"
         value={avgTimeDisplay}
       />
+      <div className="flex flex-col gap-1">
+        <KPICard
+          icon={DollarSign}
+          label="Revenue Exposure"
+          value={revenueDisplay}
+          variant={kpis.revenueExposure > 0 ? 'alert-past' : 'default'}
+        />
+        {kpis.revenueExposureExcludedCount > 0 && (
+          <p className="text-xs text-text-secondary px-1">
+            {kpis.revenueExposureExcludedCount} turn{kpis.revenueExposureExcludedCount !== 1 ? 's' : ''} excluded (no target date)
+          </p>
+        )}
+      </div>
+
+      {/* Row 2: Action */}
       <KPICard
-        icon={DollarSign}
-        label="Projected Spend MTD"
-        value={spendDisplay}
+        icon={CheckCircle}
+        label="Completed This Period"
+        value={kpis.completedThisPeriod}
+      />
+      <KPICard
+        icon={Briefcase}
+        label="Jobs In Progress"
+        value={kpis.jobsInProgress}
       />
       <KPICard
         icon={AlertTriangle}
-        label="Past Target Time"
-        value={kpis.pastTargetCount}
-        variant={kpis.pastTargetCount > 0 ? 'alert-past' : 'default'}
+        label="Turns Near Deadline"
+        value={kpis.turnsNearDeadline}
+        variant={kpis.turnsNearDeadline > 0 ? 'alert-trending' : 'default'}
       />
     </div>
   );
