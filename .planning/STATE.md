@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Dashboard Redesign
-status: roadmap-ready
-stopped_at: null
-last_updated: "2026-03-18"
-last_activity: 2026-03-18 — Roadmap created for v1.2 Dashboard Redesign (Phases 12-16)
+status: planning
+stopped_at: Phase 12 context gathered
+last_updated: "2026-03-19T01:58:55.362Z"
+last_activity: 2026-03-18 — Roadmap created for v1.2 Dashboard Redesign
 progress:
   total_phases: 5
   completed_phases: 0
@@ -37,6 +37,7 @@ Prior milestones: v1.0 (phases 1-9) + v1.1 (phases 10-11) = 11 phases shipped
 ## Performance Metrics
 
 **Velocity:**
+
 - v1.0: 24 plans across 9 phases (2026-03-09 → 2026-03-15)
 - v1.1: 7 plans across 2 phases (2026-03-15 → 2026-03-17)
 - v1.2: 0 plans across 0 phases (in progress)
@@ -50,6 +51,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 All v1.0 and v1.1 decisions archived — see `.planning/milestones/` for details.
 
 **v1.2 open decisions (must be resolved before Phase 13):**
+
 - Turn closing contract: Is "Done" set via lease-ready date entry only, or does TurnStatusDropdown retain a "Done" option? (see PITFALLS.md Pitfall 1)
 - PM KPI box definitions 4-6: Exact fields for turns near deadline, jobs in progress, completed this period not yet confirmed with client
 - Executive KPI box definitions: All 6 v1.2 Executive KPI definitions not yet specified
@@ -67,6 +69,6 @@ None blocking roadmap. Phase 13 and Phase 16 each have open product questions (s
 
 ## Session Continuity
 
-Last session: 2026-03-18
-Stopped at: Roadmap defined — Phase 12 ready to plan
+Last session: 2026-03-19T01:58:55.356Z
+Stopped at: Phase 12 context gathered
 Resume with: `/gsd:plan-phase 12`
