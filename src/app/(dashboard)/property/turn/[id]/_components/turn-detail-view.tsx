@@ -124,10 +124,10 @@ export function TurnDetailView({ turn }: TurnDetailViewProps) {
 
             <div className="flex flex-col gap-0.5">
               <span className="text-text-secondary text-xs uppercase tracking-wider">
-                Vacant Date
+                Off Market Date
               </span>
               <span className="text-text-primary text-sm font-medium">
-                {formatDate(turn.vacantDate) || 'Not set'}
+                {formatDate(turn.offMarketDate) || 'Not set'}
               </span>
             </div>
 
@@ -142,11 +142,11 @@ export function TurnDetailView({ turn }: TurnDetailViewProps) {
 
             <div className="flex flex-col gap-0.5">
               <span className="text-text-secondary text-xs uppercase tracking-wider">
-                Days Vacant
+                Days Off Market
               </span>
               <span className="text-text-primary text-sm font-medium">
-                {turn.daysVacantUntilReady != null
-                  ? String(turn.daysVacantUntilReady)
+                {turn.daysOffMarketUntilReady != null
+                  ? String(turn.daysOffMarketUntilReady)
                   : 'N/A'}
               </span>
             </div>

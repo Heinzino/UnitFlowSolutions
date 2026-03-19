@@ -12,7 +12,7 @@ export function ExecutiveKPISkeleton() {
         ))}
       </div>
 
-      {/* Make Ready Overview section skeleton */}
+      {/* Turn Overview section skeleton */}
       <div>
         <Skeleton className="h-6 w-48 mb-4" />
         <KPICard loading={true} icon={Activity} label="" value="" />

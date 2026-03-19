@@ -21,8 +21,8 @@ export async function PMKPIs({ assignedProperties, role = 'pm' }: PMKPIsProps) {
   const kpis = computePMKPIs(turnRequests);
 
   const avgTimeDisplay =
-    kpis.avgMakeReadyTime !== null
-      ? `${Math.round(kpis.avgMakeReadyTime)} days`
+    kpis.avgTurnTime !== null
+      ? `${Math.round(kpis.avgTurnTime)} days`
       : 'N/A';
 
   const spendDisplay = new Intl.NumberFormat('en-US', {
@@ -36,8 +36,8 @@ export async function PMKPIs({ assignedProperties, role = 'pm' }: PMKPIsProps) {
       {/* Row 1 */}
       <KPICard
         icon={Home}
-        label="Active Make Readys"
-        value={kpis.activeMakeReadys}
+        label="Active Turns"
+        value={kpis.activeTurns}
       />
       <KPICard
         icon={CheckCircle}
@@ -52,7 +52,7 @@ export async function PMKPIs({ assignedProperties, role = 'pm' }: PMKPIsProps) {
       {/* Row 2 */}
       <KPICard
         icon={Clock}
-        label="Avg Make Ready Time"
+        label="Avg Turn Time"
         value={avgTimeDisplay}
       />
       <KPICard

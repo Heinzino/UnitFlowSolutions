@@ -90,7 +90,7 @@ function TurnTableRows({ turns }: { turns: TurnRequest[] }) {
             </StopPropagation>
           </TableCell>
           <TableCell>{formatDate(turn.readyToLeaseDate)}</TableCell>
-          <TableCell>{formatDate(turn.vacantDate)}</TableCell>
+          <TableCell>{formatDate(turn.offMarketDate)}</TableCell>
           <TableCell>
             <JobsCell turn={turn} />
           </TableCell>
@@ -136,7 +136,7 @@ function TurnSection({
                   <TableHead>Unit</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Ready To Lease</TableHead>
-                  <TableHead>Vacant Date</TableHead>
+                  <TableHead>Off Market Date</TableHead>
                   <TableHead>Jobs</TableHead>
                   <TableHead>Price</TableHead>
                 </TableRow>
@@ -168,12 +168,12 @@ export async function PMTurnList({ assignedProperties, role }: PMTurnListProps) 
   // Only active turns (not Done)
   const activeTurns = turnRequests.filter((tr) => tr.status !== 'Done');
 
-  // Partition: overdue = daysVacantUntilReady > 10
+  // Partition: overdue = daysOffMarketUntilReady > 10
   const overdue = activeTurns.filter(
-    (tr) => tr.daysVacantUntilReady !== null && tr.daysVacantUntilReady > 10
+    (tr) => tr.daysOffMarketUntilReady !== null && tr.daysOffMarketUntilReady > 10
   );
   const onSchedule = activeTurns.filter(
-    (tr) => tr.daysVacantUntilReady === null || tr.daysVacantUntilReady <= 10
+    (tr) => tr.daysOffMarketUntilReady === null || tr.daysOffMarketUntilReady <= 10
   );
 
   return (
@@ -181,7 +181,7 @@ export async function PMTurnList({ assignedProperties, role }: PMTurnListProps) 
       {/* Overdue section — hidden entirely when empty (user decision) */}
       {overdue.length > 0 && (
         <TurnSection
-          title="Make Readys Past Target Time"
+          title="Turns Past Target Time"
           turns={overdue}
           headerClassName="bg-alert-past-target border-b border-card-border text-text-primary"
         />
@@ -189,7 +189,7 @@ export async function PMTurnList({ assignedProperties, role }: PMTurnListProps) 
 
       {/* On-schedule section — always visible */}
       <TurnSection
-        title="Active Make Readys (On Schedule)"
+        title="Active Turns (On Schedule)"
         turns={onSchedule}
       />
     </div>

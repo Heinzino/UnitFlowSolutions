@@ -48,8 +48,8 @@ export function MobileTurnCard({ turn }: { turn: TurnRequest }) {
         <span className="text-text-secondary text-xs">Ready To Lease</span>
         <span className="text-text-primary">{formatDate(turn.readyToLeaseDate)}</span>
 
-        <span className="text-text-secondary text-xs">Vacant Date</span>
-        <span className="text-text-primary">{formatDate(turn.vacantDate)}</span>
+        <span className="text-text-secondary text-xs">Off Market Date</span>
+        <span className="text-text-primary">{formatDate(turn.offMarketDate)}</span>
 
         <span className="text-text-secondary text-xs">Price</span>
         <span className="text-text-primary">{formatPrice(turn.totalCost, turn.quotePrice)}</span>

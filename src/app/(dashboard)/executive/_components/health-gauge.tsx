@@ -88,7 +88,7 @@ export function HealthGauge({ score, size = 140 }: HealthGaugeProps) {
         </text>
       </svg>
       <p className="text-text-secondary text-xs text-center max-w-48">
-        % of turns completed within 10 days vacant
+        % of turns completed within 10 days off market
       </p>
     </div>
   )

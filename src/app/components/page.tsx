@@ -77,7 +77,7 @@ export default function ComponentsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <KPICard
             icon={Activity}
-            label="Active Make Readys"
+            label="Active Turns"
             value={12}
             trend={{ direction: "up", percentage: 8.5 }}
           />

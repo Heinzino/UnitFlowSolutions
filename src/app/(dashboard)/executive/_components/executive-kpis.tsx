@@ -72,15 +72,15 @@ export async function ExecutiveKPIs() {
         />
       </div>
 
-      {/* Make Ready Overview */}
+      {/* Turn Overview */}
       <div>
         <h2 className="font-heading font-semibold text-lg text-white mb-2">
-          Make Ready Overview
+          Turn Overview
         </h2>
         <KPICard
           icon={Home}
-          label="Active Make Readys Open"
-          value={kpis.activeMakeReadysOpen}
+          label="Active Turns Open"
+          value={kpis.activeTurnsOpen}
         />
       </div>
 
@@ -90,7 +90,7 @@ export async function ExecutiveKPIs() {
           {kpis.pastTargetAlerts.length > 0 && (
             <KPICard
               icon={AlertTriangle}
-              label="Make Readys Past Target Time"
+              label="Turns Past Target Time"
               value={kpis.pastTargetAlerts.length}
               variant="alert-past"
             />
@@ -98,7 +98,7 @@ export async function ExecutiveKPIs() {
           {kpis.trendingAlerts.length > 0 && (
             <KPICard
               icon={AlertCircle}
-              label="Make Readys Trending Past Target Date"
+              label="Turns Trending Past Target Date"
               value={kpis.trendingAlerts.length}
               variant="alert-trending"
             />
