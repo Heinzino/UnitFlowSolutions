@@ -1,321 +1,375 @@
-# Domain Pitfalls
+# Pitfalls Research
 
-**Domain:** Airtable-backed Next.js property management dashboard
-**Researched:** 2026-03-08
-**Confidence:** HIGH (based on actual project data analysis + known Airtable API behavior)
+**Domain:** Adding Turn/Job separation, inline date entry, revenue exposure, property-level aggregation, RM dashboard, and Completed Jobs page to existing Airtable-backed Next.js dashboard (v1.2 Dashboard Redesign)
+**Researched:** 2026-03-18
+**Confidence:** HIGH — based on direct code analysis of the 8,753-LOC codebase, typed interfaces, KPI functions, Airtable data model, and 202-test suite. Updated from 2026-03-17 version.
+
+---
 
 ## Critical Pitfalls
 
-Mistakes that cause rewrites, data corruption, or broken user experiences.
+### Pitfall 1: Turn "Done" State Conflicts With Job Lifecycle Separation
+
+**What goes wrong:**
+The v1.2 design separates Turn lifecycle from Job lifecycle: jobs completing does not close the turn. But the existing codebase closes a turn by setting `turn.status === 'Done'`. The new design requires a `leaseReadyDate` field (set manually) as the turn-closing signal, while jobs can be individually completed without closing the turn. If both mechanisms exist simultaneously — the old `TurnStatusDropdown` still writes `Done` to `status`, and the new inline date entry also writes to `readyToLeaseDate` — a turn can be in a "Done" status but have no lease-ready date, or have a lease-ready date but not be "Done". This creates broken state where KPI calculations disagree on how many active turns exist.
+
+**Why it happens:**
+The existing `TurnStatusDropdown` component (`turn-status-dropdown.tsx`) allows writing `Done` directly. The new flow requires keeping turns open until the PM enters a lease-ready date. Developers add the new flow without removing or gating the old one, since the old component is used in the current turn list that still works.
+
+**How to avoid:**
+Decide before building whether "Done" status is set by: (a) the PM entering a lease-ready date (new design intent), or (b) a separate status dropdown (existing behavior). If (a), gate the `TurnStatusDropdown` so it no longer offers "Done" as an option, or remove it from the redesigned turn list entirely. The `TurnRequest.readyToLeaseDate` field already exists in the type — use its presence/absence as the source of truth for whether a turn is closed. Write a single `markTurnDone(requestId, leaseReadyDate)` server action that sets both fields atomically.
+
+**Warning signs:**
+- `computePMKPIs` Active Turns count differs from the count visible in the turn list
+- A turn appears in the "Active" section but has a lease-ready date set
+- KPI test for `activeTurns` passes but the dashboard shows wrong numbers
+
+**Phase to address:**
+Phase implementing the PM dashboard redesign (Open Turns list with lease-ready date entry). Define the closing signal before writing any UI code.
 
 ---
 
-### Pitfall 1: Property Name Mismatch Between Supabase Roles and Airtable Data
+### Pitfall 2: Revenue Exposure Calculation Silently Returns $0 When `targetDate` Is Null
 
-**What goes wrong:** The `Property_Managers` table in Airtable stores `"Park Point Apartments"` in the "Property Managed" field, but the `Properties` table stores `"Park Point"` as the property name. When Supabase `user_profiles.assigned_properties` is populated (presumably matching one of these), `filterByFormula` queries will silently return zero records if the wrong variant is used. Users log in and see an empty dashboard with no error.
+**What goes wrong:**
+Revenue Exposure is `$60 × days_over_target`, where `days_over_target = today - targetDate`. The `TurnRequest.targetDate` field is `string | null` in the existing type. When `targetDate` is null (turn has no target set, or was created without one), the calculation silently produces 0 instead of an error or a flagged value. With multiple turns missing target dates, the "Total Revenue Exposure" KPI card shows a number that is significantly lower than reality. PMs make decisions based on an understated figure.
 
-**Evidence from data:**
-- `Property_Managers` CSV: `Park Point Apartments` (line 2)
-- `Properties` CSV: `Park Point` (lines 2-4)
-- Other properties match (`Sunrise Villas`, `Oak Terrace`) but this inconsistency exists for the primary test property.
+**Why it happens:**
+This mirrors the existing `NaN` pitfall — Airtable formula fields return empty when inputs are missing, and the existing codebase already has precedent for this pattern: `daysVacantUntilReady` is `number | null` and the current KPI code uses `?? 0` as a fallback, which silently zeroes out missing data. Developers copy this pattern to the revenue exposure calculation.
 
-**Why it happens:** Airtable has no referential integrity enforcement. The "Property Managed" field in Property_Managers is free text, not a linked record to the Properties table. Humans type different variants.
+**How to avoid:**
+In the revenue exposure aggregation function, explicitly separate turns into three buckets:
+1. `targetDate` present, over target — contribute to exposure
+2. `targetDate` present, not over target — $0 exposure
+3. `targetDate` null — unknown, exclude from total but count separately
 
-**Consequences:**
-- Property Managers see empty dashboards despite having active turns
-- Silent failure -- no error thrown, just zero results from `filterByFormula`
-- Debugging is painful because the query looks correct syntactically
+Surface the "unknown" count on the KPI card: "Revenue Exposure: $4,200 (3 turns without target dates excluded)." This prevents the KPI from silently understating. In the unit tests, include a test case with mixed null/non-null target dates and assert both the dollar figure and the excluded count.
 
-**Prevention:**
-1. Build a property name normalization layer in `src/lib/airtable/properties.ts` that fetches all canonical property names from the Properties table and maps known variants
-2. On app startup (or cached), load the canonical property name list and validate `user_profiles.assigned_properties` against it
-3. Use `FIND()` for partial matching in `filterByFormula` as a fallback: `FIND("Park Point", {Property Name})` instead of exact equality
-4. Add a health-check endpoint or admin page that flags mismatches between Supabase assigned properties and Airtable property names
+**Warning signs:**
+- Revenue Exposure KPI shows $0 when turns are clearly overdue
+- Airtable shows target dates set, but the dashboard shows lower exposure than expected
+- The aggregation function uses `targetDate ?? someDate` without a separate null count
 
-**Detection (warning signs):**
-- A user reports "I see no data" after login
-- During development: write a test that fetches all distinct property names from Properties table and compares against Property_Managers "Property Managed" values
-- Log when `filterByFormula` returns 0 records for a user who should have data
-
-**Phase:** Address in Phase 3 (Airtable API Integration Layer). The normalization layer must exist before any view is built.
+**Phase to address:**
+Phase implementing Revenue Exposure KPI. Write the null-handling policy before writing the formula.
 
 ---
 
-### Pitfall 2: Airtable Linked Records Return Opaque Record IDs, Not Data
+### Pitfall 3: Partial Terminology Rename Leaves Inconsistent Strings Scattered Across Codebase
 
-**What goes wrong:** When you fetch a Turn Request record, the `Jobs` field contains an array like `["rec1abc", "rec2def"]` -- raw Airtable record IDs, not job objects. Developers build the UI expecting nested data (like a SQL JOIN) and get meaningless ID strings. This forces a second round of API calls to resolve each linked record, which quickly exhausts the 5 req/sec rate limit.
+**What goes wrong:**
+"Make Ready → Turn", "Make Readys → Turns", "Vacant → Off Market" appear in: KPI card labels (`pm-kpis.tsx` line 40: `"Active Make Readys"`), section headers (`pm-turn-list.tsx` line 189: `"Make Readys Past Target Time"`, line 192: `"Active Make Readys (On Schedule)"`), KPI interface property names (`PMKPIResult.activeMakeReadys`), and test descriptions (`pm-kpis.test.ts`). A partial rename where the UI strings are updated but the TypeScript interface names, test descriptions, and server action names are not updated creates a codebase where a developer reads `activeMakeReadys` in the code but sees "Active Turns" in the UI — permanent cognitive dissonance that makes the codebase harder to reason about.
 
-**Why it happens:** Airtable's REST API is not a relational database. Linked record fields only return record IDs. Lookup fields (like "Property Name" on Jobs) DO return resolved values because they're computed fields, but linked records themselves are just ID arrays.
+**Why it happens:**
+The rename spans UI display strings, TypeScript identifiers, test descriptions, and comments. There is no single file to change. Developers update what is visible (UI labels) and miss what is internal (interface properties, variable names, test names, server action names).
 
-**Consequences:**
-- N+1 query explosion: 10 turn requests with 3 jobs each = 10 + 30 = 40 API calls for one page load
-- Rate limit hit (429 errors) within seconds on pages that display turn details
-- Slow page loads even with rate limiting (queued requests)
+**How to avoid:**
+Use a two-pass approach. Pass 1: update all display strings (UI labels, section headers, page titles) — these are user-facing. Pass 2: update TypeScript identifiers (`activeMakeReadys → activeTurns`, result type `PMKPIResult.activeMakeReadys → activeTurns`), test descriptions, and inline comments. Use `grep -r "Make Ready\|makeReady\|make_ready\|MakeReady"` to find all occurrences before starting. The rename is a standalone phase — do not mix it with feature additions or it becomes impossible to review.
 
-**Prevention:**
-1. Use batch resolution: collect all linked record IDs across all fetched records, deduplicate, then fetch in a single `OR(RECORD_ID()='rec1', RECORD_ID()='rec2', ...)` call (Airtable allows up to ~15-20 record IDs per formula before hitting URL length limits)
-2. Rely on Lookup fields wherever possible -- the Airtable schema already has lookups like "Property Name" and "Vendor Name" on the Jobs table, which return resolved values without extra API calls
-3. Cache resolved records aggressively -- linked records rarely change between requests
-4. For the Turn Request detail page, fetch Jobs filtered by Turn Request ID rather than resolving individual record IDs: `filterByFormula: OR({Request ID (from Turn Requests)}=38, {Request ID (from Turn Requests)}=39)`
+**Warning signs:**
+- PR diff shows UI label changes but interface property names unchanged
+- A test description says "make ready" while the KPI function is now called "turn"
+- New features added to the codebase use both terminologies in the same file
 
-**Detection:**
-- Monitor API call count per page load during development
-- Any page that makes more than 3-4 Airtable API calls is a red flag
-- Watch for 429 responses in server logs
-
-**Phase:** Address in Phase 3. The linked record resolution strategy must be designed before building views.
+**Phase to address:**
+Dedicated terminology rename phase, completed before any new feature is added. It should be a standalone, reviewable diff.
 
 ---
 
-### Pitfall 3: Airtable Rate Limit (5 req/sec) Causes Cascading Failures Under Concurrent Users
+### Pitfall 4: Inline Date Input Creates Two Data Entry Paths That Fight Over Cache Invalidation
 
-**What goes wrong:** The 5 req/sec limit is per API key, not per user. When User A triggers a cache miss and User B does the same 200ms later, both generate real API calls. With 6-15 users checking the dashboard at similar times (e.g., morning standup), uncached requests pile up. A naive implementation queues requests but the queue grows faster than it drains, causing timeouts.
+**What goes wrong:**
+Adding an inline `<input type="date">` to the Open Turns list row means a PM can set `readyToLeaseDate` directly from the list without navigating to the turn detail page. The turn detail page already shows `readyToLeaseDate` as a read-only display field. After the PM sets the date inline and the server action fires, `revalidateTag(CACHE_TAGS.turnRequests)` busts the cache. However, if the PM has the turn detail page open in another tab (or opens it 5 seconds later during the 60s cache window), they see the old read-only value because the detail page fetches `fetchTurnRequestById(id)` which has its own cache entry tagged `CACHE_TAGS.turnRequest(id)`. The two cache tags are not busted together.
 
-**Why it happens:** Next.js Server Components on Vercel run in serverless functions. Each invocation is independent -- there is no shared in-memory rate limiter across function instances. A token-bucket in `rate-limiter.ts` only works within a single function invocation.
+**Why it happens:**
+Looking at `turn-requests.ts`: `fetchTurnRequests()` uses `cacheTag(CACHE_TAGS.turnRequests)` and `fetchTurnRequestById()` uses `cacheTag(CACHE_TAGS.turnRequests, CACHE_TAGS.turnRequest(id))`. A write to `readyToLeaseDate` that only calls `revalidateTag(CACHE_TAGS.turnRequests)` will bust the list but not the per-turn cache key if the developer forgets the second tag.
 
-**Consequences:**
-- 429 errors from Airtable (30-second backoff required)
-- Cascading timeouts: one slow request blocks the queue, subsequent requests time out
-- Vercel serverless function timeout (default 10s on Hobby, 60s on Pro) kills in-flight requests
-- Users see loading spinners that never resolve
+**How to avoid:**
+The `setLeaseReadyDate` server action must call both `revalidateTag(CACHE_TAGS.turnRequests)` and `revalidateTag(CACHE_TAGS.turnRequest(requestId))`. Write this as a rule in the server action file comment. Add a test that verifies both cache tags are invalidated after a date write — inspect the `revalidateTag` mock calls.
 
-**Prevention:**
-1. Cache is the primary defense, not rate limiting. With 60s `unstable_cache`, the rate limiter should almost never activate. Verify that cache is working by checking that repeat page loads within 60s produce zero Airtable API calls.
-2. For the rate limiter to work across serverless instances, consider using Vercel KV (Redis) for a shared token bucket -- but this is likely overkill for 6-15 users. Simpler approach: rely entirely on cache and accept that cold starts may briefly exceed the limit.
-3. Implement retry with exponential backoff on 429 responses (Airtable recommends 30s, but try shorter intervals first: 1s, 2s, 4s)
-4. Batch parallel fetches using `Promise.all()` but limit concurrency to 4 simultaneous requests using a semaphore pattern
-5. Pre-warm cache on deployment or via a cron job that hits the main data endpoints
+**Warning signs:**
+- After setting a lease-ready date inline, navigating to the turn detail shows the old date
+- The turn disappears from the Open Turns list (cache busted) but the detail page still shows it as open
 
-**Detection:**
-- Log every real Airtable API call (not cache hits) with timestamps
-- Alert if more than 5 calls happen within any 1-second window
-- Monitor for 429 responses
-
-**Phase:** Address in Phase 3 (rate-limiter.ts and cache.ts). Test under simulated concurrent load before Phase 4.
+**Phase to address:**
+Phase implementing the inline lease-ready date entry server action.
 
 ---
 
-### Pitfall 4: `unstable_cache` Is Literally Unstable -- API May Change Between Next.js Versions
+### Pitfall 5: RM Property-Level Aggregation Requires a Second `fetchTurnRequests` Call Per Property — Multiplying API Costs
 
-**What goes wrong:** The PLAN.md specifies `unstable_cache` for caching Airtable responses. This API is marked unstable in Next.js and has changed behavior between versions. In Next.js 15, `unstable_cache` was replaced/supplemented by the `use cache` directive and `cacheLife`/`cacheTag` APIs. Building the entire data layer on an unstable API means a Next.js upgrade could break all caching silently.
+**What goes wrong:**
+The RM dashboard needs per-property stats (active turns per property, avg turn time per property, revenue exposure per property) for the Property Insights list. The naive implementation fetches turn requests filtered per property: one `fetchTurnRequestsForUser(role, [propertyName])` call per property. With 5 properties, that is 5 separate Airtable API calls at page load. The current PM view makes 1 call for all assigned properties. The RM view would make 5× as many calls, and these are not all cache-hits if the RM is the first user of the day.
 
-**Why it happens:** Next.js moves fast and deprecates experimental APIs. The `unstable_` prefix is a literal warning.
+**Why it happens:**
+The existing `fetchTurnRequestsForUser` function already exists and accepts a property array. It is tempting to call it per-property in a `Promise.all()`. This looks clean but generates N Airtable calls (or N separate `use cache` cache entries that all need to warm).
 
-**Consequences:**
-- After a Next.js upgrade, caching may silently stop working -- every page load hits Airtable directly
-- Rate limit immediately exceeded under normal usage
-- Or worse: cache behavior changes (e.g., longer default TTL) and users see stale data for minutes
+**How to avoid:**
+Fetch all turn requests for all RM-assigned properties in a single call, then partition by property name in JavaScript. The existing `fetchTurnRequestsForUser(role, assignedProperties)` already supports multiple properties in one call. Write a `groupTurnsByProperty(turnRequests)` aggregation function that takes the full result set and returns a `Map<propertyName, TurnRequest[]>`. Derive all per-property stats from this map without additional fetches.
 
-**Prevention:**
-1. Wrap all caching behind an abstraction layer in `src/lib/airtable/cache.ts` so the caching mechanism can be swapped without touching every data function
-2. Check the Next.js version at project start and use the stable caching API available for that version. For Next.js 15+, prefer `use cache` with `cacheLife` and `cacheTag` if available in stable form.
-3. Pin the Next.js version in `package.json` (exact version, not `^`) to prevent accidental upgrades
-4. Add a cache health check: a test or monitoring that verifies cache hits are occurring
+**Warning signs:**
+- The RM page triggers N Airtable API calls on cold cache instead of 1
+- Server logs show `rateLimiter.acquire()` called more than 2-3 times per RM page load
 
-**Detection:**
-- After any Next.js upgrade, check server logs for increased Airtable API call volume
-- Write a test that fetches the same data twice within 60s and asserts only 1 real API call was made
-- Monitor Airtable API usage in the Airtable dashboard
-
-**Phase:** Address in Phase 1 (scaffolding -- pin Next.js version) and Phase 3 (build the cache abstraction layer).
+**Phase to address:**
+Phase implementing the RM aggregation functions and Property Insights list.
 
 ---
 
-### Pitfall 5: Airtable `filterByFormula` URL Length Limit Breaks Large Queries
+### Pitfall 6: Active Jobs Table Doubles the Data Fetching Already Done by the Turn List
 
-**What goes wrong:** When resolving linked records or filtering by multiple property names, the formula string is embedded in the URL query parameter. URLs have practical limits (~2000 characters for safe browser/proxy compatibility, ~16KB for Airtable's API). A formula like `OR(RECORD_ID()='recXXX', RECORD_ID()='recYYY', ...)` with 50+ record IDs exceeds this limit and the request silently truncates or returns a 422 error.
+**What goes wrong:**
+The redesigned PM dashboard has two sections: Open Turns list (fetching `TurnRequest[]` with resolved jobs) and a new Active Jobs table (showing all in-flight jobs directly). A naive implementation fetches `fetchJobsForUser(assignedProperties)` separately for the Active Jobs table on top of the `fetchTurnRequestsForUser` call already made for the Open Turns section. The turn requests already have their jobs resolved via `resolveLinkedJobs` in the existing data layer — each `TurnRequest.jobs` is populated. Fetching jobs again is redundant and wastes API budget.
 
-**Why it happens:** Airtable's REST API passes the filter formula as a URL query parameter, not a POST body. The more records you try to batch-resolve, the longer the URL.
+**Why it happens:**
+The Active Jobs table is a new feature. The developer adds a new data fetch for it without noticing that `TurnRequest.jobs` already contains the job data. The two fetched datasets are structurally different (one is jobs filtered by property, the other is jobs nested in turn requests), making the duplication non-obvious.
 
-**Consequences:**
-- 422 Unprocessable Entity errors on pages with many linked records
-- Missing data -- if the URL silently truncates, some records are never fetched
-- Particularly dangerous for the Executive view which aggregates across ALL properties
+**How to avoid:**
+Extract jobs from the already-fetched turn requests: `turnRequests.flatMap(tr => tr.jobs ?? [])`. Filter to non-completed jobs. The Active Jobs table is a view over this data, not a separate data source. No additional Airtable API call needed. If the Active Jobs table needs fields not available via the turn request's linked job resolution (for example, fields not currently mapped in `mapJob`), extend the `Job` type and `mapJob` function rather than adding a second fetch.
 
-**Prevention:**
-1. Chunk batch record ID resolution into groups of 10-15 IDs per request
-2. For the Executive view, avoid record-ID-based resolution entirely. Instead, fetch all records from a table (e.g., all Jobs) and filter in-memory using JavaScript. The total record count is small enough (currently ~40 jobs) that fetching all and filtering client-side is more efficient than complex formulas.
-3. Use Airtable views (pre-filtered server-side) as an alternative to complex formulas where possible
-4. Monitor formula string length before sending the request -- log a warning if it exceeds 1500 characters
+**Warning signs:**
+- The PM page server component makes more than 1 Airtable API call on cache miss
+- The Active Jobs table and the jobs shown in turn rows show different data
 
-**Detection:**
-- 422 errors in server logs from Airtable
-- A page that works with 5 properties but breaks when a 6th is added
-- Executive dashboard showing fewer jobs than Airtable native interface
-
-**Phase:** Address in Phase 3 when building the query layer. Test with realistic data volume.
+**Phase to address:**
+Phase implementing the Active Jobs table. Audit the data dependency graph before writing the fetch.
 
 ---
 
-## Moderate Pitfalls
+### Pitfall 7: Test Suite Breaks When KPI Interface Properties Are Renamed During Redesign
 
-### Pitfall 6: Airtable Pagination Returns Max 100 Records Per Page
+**What goes wrong:**
+The 202-test suite includes `pm-kpis.test.ts` and `executive-kpis.test.ts` that test against named result properties: `result.activeMakeReadys`, `result.projectedSpendMTD`, etc. When v1.2 adds new KPI fields (Revenue Exposure, Avg Turn Time, turns-vs-jobs separation) and renames existing ones, the test files must be updated in lockstep. A developer who updates `computePMKPIs` to return `activeTurns` instead of `activeMakeReadys` but does not update the test file gets TypeScript errors at test time — not a runtime surprise, but the tests go red and CI blocks until fixed. The risk is the reverse: tests are updated to match the new interface, but the old test cases are deleted rather than updated, losing coverage.
 
-**What goes wrong:** The Airtable SDK's `.select()` returns at most 100 records per page. If you don't iterate through all pages, you silently lose records. The current dataset is small (~40 jobs), but as the business grows, a property with 100+ historical turn requests will silently truncate.
+**Why it happens:**
+Renaming an interface property requires changing: the interface definition, the compute function, the component that reads the property, and the test assertions. It is easy to delete old test cases during this multi-file edit and not write new ones for the renamed properties.
 
-**Prevention:**
-1. Always use the SDK's `.all()` method or `.eachPage()` callback to ensure full pagination
-2. Never use `.firstPage()` for production queries -- it's a trap that works during development and breaks in production
-3. Log the record count returned vs the total expected (Airtable doesn't provide a total count, so compare against known benchmarks)
+**How to avoid:**
+When updating KPI interfaces for v1.2, update — do not delete — the existing test cases. The count of test cases for `computePMKPIs` should be at least as large after the rename as before. Add new test cases for new KPI fields (Revenue Exposure) before implementing the formula. New fields that have null-handling edge cases (target date missing, no completed turns) require dedicated test cases.
 
-**Detection:**
-- Data counts in the dashboard don't match Airtable's native interface
-- KPI aggregations (e.g., "Jobs Completed Last 30 Days") show lower numbers than expected
+**Warning signs:**
+- The test file line count decreases during a KPI refactor
+- A CI run has fewer tests than the prior run after a rename
+- `pm-kpis.test.ts` tests compile but no longer test the renamed properties
 
-**Phase:** Phase 3. Enforce in code review -- every Airtable query must use `.all()`.
-
----
-
-### Pitfall 7: Server Actions for Writes Don't Validate Against Stale UI State
-
-**What goes wrong:** User A views a job with status "NEEDS ATTENTION" and clicks "Approve Pricing." Between when they loaded the page and when they clicked, User B already changed the status to "Completed." The server action blindly overwrites Airtable with the stale action, reverting the job to an incorrect state.
-
-**Why it happens:** Airtable has no optimistic concurrency control (no ETags, no version fields). The last write wins.
-
-**Consequences:**
-- Data regression -- completed jobs get reverted to earlier statuses
-- Particularly dangerous for pricing approval: a quote could be approved after it was already rejected and a new vendor assigned
-
-**Prevention:**
-1. In every server action, fetch the current record state from Airtable before applying the update. If the status has changed since the UI was rendered, reject the action and force a page refresh.
-2. Use `revalidateTag()` after every write to ensure the UI reflects the latest state
-3. For critical actions (pricing approval), add a confirmation step that shows the current state fetched in real-time
-
-**Detection:**
-- Users report that changes "disappear" or "revert"
-- Airtable audit log shows rapid back-and-forth status changes
-
-**Phase:** Phase 5 (Property Manager actions). Implement the "read-before-write" pattern in server actions.
+**Phase to address:**
+All phases that touch `computePMKPIs`, `PMKPIResult`, or `ExecutiveKPIResult`.
 
 ---
 
-### Pitfall 8: Duplicate Vendor Records in Airtable Cause Incorrect Aggregations
+### Pitfall 8: Revenue Exposure Date Arithmetic Produces Negative Values for On-Target Turns
 
-**What goes wrong:** The Vendors table has duplicate entries -- "NextGen Flooring" appears twice with slightly different record IDs but the same name. Aggregation functions that count "Jobs per Vendor" will split the count across duplicates, showing misleading metrics on the Vendor Metrics page.
+**What goes wrong:**
+Revenue Exposure = `$60 × max(0, daysSinceTarget)`. If `daysSinceTarget` is computed as `Math.floor((today - targetDate) / MS_PER_DAY)` and a turn has a target date in the future (it is on schedule), the result is negative. Passing a negative value to the `$60 × days` formula produces a negative revenue exposure. A PM managing 4 on-target turns and 1 overdue turn by 3 days sees Revenue Exposure = `($60 × -5) + ($60 × -3) + ($60 × -8) + ($60 × -2) + ($60 × 3) = -$900` which is nonsensical.
 
-**Evidence from data:**
-- Vendors CSV lines 6-7: Two "NextGen Flooring" records with different record IDs, different phone number formats, and different job assignments
+**Why it happens:**
+The calculation is `(today - targetDate) × $60` without a `max(0, ...)` clamp. The `daysVacantUntilReady` field in `TurnRequest` is an Airtable computed field that may also return negative values for on-track turns (days until ready, not days past ready).
 
-**Prevention:**
-1. Aggregate vendor metrics by vendor NAME, not by record ID. Group duplicates together in the aggregation layer.
-2. Add a data quality check that flags duplicate vendor names on the Vendor Metrics page (a small warning banner)
-3. Do NOT attempt to deduplicate in Airtable from the dashboard -- this is "work with existing schema" territory
+**How to avoid:**
+Use `Math.max(0, daysSinceTarget)` in the revenue exposure formula. In unit tests, include cases where `targetDate` is in the future and assert `exposure === 0`. Document the formula in the function comment: "Revenue Exposure: sum of ($60 × max(0, floor((today - targetDate) / 86400000))) for all active turns with a target date."
 
-**Detection:**
-- Vendor Metrics page shows the same vendor name multiple times with different stats
-- Total job counts per vendor don't add up to the total jobs in the system
+**Warning signs:**
+- Revenue Exposure KPI shows a negative number
+- Total Revenue Exposure is lower than any single overdue turn's individual exposure
+- The formula is written as `days * 60` without a clamp
 
-**Phase:** Phase 7 (Vendor Metrics page). Handle in the aggregation functions.
-
----
-
-### Pitfall 9: Airtable Attachment URLs Are Temporary (Expire After ~2 Hours)
-
-**What goes wrong:** Attachment fields (photos on Turn Requests, invoices on Jobs) return URLs that include authentication tokens with a TTL. If you cache the Airtable response for 60 seconds, the URLs work. But if you cache longer, store URLs in any persistent cache, or render them in a page that stays open for hours, the images break with 403 errors.
-
-**Why it happens:** Airtable generates signed URLs for attachments that expire. This is documented but easy to miss.
-
-**Consequences:**
-- Broken image icons on turn detail pages
-- Invoice PDFs that can't be downloaded
-- Users think the data is corrupted
-
-**Prevention:**
-1. Never persist Airtable attachment URLs in any long-term cache or database
-2. The 60s cache TTL is safe -- URLs last ~2 hours. But add a comment in the code explaining why attachment caching must stay short.
-3. If displaying attachments, add error handling (fallback placeholder image, retry button that re-fetches)
-4. For Phase 2 scope (photos are out of scope), this is a "when you get there" warning
-
-**Detection:**
-- Broken images appearing after a page has been open for a while
-- 403 errors in browser console for airtableusercontent.com URLs
-
-**Phase:** Relevant when attachments are implemented (currently out of scope for v1, but Notes with attachments are in Phase 5). Document this constraint early.
+**Phase to address:**
+Phase implementing Revenue Exposure KPI computation.
 
 ---
 
-### Pitfall 10: Middleware Fetching Supabase Profile on Every Request Creates Latency
+### Pitfall 9: RM Middleware Route Update Missed — RM Users Land on Old `/property` View
 
-**What goes wrong:** The PLAN.md specifies that middleware fetches the user role from `user_profiles` on every request to enforce route protection. Middleware runs on the edge (Vercel Edge Runtime) but Supabase queries add 50-200ms per request. On a page with multiple Server Component parallel fetches, this latency compounds.
+**What goes wrong:**
+The v1.2 design creates a new `/regional` route for the RM dashboard. Currently, `/district/page.tsx` simply redirects to `/property`, so RM users see the PM view with an RM-role filter applied. When the new `/regional` route is built, RM users should be redirected to `/regional` instead of `/property`. If `middleware.ts` and the root redirect logic are not updated, RM users continue landing on `/property` after login and never reach their new dedicated dashboard. The `/regional` route exists but is unreachable through normal navigation.
 
-**Prevention:**
-1. Cache the user profile in the Supabase session JWT claims or in a short-lived cookie after first fetch
-2. Only fetch the full profile from `user_profiles` on login and role changes, not on every request
-3. Middleware should only verify the session token (fast) and read role from the token/cookie, not query the database
+**Why it happens:**
+The middleware `ROLE_ALLOWED_ROUTES` map and the root post-login redirect for the `rm` role both reference `/property`. When a new route is added for RM, both locations must be updated. Developers build the new page and sidebar link but forget the middleware update because middleware is a separate file from the component code.
 
-**Detection:**
-- Every navigation feels slow (200ms+ before the page even starts rendering)
-- Supabase dashboard shows high query volume on `user_profiles`
+**How to avoid:**
+The RM dashboard phase must include: (1) add `/regional` to `ROLE_ALLOWED_ROUTES` for the `rm` role, (2) update the root redirect for `rm` from `/property` to `/regional`, (3) verify that the old `/district` → `/property` redirect still works or update it to `/regional`. Write a test that simulates RM login and asserts the redirect target is `/regional`.
 
-**Phase:** Phase 2 (Authentication). Design the session/role caching strategy before building middleware.
+**Warning signs:**
+- The `/regional` page renders correctly when navigated to directly, but RM users always land on `/property` after login
+- Sidebar shows the "Regional" link but clicking it causes a 404 or auth redirect
+- Manual testing skips checking what happens immediately after login
 
----
-
-## Minor Pitfalls
-
-### Pitfall 11: Airtable Field Names with Spaces and Parentheses Break Destructuring
-
-**What goes wrong:** Airtable field names like `"Duration (Days, If Completed)"`, `"Counter Quote (NEW)"`, and `"Start Date NEW"` contain spaces, parentheses, and mixed casing. JavaScript destructuring and dot notation don't work. Developers write `record.fields.Status` (works) and then `record.fields.Counter Quote (NEW)` (syntax error).
-
-**Prevention:**
-1. In `src/lib/airtable/types.ts`, define a field name mapping that converts Airtable field names to clean TypeScript property names
-2. Build a record transformer function that maps raw Airtable records to typed objects with clean keys
-3. Never access `record.fields[...]` directly outside the data layer -- always go through the typed interface
-
-**Phase:** Phase 3. The type definitions and field mapping are foundational.
+**Phase to address:**
+Phase implementing the RM (`/regional`) dashboard — middleware update is a required deliverable of that phase, not a follow-up.
 
 ---
 
-### Pitfall 12: `NaN` Values in Airtable Computed Fields
+### Pitfall 10: `resolveLinkedJobs` N+1 Pattern Used for the Active Jobs Table
 
-**What goes wrong:** The Turn Requests CSV shows `Time to Complete Unit (Days)` = `NaN` for record 42 (a turn request with no Target Date set). Airtable formula fields that divide by zero or reference empty fields produce `NaN`. If the dashboard passes this to KPI computations or chart components, React will render "NaN" as text or crash.
+**What goes wrong:**
+The Active Jobs table needs a flat list of `Job` records. `resolveLinkedJobs` in `turn-requests.ts` resolves jobs by making one Airtable API call per job record ID found in a turn request. For a PM with 10 open turns averaging 3 jobs each, this is 30 individual Airtable job-record fetches at cold cache. If a developer uses this path to populate the Active Jobs table (by fetching turn requests with resolved jobs, then flattening), they pay for N+1-style resolution unnecessarily. The direct `fetchJobs()` function returns all job records in a single Airtable call filtered by formula.
 
-**Evidence from data:** Turn Request 42: `Time to Complete Unit (Days)` = `NaN`, `Target Date` is empty
+**Why it happens:**
+The existing `fetchTurnRequestsForUser()` path is familiar — it is used everywhere in the PM view. Reusing it for the Active Jobs table feels like code reuse. The `resolveLinkedJobs` cost is invisible at development scale (few records) and only becomes apparent under production load.
 
-**Prevention:**
-1. In the record transformer, coerce `NaN` and `null` numeric fields to `0` or `undefined` with explicit handling
-2. KPI aggregation functions must filter out `NaN` values before computing averages (otherwise one `NaN` poisons the entire average)
-3. Display components should show "N/A" or "--" for undefined/NaN values, never the raw string
+**How to avoid:**
+Add a `fetchJobsForUser(role, propertyNames)` function to `jobs.ts` following the pattern of `fetchTurnRequestsForUser`. This makes a single Airtable formula-filtered fetch for jobs belonging to the specified properties. Use this function exclusively for the Active Jobs table and the Completed Jobs page. The resolved-jobs path via turn requests is only appropriate when you need jobs in the context of their parent turn (e.g., the Open Turns list where jobs are shown under each turn row).
 
-**Phase:** Phase 3 (data layer) and Phase 4 (KPI display).
+**Warning signs:**
+- The PM page server component calls `resolveLinkedJobs` more than once
+- The Active Jobs table data load is noticeably slow compared to the Open Turns list
+- Server logs show 15+ Airtable requests on a single PM page load
 
----
-
-### Pitfall 13: Vercel Serverless Function Cold Starts + Airtable Latency Stack
-
-**What goes wrong:** On Vercel's Hobby plan, serverless functions have a 10-second timeout. A cold start (500ms-1s) plus rate-limited Airtable calls (200-400ms each) plus multiple sequential fetches can exceed 10 seconds. The Executive dashboard with 6+ KPI cards, each requiring an Airtable call, is the most vulnerable.
-
-**Prevention:**
-1. Use `Promise.all()` for parallel data fetches within a single Server Component
-2. Fetch data at the page level and pass to components as props, rather than each component fetching independently
-3. Consider Vercel Pro for 60s timeout if cold start + Airtable latency becomes a problem
-4. Pre-warm critical routes with a cron job (Vercel cron or external)
-
-**Phase:** Phase 4 (Executive dashboard). Monitor function execution times.
+**Phase to address:**
+Phase implementing the Active Jobs table. Add `fetchJobsForUser()` before writing the table component.
 
 ---
 
-## Phase-Specific Warnings
+### Pitfall 11: Completed Jobs Page Applies `isCompleted` Filter Client-Side, Shipping All Jobs to Browser
 
-| Phase Topic | Likely Pitfall | Mitigation |
-|-------------|---------------|------------|
-| Phase 1: Scaffolding | Pitfall 4: unstable_cache API instability | Pin Next.js version, build cache abstraction |
-| Phase 2: Auth | Pitfall 10: Middleware latency from DB queries | Cache role in JWT/cookie, not per-request DB query |
-| Phase 2: Auth | Pitfall 1: Property name mismatch | Validate assigned_properties against Airtable canonical names |
-| Phase 3: Airtable Layer | Pitfall 2: Linked record N+1 queries | Batch resolution, prefer lookup fields |
-| Phase 3: Airtable Layer | Pitfall 3: Rate limit under concurrency | Cache-first strategy, concurrency limiter |
-| Phase 3: Airtable Layer | Pitfall 5: filterByFormula URL length | Chunk ID batches, fetch-all for small tables |
-| Phase 3: Airtable Layer | Pitfall 6: Silent pagination truncation | Always use `.all()`, never `.firstPage()` |
-| Phase 3: Airtable Layer | Pitfall 11: Messy field names | Field name mapping in types.ts |
-| Phase 3: Airtable Layer | Pitfall 12: NaN in computed fields | Coerce in record transformer |
-| Phase 4: Executive View | Pitfall 13: Cold start + latency stack | Parallel fetches, single page-level data load |
-| Phase 5: PM Actions | Pitfall 7: Stale write conflicts | Read-before-write in server actions |
-| Phase 7: Vendor Metrics | Pitfall 8: Duplicate vendor records | Aggregate by name, not record ID |
+**What goes wrong:**
+The Completed Jobs page shows jobs where `job.isCompleted === true`. If the filter is applied client-side in the `ActiveJobsTable` component (via `useState` or a prop filter), all jobs — including active ones — are fetched server-side and serialized into the initial page payload. For a property with 200 completed jobs and 40 active ones, the browser receives all 240 records even though only completed ones are displayed. This is a data exposure concern (active job details sent to browser unnecessarily) and a payload size concern.
+
+**Why it happens:**
+The Completed Jobs page is designed to reuse `ActiveJobsTable` with an `isCompleted` toggle. It is tempting to pass `jobs.filter(j => j.isCompleted)` in the server component or let the client component handle the filter. Both approaches are correct for display but wrong for data minimization.
+
+**How to avoid:**
+Filter at the fetch layer. Pass `{ completedOnly: true }` (or equivalent) to `fetchJobsForUser()` so the Airtable query includes `isCompleted: true` in its filter formula. This ensures only completed jobs are fetched, serialized, and sent to the browser. The server component for the Completed Jobs page should receive only `Job[]` where every record is completed — no client-side filtering needed.
+
+**Warning signs:**
+- The Completed Jobs page network payload includes jobs with `isCompleted: false`
+- The Airtable filter formula in `fetchJobsForUser()` does not include a completed-status condition
+- The component receives a `jobs` prop and filters it internally
+
+**Phase to address:**
+Phase implementing the Completed Jobs page. The filtering decision must be made in the fetch function, not the component.
+
+---
+
+## Technical Debt Patterns
+
+| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
+|----------|-------------------|----------------|-----------------|
+| Keep `activeMakeReadys` property name, only update display label | Fast rename — one file change | Interface mismatch with new terminology; new developers confused when reading code | Never — rename the identifier too |
+| Fetch jobs separately for Active Jobs table instead of extracting from turn requests | Simpler code — no restructuring of data flow | Doubles Airtable API calls; may hit rate limit on RM view | Never — extract from already-fetched data |
+| Use `?? 0` fallback for null `targetDate` in revenue exposure | No null checks needed | Silently understates exposure; KPI card lies | Never — null target dates must be counted separately |
+| Skip test updates when renaming KPI interface properties | Faster iteration | Tests compile but cover the wrong thing; coverage gap invisible | Never |
+| Build RM aggregation as N per-property fetches | Matches existing per-property fetch pattern | N× API calls; cache warm cost scales with property count | Only if RM has exactly 1 property (i.e., never useful) |
+| Add inline date input as uncontrolled component (no optimistic UI) | No state management needed | PM sees no feedback after date entry; unclear if save worked | Only for prototype/demo, not production |
+| Apply `isCompleted` filter client-side on Completed Jobs page | Reuses `ActiveJobsTable` unmodified | All jobs (including active) serialized to browser; data exposure | Never — filter at the Airtable query level |
+| Pre-format currency in KPI compute functions (e.g., `"$1,200"`) | No formatting logic in components | Cannot sort numerically; cannot make arithmetic assertions in tests; locale handling impossible | Never — return raw numbers, format in components |
+| Skip middleware update when adding `/regional` route | Route works when navigated to directly | RM users land on PM view after login; new route unreachable via normal flow | Never — middleware update is part of the route phase |
+
+---
+
+## Integration Gotchas
+
+| Integration | Common Mistake | Correct Approach |
+|-------------|----------------|------------------|
+| Airtable `readyToLeaseDate` write | Write only to `readyToLeaseDate` without setting `status: 'Done'` | Decide the closing contract: either set both fields atomically, or use presence of `readyToLeaseDate` as the sole source of truth for closed state. Pick one and document it. |
+| `use cache` + `cacheTag` on turn list vs. per-turn fetch | Busting `CACHE_TAGS.turnRequests` after inline date write but not `CACHE_TAGS.turnRequest(id)` | The `setLeaseReadyDate` action must call `revalidateTag` for both cache keys: the list tag and the per-record tag. |
+| RM aggregation from existing per-unit data | Calling `fetchTurnRequestsForUser` per property in `Promise.all` | Call once for all RM properties, partition in JavaScript with `groupTurnsByProperty`. |
+| Active Jobs table data source | Adding `fetchJobs()` call separately from the turn list fetch | Extract jobs from `turnRequests.flatMap(tr => tr.jobs ?? [])` — jobs are already resolved by `resolveLinkedJobs`. |
+| Revenue exposure with null `targetDate` | Using `tr.targetDate ?? new Date().toISOString()` or `?? 0` | Track null-target-date turns separately, exclude from dollar total, surface the count as a footnote on the KPI card. |
+| Middleware route guards | Adding `/regional` page without adding it to `ROLE_ALLOWED_ROUTES` for `rm` | Every new route must be added to `ROLE_ALLOWED_ROUTES` in the middleware AND the role's post-login redirect must be updated. |
+| Completed Jobs fetch scope | Fetching all jobs then filtering `isCompleted` client-side | Pass a `completedOnly` parameter to `fetchJobsForUser()` so the Airtable formula excludes active jobs at the source. |
+| KPI compute function return types | Returning pre-formatted strings (`"$1,200"`, `"14 days"`) from compute functions | Return raw `number` values; apply `Intl.NumberFormat` or string interpolation in the component layer. |
+
+---
+
+## Performance Traps
+
+| Trap | Symptoms | Prevention | When It Breaks |
+|------|----------|------------|----------------|
+| N per-property fetches for RM Property Insights | RM page load triggers 5+ Airtable calls on cold cache; rate limiter queues requests | Single fetch + in-memory partition by property name | From the first RM user if >2 properties |
+| Duplicate jobs fetch (Active Jobs table + turn list) | PM page triggers 2 Airtable calls instead of 1; joins take twice as long | Extract jobs from resolved turn requests | From day 1 of Active Jobs table feature |
+| Re-computing revenue exposure per render | Revenue exposure recalculated on every component render if not memoized | Put revenue exposure calculation inside the `computePMKPIs` pure function (already called once per Suspense boundary) | Not a real-scale problem with 6-15 users, but worth keeping clean |
+| Inline date input triggers full page revalidation for every keypress | User types a date character-by-character; each character fires a server action | Use a controlled `<input>` that fires the server action only on `blur` or explicit save button, not `onChange` | From the first PM user entering a date |
+| `resolveLinkedJobs` used for flat jobs table | PM page shows 30+ Airtable calls in server logs; Active Jobs table is slow to load | Add `fetchJobsForUser()` that makes one filtered Airtable call; use this for the Active Jobs and Completed Jobs pages | At any scale — even small data sets pay the N+1 cost |
+
+---
+
+## Security Mistakes
+
+| Mistake | Risk | Prevention |
+|---------|------|------------|
+| Adding `setLeaseReadyDate` server action without role check | A user with `exec` or `rm` role who cannot normally edit turns calls the action directly | Every server action must verify `user.app_metadata.role` allows writes; PMs write, RMs/Execs are read-only on turn date actions |
+| Exposing `targetDate` in a client-side calculation | Revenue exposure formula client-side leaks business data to browser devtools | All revenue exposure computation in server components or server actions; never in `'use client'` components |
+| Inline date input that writes directly to Airtable without sanitization | Malformed date string written to Airtable corrupts the `readyToLeaseDate` field | Parse and validate the date string server-side before writing: `new Date(input)` must produce a valid date; reject otherwise |
+| Completed Jobs page fetching all jobs then filtering client-side | Active job details (vendor, price, status) sent to browser unnecessarily | Apply `isCompleted: true` filter in the Airtable fetch formula, not in the component |
+| `/regional` route not added to middleware `ROLE_ALLOWED_ROUTES` | Exec or PM users can access RM-scoped data by navigating directly to `/regional` | Add `/regional` to `ROLE_ALLOWED_ROUTES` with `rm`-only access; middleware rejects other roles |
+
+---
+
+## UX Pitfalls
+
+| Pitfall | User Impact | Better Approach |
+|---------|-------------|-----------------|
+| Inline date input with no save confirmation | PM enters a date, nothing visible happens; they click again, setting it twice or clearing it | Show a subtle "Saved" indicator (checkmark or green flash) after the server action resolves; use optimistic UI to show the date immediately |
+| Revenue Exposure shown as "$0" when target dates are missing | PM trusts the number; real exposure is hidden | Show "$X,XXX + 3 turns without target dates" rather than an incomplete total |
+| "Active Jobs" table showing all jobs including completed ones | Table is too long; PMs scan for stuck jobs but see completed ones first | Filter to non-completed jobs only; add a "Show completed" toggle or a link to the Completed Jobs page |
+| Turn lifecycle closed by entering lease-ready date but turn still appears in list for ~60s | PM enters the date, turn disappears, PM thinks it vanished; checks Airtable to confirm | Optimistic removal: remove the turn from the list client-side immediately on date entry, before the server revalidation completes |
+| RM Property Insights list showing KPIs calculated differently than PM view | RM sees "3 active turns" for Property A, PM logs in and sees "4 active turns" for same property | Use the same computation function (`computePMKPIs`) for both views; RM view applies it per-property to a filtered subset |
+| RM users landing on PM view after login (wrong dashboard) | RM users see PM-scoped data rather than their aggregated multi-property view | Update root redirect for `rm` role to `/regional`; do not leave it pointing to `/property` |
+| Completed Jobs page shows all properties without a filter indicator | Users don't realize they can filter; assume they are seeing all jobs | Default to "All Properties" selected with a visible filter control; show the count of matching jobs |
+
+---
+
+## "Looks Done But Isn't" Checklist
+
+- [ ] **Terminology rename:** Visual scan of UI shows "Turns" everywhere — verify TypeScript identifiers, test descriptions, and server action names in `grep -r "makeReady\|make_ready\|MakeReady\|Make Ready" src/`
+- [ ] **Revenue Exposure KPI:** KPI card shows a dollar number — verify it shows "$0" for turns with future target dates (not negative), and surfaces a count of turns with null target dates
+- [ ] **Inline lease-ready date:** Date input appears in the turn row — verify: (a) server action sets `status: 'Done'` or equivalent, (b) both `CACHE_TAGS.turnRequests` and `CACHE_TAGS.turnRequest(id)` are busted, (c) the turn disappears from the Active list after saving
+- [ ] **Active Jobs table:** Table renders jobs — verify data comes from `turnRequests.flatMap(tr => tr.jobs)` or `fetchJobsForUser()` (not via `resolveLinkedJobs` N+1 path), and that completed jobs are filtered out
+- [ ] **RM Property Insights:** Per-property stats show correct numbers — verify aggregation uses a single `fetchTurnRequestsForUser` call and partitions in JavaScript, not N separate calls
+- [ ] **Turn/Job separation:** Completing all jobs on a turn does NOT close the turn — verify a turn with all `Job.status === 'Completed'` still appears in the Open Turns list until a lease-ready date is entered
+- [ ] **Test count maintained:** After KPI interface rename, test count in `pm-kpis.test.ts` is >= the count before the rename
+- [ ] **Role guard on server actions:** `setLeaseReadyDate` and any write server action rejects non-PM roles with an appropriate error
+- [ ] **RM middleware routing:** After RM login, user lands on `/regional` (not `/property`); direct navigation to `/regional` by exec or PM roles results in redirect, not 200 OK
+- [ ] **Completed Jobs fetch scope:** Network tab on Completed Jobs page shows no jobs with `isCompleted: false` in the serialized payload
+- [ ] **KPI return types:** `computePMKPIs()`, `computeRMKPIs()`, `computeExecutiveKPIs()` all return raw numbers — no string values like `"$1,200"` in the returned objects
+
+---
+
+## Recovery Strategies
+
+| Pitfall | Recovery Cost | Recovery Steps |
+|---------|---------------|----------------|
+| Turn closed by old status dropdown AND new date entry — inconsistent state | MEDIUM | Write a one-time data repair script: fetch all turns where `status === 'Done'` but `readyToLeaseDate` is null, and vice versa; log the inconsistencies for manual review in Airtable |
+| Revenue Exposure showing wrong totals due to null handling | LOW | Fix the aggregation function, update tests; no data corruption (read-only calculation) |
+| Cache tag not invalidated after inline date write — stale data displayed | LOW | Add missing `revalidateTag` call to server action; users will see fresh data after next natural 60s cache expiry |
+| RM page slow due to N per-property fetches — discovered in production | MEDIUM | Refactor to single fetch + in-memory partition; deploy; cache warms on next RM load |
+| Test count decreases after KPI rename — coverage gap | MEDIUM | Restore deleted test cases from git history; add new cases for renamed properties; add CI test count assertion to prevent recurrence |
+| RM users landing on wrong dashboard post-login | LOW | Update middleware redirect for `rm` role; redeploy; no data consequences |
+| Completed Jobs page leaking active job data to browser | LOW-MEDIUM | Add `completedOnly` filter to `fetchJobsForUser()`; redeploy; no data corruption (read-only issue) |
+| KPI compute functions returning pre-formatted strings | LOW | Update return type to raw numbers; update components to format; update tests |
+
+---
+
+## Pitfall-to-Phase Mapping
+
+| Pitfall | Prevention Phase | Verification |
+|---------|------------------|--------------|
+| Turn Done signal conflicts (Pitfall 1) | PM dashboard redesign phase — before writing any turn-closing UI | Integration test: turn with all completed jobs still appears in Open Turns list |
+| Revenue Exposure null target dates (Pitfall 2) | Revenue Exposure KPI phase — before writing the formula | Unit test: mixed null/non-null target dates produces correct total + excluded count |
+| Partial terminology rename (Pitfall 3) | Terminology rename phase (standalone, first phase) | `grep -r "Make Ready\|makeReady" src/` returns 0 results |
+| Cache tag split on inline date write (Pitfall 4) | Inline lease-ready date phase — server action implementation | Test: mock `revalidateTag`, assert both tags are called |
+| RM N-fetch aggregation (Pitfall 5) | RM dashboard phase — before writing per-property stats | Server log: RM page triggers exactly 1 Airtable call on cold cache |
+| Active Jobs duplicate fetch (Pitfall 6) | Active Jobs table phase — data dependency audit before new fetch | Server log: PM page triggers exactly 1 Airtable call on cold cache |
+| KPI test coverage loss during rename (Pitfall 7) | All KPI-touching phases | Test count >= prior count; CI fails if count decreases |
+| Revenue Exposure negative values (Pitfall 8) | Revenue Exposure KPI phase — formula implementation | Unit test: turn with future target date produces $0 exposure |
+| RM middleware routing missing (Pitfall 9) | RM dashboard phase — middleware update is part of the phase scope | Integration test: RM login redirects to `/regional`; exec login to `/regional` redirects away |
+| `resolveLinkedJobs` N+1 for Active Jobs (Pitfall 10) | Active Jobs table phase — data layer decision made before component | Server log: Active Jobs table triggers 1 Airtable call, not N |
+| Completed Jobs client-side filter (Pitfall 11) | Completed Jobs page phase — filter decision in fetch function | Browser network tab: page payload contains only `isCompleted: true` records |
+
+---
 
 ## Sources
 
-- Airtable REST API documentation (rate limits: 5 req/sec per base, pagination: 100 records max, attachment URL expiry)
-- Direct analysis of project CSV snapshots in `SnapshotData/` (property name mismatch, NaN values, duplicate vendors)
-- Next.js App Router documentation (unstable_cache deprecation path, Server Component data fetching patterns)
-- PLAN.md architecture decisions and identified challenges
-- Vercel serverless function limits (timeout constraints per plan tier)
+- Direct code analysis: `src/lib/kpis/pm-kpis.ts`, `src/lib/kpis/executive-kpis.ts`, `src/lib/types/airtable.ts`, `src/lib/airtable/tables/turn-requests.ts`
+- Component analysis: `src/app/(dashboard)/property/_components/pm-turn-list.tsx`, `pm-kpis.tsx`
+- Cache architecture: `src/lib/airtable/cache-tags.ts`, `use cache` + `cacheTag` pattern in turn-requests.ts
+- Test inventory: 20 test files, 202 passing tests — `pm-kpis.test.ts`, `executive-kpis.test.ts` are the KPI coverage files
+- Middleware analysis: `src/middleware.ts` — `ROLE_ALLOWED_ROUTES`, post-login redirect logic
+- Architecture research: `.planning/research/ARCHITECTURE.md` — anti-patterns section, build order, component responsibility table
+- v1.2 requirements: `.planning/PROJECT.md` (Active requirements section, Current Milestone)
+- Prior pitfalls research: `.planning/research/PITFALLS.md` v1.0 (2026-03-17) — Airtable API pitfalls, now extended with v1.2-specific integration and routing pitfalls
+
+---
+*Pitfalls research for: v1.2 Dashboard Redesign — Turn/Job separation, inline date entry, revenue exposure, property-level aggregation, RM routing, Completed Jobs page*
+*Researched: 2026-03-18*

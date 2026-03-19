@@ -1,243 +1,227 @@
 # Technology Stack
 
-**Project:** UnitFlowSolutions (ScheduleSimple) — Property Management Turnover Dashboard
-**Researched:** 2026-03-08
-**Verification note:** WebSearch and WebFetch were unavailable during research. Version numbers are based on training data (cutoff ~May 2025). Verify exact latest versions with `npm view <package> version` before scaffolding.
+**Project:** UnitFlowSolutions — v1.2 Dashboard Redesign
+**Domain:** Property management dashboard — Turn/Job separation, new KPI calculations, inline editing, property bar chart comparisons
+**Researched:** 2026-03-18
+**Confidence:** HIGH (all critical decisions based on existing validated code; no new external libraries required)
 
 ---
 
-## Recommended Stack
+## Scope of This Document
 
-### Core Framework
-
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| Next.js | ^15.1 | Full-stack framework, App Router, Server Components, Server Actions | Already decided in PROJECT.md. App Router provides server-side Airtable access, `unstable_cache` for caching, Server Actions for mutations, and native Vercel deployment. v15 stabilized many App Router APIs. | HIGH |
-| TypeScript | ^5.6 | Type safety | Catch Airtable field name typos at compile time. Essential for mapping 9 Airtable tables to typed interfaces. | HIGH |
-| React | ^19.0 | UI library (bundled with Next.js 15) | Next.js 15 ships with React 19. Server Components are first-class. `use()` hook available for data patterns. | HIGH |
-
-### Authentication
-
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| @supabase/supabase-js | ^2.45 | Supabase client SDK | Already decided. Handles auth state, session management, and querying the `user_profiles` table for role mapping. | MEDIUM (verify version) |
-| @supabase/ssr | ^0.5 | Server-side auth for Next.js App Router | Required for cookie-based session management in Server Components and middleware. Replaces the deprecated `@supabase/auth-helpers-nextjs`. | MEDIUM (verify version) |
-
-### Data Source
-
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| airtable | ^0.12 | Official Airtable SDK | Already decided. Provides typed access to Airtable REST API with pagination handling (`.eachPage()`), formula filtering, and field selection. The official SDK is the safest choice for staying compatible with Airtable API changes. | MEDIUM (verify version) |
-
-**Important note on the `airtable` npm package:** The official SDK is adequate but has quirks. It uses a callback-based API (`.eachPage()`) rather than async/await natively. Wrap it in Promise-based helpers early. The alternative is raw `fetch` against `https://api.airtable.com/v0/`, which gives you full control over request/response handling and works better with Next.js caching. See "Alternatives Considered" below.
-
-### Styling
-
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| Tailwind CSS | ^3.4 or ^4.0 | Utility-first CSS | Already decided in PLAN.md. Fast iteration on the custom THEME.md design tokens. Excellent with Server Components (no runtime CSS-in-JS needed). If scaffolding with `create-next-app`, Tailwind v4 may be the default -- use whichever version the scaffolding installs. | MEDIUM (v4 may be default by now) |
-
-**Tailwind v3 vs v4 decision:** Tailwind v4 was released in early 2025 with a new CSS-first configuration model (no `tailwind.config.ts`). If `create-next-app` scaffolds v4, use it -- the new `@theme` directive in CSS replaces the config file and is simpler for custom tokens. If it scaffolds v3, that is also fine. Do NOT manually downgrade or upgrade; use what the scaffolding provides.
-
-### Charting & Visualization
-
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| Recharts | ^2.13 | Bar charts, gauges, data visualization | Already decided in PLAN.md. Built on D3 + React. Handles the vendor bar charts and KPI visualizations. Lightweight enough for this use case. Supports responsive containers out of the box. | MEDIUM (verify version) |
-
-### Icons
-
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| lucide-react | ^0.460 | Icon library | Already decided in PLAN.md. Tree-shakeable, consistent rounded style that matches THEME.md's "approachable" icon direction. Better than Heroicons for this design language. | MEDIUM (verify version) |
-
-### Fonts
-
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| next/font (Plus Jakarta Sans) | bundled | Heading font | Use `next/font/google` for zero-layout-shift font loading. Plus Jakarta Sans is the geometric rounded sans specified in THEME.md. | HIGH |
-| next/font (Geist) | bundled | Body/data font | Geist is Vercel's own font, available via `next/font/local` or the `geist` npm package. Clean, legible at small sizes. Perfect for data tables and numbers. `create-next-app` may include it by default. | HIGH |
-
-### Infrastructure
-
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| Vercel | N/A | Hosting & deployment | Already decided. Zero-config Next.js deployment. Edge middleware for auth. ISR/caching built in. Free tier easily handles 6-15 users. | HIGH |
-| Supabase (hosted) | N/A | Auth provider + user_profiles DB | Already set up per PROJECT.md. Free tier handles this user volume. Only stores auth and role data, not business data. | HIGH |
-| Airtable (existing) | N/A | Business data source of truth | Existing base with 9 tables. No changes to schema. Dashboard reads/writes via REST API. | HIGH |
-
-### Supporting Libraries
-
-| Library | Version | Purpose | When to Use | Confidence |
-|---------|---------|---------|-------------|------------|
-| clsx | ^2.1 | Conditional CSS class merging | Every component that conditionally applies Tailwind classes (status badges, alert cards, active states). Tiny (228B). | HIGH |
-| tailwind-merge | ^2.5 | Tailwind class conflict resolution | Combine with clsx in a `cn()` utility. Prevents `p-4 p-6` conflicts when merging component props with defaults. | HIGH |
-| date-fns | ^4.1 | Date formatting and calculation | Computing overdue status, "days until target", "last 30 days" filters, relative time displays. Lighter than dayjs for tree-shaking. | MEDIUM (verify version) |
-| zod | ^3.23 | Runtime validation | Validate Airtable API responses (schema can drift), validate Server Action inputs, and type-narrow user profile data from Supabase. | HIGH |
-
-### Dev Dependencies
-
-| Library | Version | Purpose | Confidence |
-|---------|---------|---------|------------|
-| eslint | ^9.0 | Linting (flat config) | HIGH |
-| eslint-config-next | ^15.1 | Next.js ESLint rules | HIGH |
-| prettier | ^3.4 | Code formatting | HIGH |
-| prettier-plugin-tailwindcss | ^0.6 | Auto-sort Tailwind classes | HIGH |
+This is a **milestone-scoped** update to the original STACK.md (dated 2026-03-08). It covers only what is **new or changed** for v1.2. The base stack (Next.js 16, Tailwind v4, Supabase Auth, Airtable SDK, Recharts 3, Vitest, lucide-react, sonner) is validated and unchanged.
 
 ---
 
-## Alternatives Considered
+## What is NOT Needed (Do Not Add)
 
-| Category | Recommended | Alternative | Why Not |
-|----------|-------------|-------------|---------|
-| Airtable client | `airtable` npm SDK | Raw `fetch` to Airtable REST API | The SDK handles pagination automatically via `.eachPage()` and field type coercion. However, if you find the SDK's callback API awkward with Next.js caching, switching to raw `fetch` is a valid Phase 1 decision. Raw fetch gives you native `next: { revalidate: 60, tags: [...] }` cache control. **Either approach works -- pick one and commit.** |
-| UI components | Hand-built primitives | shadcn/ui | The THEME.md design language is highly custom (forest green bg, 16px radius cards, chartreuse CTAs). Installing shadcn/ui then overriding everything adds indirection. For ~10 components, hand-building to spec is faster and produces cleaner code. Exception: if you want shadcn's Dialog/Dropdown primitives for the notification panel drawer, install individual components a la carte. |
-| State management | Server Components + Server Actions | React Query / SWR | With ~60s cache revalidation and Server Components doing all data fetching, client-side caching is unnecessary. The 6-15 user base does not need optimistic updates or real-time sync. Server Actions with `revalidateTag()` handle the write-then-refresh cycle cleanly. |
-| CSS framework | Tailwind CSS | CSS Modules / Styled Components | CSS-in-JS has runtime cost and does not work in Server Components. CSS Modules work but lack the speed of utility classes for rapid prototyping. Tailwind is the clear winner for this stack. |
-| Charts | Recharts | visx / Nivo / Chart.js | Recharts has the simplest API for the chart types needed (bar chart, gauge). visx is more flexible but requires more D3 knowledge. Nivo is heavier. Chart.js requires a wrapper for React. For 2-3 chart components, Recharts is right-sized. |
-| Icons | lucide-react | Heroicons / Phosphor | Lucide's rounded style matches THEME.md better than Heroicons' sharper aesthetic. Phosphor is comparable but less widely adopted in the Next.js ecosystem. |
-| Date library | date-fns | dayjs / Temporal API | dayjs is fine too -- the difference is marginal. date-fns tree-shakes better. Temporal API is not yet broadly available without polyfills. |
-| Form validation | zod | yup / joi | Zod has first-class TypeScript inference. Server Actions benefit from `z.parse()` for input validation. Yup is fine but Zod is the ecosystem standard with Next.js. |
-| Auth library | @supabase/ssr | NextAuth.js | Supabase is already set up. NextAuth adds unnecessary complexity when Supabase handles the full auth flow. |
+Before listing additions, it is worth being explicit: the main risk in v1.2 is **adding dependencies that are not warranted**.
+
+| Temptation | Why to Resist | What to Use Instead |
+|------------|---------------|---------------------|
+| A date picker library (react-datepicker, react-day-picker, etc.) | Lease-ready date entry is a single `<input type="date">` in a table cell — no calendar UI needed, no range selection, no custom styling requirements that outweigh the bundle cost | Native `<input type="date">` styled with Tailwind |
+| TanStack Table / react-table | Active Jobs table needs sort + filter but the existing VendorTable (already in production) implements exactly this pattern with `useState` + sort logic in ~120 lines — no library needed | Extend the existing hand-built table pattern |
+| A filter/facet library | Property filter on Completed Jobs page is a `<select>` or a variant of the existing `PropertyMultiSelect` component | Reuse `PropertyMultiSelect` |
+| A new charting library | Avg Turn Time bar graph (RM view) and Top 10 Properties by Revenue Exposure (Executive view) are standard grouped/sorted bar charts — Recharts `BarChart` already handles this; the existing `VendorCompletionChart` is the exact pattern | Recharts `BarChart` with `ResponsiveContainer` |
+| A tooltip library | Recharts ships its own `<Tooltip>` component already used in the codebase | Recharts Tooltip |
+| A currency/number formatting library | `Intl.NumberFormat` is used in `pm-kpis.tsx` for currency — already pattern-established | `Intl.NumberFormat` |
+| Zustand / Jotai | Active Jobs sort/filter state is local to one component | `useState` |
+| date-fns (new addition) | Avg Turn Time needs date arithmetic (diff in days between two dates). The project currently uses none, but the existing `pm-kpis.ts` does this with raw `Date` math. For simple day-diff calculations, raw `Date` arithmetic is sufficient | Raw `Date` arithmetic — do not add date-fns |
 
 ---
 
-## What NOT to Use
+## Recommended Stack Additions
 
-| Technology | Why Not |
-|------------|---------|
-| Prisma / Drizzle | No local database. Airtable is the sole data source. ORMs have no role here. |
-| tRPC | Overkill for this architecture. Server Components fetch data directly; Server Actions handle mutations. No API layer to type. |
-| Redux / Zustand | No complex client state. Server Components handle data; the only client state is UI toggles (drawer open, filter selection) which `useState` handles fine. |
-| Socket.io / Pusher | No real-time requirements. 60s cache revalidation is sufficient for 6-15 users checking periodically. |
-| Storybook | The component count (~15-20) does not justify the setup overhead. Test components in the actual app during development. |
-| Docker | Vercel handles deployment. No need to containerize a Next.js app deployed to Vercel. |
-| @tanstack/react-table | The tables in this app are simple (5-8 columns, <100 rows). A hand-built `<table>` with Tailwind is simpler and more maintainable than wiring up TanStack for basic sort/filter. |
-| next-auth / Auth.js | Supabase already provides auth. Adding another auth layer creates confusion about which system is authoritative. |
+### No New Dependencies Required
+
+After analyzing the v1.2 feature set against the existing codebase, **no new npm packages are needed**. Every new feature maps to an existing pattern:
+
+| New Feature | Existing Pattern to Follow | File(s) |
+|-------------|---------------------------|---------|
+| Active Jobs table with sort + filter | VendorTable — `useState` sort, ChevronUp/Down icons, custom `<Table>` primitives | `src/app/(dashboard)/vendors/_components/vendor-table.tsx` |
+| Lease-ready date entry (inline editable) | JobStatusDropdown — `useOptimistic` + `useTransition` + Server Action + `sonner` toast | `src/app/(dashboard)/property/_components/job-status-dropdown.tsx` |
+| Revenue Exposure KPI box | KPICard + `Intl.NumberFormat` | `src/components/ui/kpi-card.tsx`, `src/app/(dashboard)/property/_components/pm-kpis.tsx` |
+| Avg Turn Time KPI box | Same KPICard with `Math.round()` days display | Already pattern in `computePMKPIs` |
+| Job Completion Tracker KPI box | KPICard with count | Already pattern |
+| Avg Turn Time bar graph (RM) | VendorCompletionChart — `BarChart`, `Bar`, `XAxis`, `YAxis`, `ResponsiveContainer` | `src/app/(dashboard)/executive/_components/vendor-completion-chart.tsx` |
+| Top 10 Properties by Revenue Exposure (Executive) | Same BarChart pattern, horizontal layout | Same Recharts components |
+| Property-level drill-down (RM) | Existing property selector + filtered data fetch | `src/components/layout/property-selector.tsx` |
+| Completed Jobs page with property filter | PropertyMultiSelect already handles multi-property selection | `src/components/ui/property-multi-select.tsx` |
+| Manual "Done" on Open Turns | Server Action + revalidateTag pattern from `updateJobStatus` | `src/app/actions/job-status.ts` |
+
+---
+
+## Implementation Guidance for Each New Capability
+
+### 1. Lease-Ready Date Entry (Inline Editable `<input type="date">`)
+
+**Pattern:** Follow `JobStatusDropdown` exactly — `useOptimistic` + `useTransition` + Server Action.
+
+**Key decisions:**
+- Use native `<input type="date">` — no external library. Browser-native date picker is sufficient for a single date field per row. Styling with Tailwind (`border rounded px-2 py-1 text-sm`) is adequate; no cross-browser calendar appearance required for internal PM tooling.
+- The input goes inline in the Open Turns list row, not in a modal.
+- On `onChange`, fire a Server Action that calls `base('TurnRequests').update(recordId, { 'Lease Ready Date': isoDate })` and `revalidateTag` the turn request cache.
+- Optimistic update: show the selected date immediately; revert + toast error on failure.
+- The Server Action follows the same structure as `updateJobStatus` — validate input, acquire rate limiter, update Airtable, bust 5 cache tags, return `{ success, error? }`.
+
+**Wire-up:**
+```typescript
+// In a 'use client' component
+const [optimisticDate, setOptimisticDate] = useOptimistic(currentLeaseReadyDate)
+const [isPending, startTransition] = useTransition()
+
+function handleDateChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const newDate = e.target.value // 'YYYY-MM-DD' string
+  startTransition(async () => {
+    setOptimisticDate(newDate)
+    const result = await updateLeaseReadyDate(turnId, newDate)
+    if (!result.success) {
+      setOptimisticDate(currentLeaseReadyDate)
+      toast.error('Failed to update lease date')
+    }
+  })
+}
+```
+
+### 2. Active Jobs Table (Sort + Filter)
+
+**Pattern:** Follow `VendorTable` exactly — no new library.
+
+**Columns required (PM view):** Unit, Property, Job Type, Vendor, Status, Days Open
+**Sort keys:** All columns should be sortable — same `SortKey` union type + `handleSort` toggle pattern.
+**Filter:** Status filter via a `<select>` above the table (same pattern as property selector). Local `useState` for `filterStatus`.
+
+**Data source:** Jobs linked to active Turns — the existing `fetchTurnRequests` returns jobs as nested records. Flatten them for the table rows in a pure function, no new fetch needed.
+
+### 3. Avg Turn Time Bar Graph (RM View)
+
+**Pattern:** `VendorCompletionChart` is the exact model — horizontal `BarChart` with `ResponsiveContainer`.
+
+**Data shape:**
+```typescript
+interface PropertyTurnTimeData {
+  propertyName: string
+  avgDays: number
+}
+```
+
+**Chart config:** Same as `VendorCompletionChart` — `layout="vertical"`, `YAxis type="category"`, `XAxis type="number"`. Color logic: green (<7 days), blue (7-14), red (>14) — same `getBarColor` function.
+
+**Calculation:** `avgDays` = mean of `(turn completion date - turn start date)` for completed turns per property. This is pure arithmetic on existing Airtable fields — no new data source.
+
+### 4. Top 10 Properties by Revenue Exposure (Executive View)
+
+**Pattern:** Same `BarChart` as above. Sort descending by Revenue Exposure, take top 10.
+
+**Revenue Exposure definition (must confirm with client):** Likely `sum(daily rent * days vacant)` per active turn. The `TurnRequest` records need a "daily rent" or "monthly rent" field. Verify this field exists in the Airtable schema before building the calculation.
+
+**Flag:** Revenue Exposure calculation definition is a business logic question, not a technical one. The Recharts chart itself is straightforward once the number is computed.
+
+### 5. KPI Calculations — Avg Turn Time, Revenue Exposure, Job Completion Tracker
+
+All three are pure TypeScript functions in `src/lib/kpis/`. Follow the pattern in `src/lib/kpis/pm-kpis.ts` — take the `TurnRequest[]` array, return computed values, export a single `computeXKPIs()` function per role.
+
+**Date arithmetic without date-fns:**
+```typescript
+function daysBetween(start: string, end: string): number {
+  const msPerDay = 1000 * 60 * 60 * 24
+  return Math.round((new Date(end).getTime() - new Date(start).getTime()) / msPerDay)
+}
+```
+This is sufficient for day-diff calculations. Do not add `date-fns` just for this.
+
+### 6. Property Filter on Completed Jobs Page
+
+**Pattern:** Reuse `PropertyMultiSelect` component from v1.1. It already handles multi-property selection with inline creation and is tested (13 tests passing).
+
+**Implementation:** Pass `selectedProperties` state as a URL search param or prop to filter the jobs list. Since Completed Jobs is a new page, use local `useState` — simpler and consistent with the rest of the app. URL params not needed for an internal tool.
+
+---
+
+## Recharts Version Notes
+
+The project runs **Recharts 3.8.0** (confirmed in `package.json`). Recharts 3 introduced:
+- Rewritten state management (fixes many long-standing bugs)
+- `width="auto"` on YAxis for automatic width calculation
+- New hooks: `useXAxisDomain`, `useYAxisDomain`
+- Z-index support across surfaces
+
+None of these new features are required for v1.2. The existing `BarChart` + `ResponsiveContainer` pattern works identically in v3 as in v2. No migration needed.
+
+**Grouped bars for property comparison:** Use multiple `<Bar>` components with different `dataKey` values in one `<BarChart>`. No `stackId` needed for side-by-side grouped bars — just multiple `<Bar>` components.
+
+---
+
+## Confirmed Existing Versions (from package.json)
+
+| Package | Installed Version | v1.2 Status |
+|---------|------------------|-------------|
+| next | 16.1.6 | No change |
+| react | 19.2.3 | No change |
+| recharts | ^3.8.0 | No change — supports all needed chart types |
+| lucide-react | ^0.577.0 | No change — all needed icons present |
+| sonner | ^2.0.7 | No change — toast for inline edit feedback |
+| radix-ui | ^1.4.3 | No change |
+| @supabase/ssr | ^0.9.0 | No change |
+| @supabase/supabase-js | ^2.99.1 | No change |
+| tailwindcss | ^4 | No change |
+| clsx | ^2.1.1 | No change |
+| airtable | ^0.12.2 | No change |
+| geist | ^1.7.0 | No change |
+| vitest | ^4.0.18 | No change |
 
 ---
 
 ## Installation
 
-```bash
-# Scaffold (use latest create-next-app, accept defaults for App Router + TypeScript + Tailwind + src directory)
-npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir
-
-# Core dependencies
-npm install @supabase/supabase-js @supabase/ssr airtable recharts lucide-react
-
-# Utility libraries
-npm install clsx tailwind-merge date-fns zod
-
-# Dev dependencies
-npm install -D prettier prettier-plugin-tailwindcss
-
-# Fonts (Geist may already be included by create-next-app)
-npm install geist
-```
-
-### Environment Variables (`.env.local`)
-
-```
-# Supabase (public -- used by browser client)
-NEXT_PUBLIC_SUPABASE_URL=your-project-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-
-# Airtable (server-only -- NEVER prefix with NEXT_PUBLIC_)
-AIRTABLE_API_KEY=your-pat-token
-AIRTABLE_BASE_ID=your-base-id
-```
-
-### Utility Setup (`src/lib/utils.ts`)
-
-```typescript
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-```
+No new packages. Zero `npm install` commands for v1.2.
 
 ---
 
-## Airtable SDK vs Raw Fetch Decision
+## Alternatives Considered
 
-This deserves explicit guidance because it affects the entire data layer architecture.
-
-### Option A: Official `airtable` SDK (Recommended for starting)
-```typescript
-import Airtable from 'airtable';
-const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY })
-  .base(process.env.AIRTABLE_BASE_ID!);
-
-// Callback-based pagination -- wrap in a Promise
-async function getAllRecords(tableName: string, options?: object) {
-  const records: any[] = [];
-  await base(tableName).select(options).eachPage((page, fetchNextPage) => {
-    records.push(...page);
-    fetchNextPage();
-  });
-  return records;
-}
-```
-**Pro:** Handles pagination, retries, field type mapping.
-**Con:** Callback API does not integrate with Next.js `fetch` caching natively. You must use `unstable_cache` wrapper instead of `next: { revalidate }`.
-
-### Option B: Raw `fetch` (Consider if caching feels awkward)
-```typescript
-async function airtableFetch(table: string, params?: URLSearchParams) {
-  const url = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/${encodeURIComponent(table)}?${params}`;
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}` },
-    next: { revalidate: 60, tags: [`airtable-${table.toLowerCase()}`] },
-  });
-  return res.json();
-}
-```
-**Pro:** Native Next.js fetch caching with `revalidate` and `tags`. No `unstable_cache` needed.
-**Con:** Must handle pagination manually (check for `offset` in response, loop until done). Must handle rate limiting yourself.
-
-### Recommendation
-Start with the official SDK + `unstable_cache` wrapper as specified in PLAN.md. The SDK's pagination handling saves significant boilerplate for tables like Jobs that may have 100+ records. If `unstable_cache` behavior becomes problematic (it has been evolving in Next.js 15), switch to raw fetch.
+| Feature | Considered | Rejected Because | Use Instead |
+|---------|------------|-----------------|-------------|
+| Lease-ready date entry | `react-datepicker` | Adds ~42KB bundle, brings its own CSS, requires theming — all for a single date field. Native `<input type="date">` is fully accessible and sufficient for internal tooling. | `<input type="date">` |
+| Active Jobs table | `@tanstack/react-table` | The existing VendorTable shows the full sort/filter pattern in 120 lines of TypeScript. TanStack Table requires ~50 lines of configuration before any UI renders. Overkill for a 6-column table. | Hand-built table following VendorTable pattern |
+| Avg Turn Time bar chart | A new charting library | Recharts 3 is already installed, the VendorCompletionChart is the exact same chart type. No new library warranted. | Recharts BarChart |
+| Revenue Exposure currency display | `accounting.js`, `numeral.js` | `Intl.NumberFormat` already used in `pm-kpis.tsx` for currency formatting. No new dependency. | `Intl.NumberFormat` |
+| Property filter state | `nuqs` (URL state management) | URL params are useful for shareable URLs but not required for this internal tool. `useState` is simpler and consistent with the rest of the app. | `useState` |
 
 ---
 
-## Caching Architecture Decision
+## What NOT to Use
 
-The PLAN.md specifies `unstable_cache` with 60s revalidation and tag-based busting. This is the correct approach given the constraints.
-
-**Why `unstable_cache` over `fetch` caching:**
-- The Airtable SDK uses its own HTTP client internally, not Next.js `fetch`. So Next.js automatic fetch deduplication and caching do not apply.
-- `unstable_cache` wraps any async function (including SDK calls) with file-system or in-memory caching.
-- Tag-based revalidation via `revalidateTag()` in Server Actions provides instant cache-busting on writes.
-
-**Note on naming:** Despite the `unstable_` prefix, this API has been stable in practice since Next.js 14. Next.js 15 may have renamed it to `cacheLife` / `cacheTag` or stabilized it as `cache()`. Verify the current API name when scaffolding.
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| `react-datepicker` / `react-day-picker` / any calendar library | Bundle weight (30-80KB) not justified for a single inline date field per turn row | `<input type="date">` with Tailwind styling |
+| `@tanstack/react-table` | Already avoided in v1.0/v1.1; Active Jobs table is the same complexity as VendorTable which was built without it | Hand-built table pattern from VendorTable |
+| A new date arithmetic library | Day-diff math is 2 lines of `Date` arithmetic | Raw `Date` math — `(new Date(end).getTime() - new Date(start).getTime()) / msPerDay` |
+| A separate filter/facet library | Property filter is a single dropdown | `<select>` or existing `PropertyMultiSelect` |
+| `tailwind-merge` | Not installed in this project — `clsx` alone is used throughout | `clsx` as already established |
 
 ---
 
-## Version Verification Checklist
+## Version Compatibility
 
-Run these commands before committing to versions:
-
-```bash
-npm view next version           # Expected: 15.x
-npm view @supabase/supabase-js version  # Expected: 2.x
-npm view @supabase/ssr version  # Expected: 0.5.x (may have reached 1.0)
-npm view airtable version       # Expected: 0.12.x
-npm view recharts version       # Expected: 2.x
-npm view lucide-react version   # Expected: 0.4xx+
-npm view tailwindcss version    # Expected: 3.4.x or 4.x
-npm view date-fns version       # Expected: 4.x
-npm view zod version            # Expected: 3.x
-```
+All packages installed. No new packages. No compatibility concerns for v1.2.
 
 ---
 
 ## Sources
 
-- PROJECT.md and PLAN.md (project decisions already made)
-- THEME.md (design language constraints)
-- Training data knowledge of Next.js 15, Supabase, Airtable SDK, and React ecosystem (cutoff ~May 2025)
-- **LOW confidence on exact version numbers** -- must verify with `npm view` before installation
-- **HIGH confidence on library choices** -- these are the standard, well-established tools for this exact stack
+- `package.json` — confirmed installed versions (HIGH confidence)
+- `src/app/(dashboard)/vendors/_components/vendor-table.tsx` — sort/filter pattern verified to exist (HIGH confidence)
+- `src/app/(dashboard)/property/_components/job-status-dropdown.tsx` — inline edit + optimistic pattern verified to exist (HIGH confidence)
+- `src/app/(dashboard)/executive/_components/vendor-completion-chart.tsx` — bar chart pattern verified to exist (HIGH confidence)
+- `src/app/actions/job-status.ts` — Server Action + cache bust pattern verified to exist (HIGH confidence)
+- `src/lib/kpis/pm-kpis.ts` — KPI calculation pattern verified to exist (HIGH confidence)
+- `src/components/ui/property-multi-select.tsx` — property filter component verified to exist (HIGH confidence)
+- Recharts GitHub releases — v3 feature notes: https://github.com/recharts/recharts/releases (MEDIUM confidence)
+- React `useOptimistic` docs: https://react.dev/reference/react/useOptimistic (HIGH confidence)
+
+---
+
+*Stack research for: UnitFlowSolutions v1.2 Dashboard Redesign*
+*Researched: 2026-03-18*
+*Scope: Additions and changes only — base stack documented in v1.0 STACK.md*

@@ -1,202 +1,264 @@
 # Feature Research
 
-**Domain:** Property management unit turnover (make ready) dashboard
-**Researched:** 2026-03-08
-**Confidence:** HIGH (based on project context, existing Airtable interface analysis, reference screenshots, and domain knowledge of property management operations software)
+**Domain:** Property management turnover dashboard — v1.2 Dashboard Redesign
+**Researched:** 2026-03-18
+**Confidence:** HIGH (v1.0 baseline from production codebase analysis; v1.2 targets derived from PROJECT.md requirements + industry research)
+
+---
+
+## Scope of This Document
+
+This is a **milestone-scoped update** to the original FEATURES.md (dated 2026-03-08). It covers what changes and what is new for the v1.2 Dashboard Redesign milestone. The v1.0 feature set is shipped and validated. This document answers: "What features belong in this redesign, what is mandatory vs. differentiating, and what should we explicitly not build?"
+
+The v1.2 target features per PROJECT.md:
+- Terminology rename (Make Ready → Turns/Jobs, Vacant → Off Market)
+- PM dashboard: 6 KPI boxes, Open Turns with lease-ready date entry + manual Done, Active Jobs table, Revenue Exposure
+- RM dashboard: 6 aggregated boxes, Property Insights list, Avg Turn Time bar graph, PM-level drill-down
+- Executive dashboard: 6 redesigned boxes, Top 10 Properties by Revenue Exposure
+- Completed Jobs page with property filter
+
+---
 
 ## Feature Landscape
 
 ### Table Stakes (Users Expect These)
 
-Features users assume exist. Missing these = product feels incomplete or worse than the Airtable interface it replaces.
+Features users assume exist in a professional dashboard. Missing these = product feels unfinished or regresses from v1.0.
 
 | Feature | Why Expected | Complexity | Notes |
 |---------|--------------|------------|-------|
-| Role-based authentication | Users currently share Airtable views; role separation is a core reason for the dashboard | MEDIUM | Supabase handles auth, but middleware routing and property scoping add complexity |
-| Property-scoped data visibility | PMs must only see their properties; executives see all. This is the #1 pain point with Airtable's "everyone sees everything" UI | MEDIUM | Filter logic in every query; mismatch between property names in Airtable vs Supabase is a known risk |
-| Turn request list with status | The core data view. PMs live in this list daily. Must show property, unit, status, dates, linked jobs, price | LOW | Direct mapping from Airtable Turn Requests table. Two sections: overdue and on-schedule |
-| Overdue/attention-needed turns surfaced first | The #1 workflow: "what needs my attention right now?" Burying overdue items = worse than Airtable | LOW | Sort/filter logic on target dates. Pink alert card for "Past Target Time" matches existing Airtable interface |
-| Job status tracking per turn | Each turn has multiple vendor jobs. PMs need to see which jobs are stuck, blocked, or need attention | LOW | Read from Jobs table, display as rows in turn detail. Status badge coloring is critical UX |
-| KPI summary cards | Executives and PMs both need at-a-glance metrics. This is the dashboard's reason to exist vs a spreadsheet | MEDIUM | Aggregation logic over Airtable data. ~10 distinct KPI calculations needed |
-| Inline job status updates | "Update status without leaving the page" is explicitly called out as the pain point. If users must navigate away, they might as well use Airtable | MEDIUM | Server actions that write to Airtable API then bust cache. Optimistic UI recommended |
-| Turn detail drill-down | Click a turn to see all linked jobs, dates, pricing, notes. The turn is the core business object | LOW | Route: /property/turns/[requestId]. Fetches linked job records |
-| Vendor metrics view | Who's performing, who's not. Table of vendors with completion rates and job counts | LOW | Already exists in Airtable interface (see VendorMetrics.png). Direct read from Vendors table rollup fields |
-| Property filter/selector | PMs with multiple properties or DMs need to filter by property. Existing Airtable interface has this | LOW | Dropdown populated from user's assigned_properties array |
-| Responsive layout | PMs check on-site from tablets/phones. If the dashboard doesn't work on mobile, they fall back to Airtable | MEDIUM | Three-column desktop, two-column tablet, stacked mobile. Bottom tab bar on mobile replaces sidebar |
-| Loading states / skeletons | Data comes from a remote API with 60s cache. Blank screens feel broken | LOW | Skeleton components matching card shapes. Next.js loading.tsx convention |
+| 6 KPI boxes per role (PM, RM, Exec) | Industry standard: property management dashboards universally lead with a KPI row. Users in property management expect at-a-glance metrics at the top. Buildium, AppFolio, and Bold BI all use this pattern. | MEDIUM | Each role gets a distinct set of 6 boxes appropriate to their scope. PM: unit-level. RM: property-level aggregation. Exec: portfolio-level. |
+| Turn list with status + age | The core PM daily view. Every property management platform surfaces active turns with overdue flagging first. Without this, PMs have no reason to open the dashboard. | LOW | Already exists in v1.0. v1.2 adds lease-ready date entry and "Done" action inline. |
+| Active Jobs table (flat, sortable) | PMs need to scan all in-flight jobs across their turns without opening each turn one at a time. Distinct from the turn list — jobs are the work, turns are the unit. This separation is the core redesign goal. | MEDIUM | New in v1.2. Sort by vendor, status, days open. Data extracted from already-fetched turn requests (no additional API call). |
+| Revenue Exposure KPI | "How much money are we losing from units sitting vacant past target?" Industry standard: days vacant is tracked as a direct revenue metric. Buildium, Second Nature, and Revela all cite days-to-lease and vacancy cost as core KPIs. The dollar figure makes urgency tangible. | MEDIUM | $60/day × days over target per active turn. Surfaced as a KPI box with currency formatting. Must handle null target dates explicitly (count excluded, not silently $0). |
+| Avg Turn Time KPI | "How fast are units turning?" Universally tracked in property management operations. Benchmarks: most make-readies finish within 72 hours; 7-10 days is a common target range for full turns. | LOW | Calculated from vacantDate → readyToLeaseDate on completed turns. Pure arithmetic on existing fields. |
+| Inline lease-ready date entry | PMs must close out a turn by recording when the unit is ready to lease. Without this write capability, turns stay open forever. The date triggers the Revenue Exposure stop-clock. | MEDIUM | New Server Action. Inline date input per turn row. Optimistic UI (show date immediately, revert on error). Fire only on blur/confirm, not on each keystroke. |
+| Manual "Done" on turns | PM needs to mark a turn complete without navigating to a separate record. Standard pattern in task management tools. If completing a turn requires extra clicks, PMs will skip it. | LOW | Reuses existing updateTurnRequestStatus() action. New "Mark Done" button in turn row. |
+| Property Insights list (RM view) | Regional Managers need per-property stats in one view. Drilling into each property individually is what the current /property page requires — that defeats the purpose of the RM view. The industry pattern: RM dashboards show a ranked list of properties by metric. | MEDIUM | Per-property aggregation: active turns, avg turn time, revenue exposure. Computed in JS from a single fetchTurnRequestsForUser() call. |
+| Avg Turn Time bar graph (RM view) | Visual comparison of turn time across properties is the fastest way for an RM to spot problem properties. Bar charts for per-property comparisons are universal in property management BI tools. | LOW | Recharts BarChart. One bar per property. Color-coded: green (<7 days), amber (7-14), red (>14). Existing VendorCompletionChart is the exact pattern. |
+| Completed Jobs page with property filter | Historical record of what was done. PMs need to verify completed work and audit vendor performance. A filterable completed-jobs table is a standard feature in work-order-style property management tools. | LOW | New route /property/completed-jobs. Reuses ActiveJobsTable with isCompleted filter. Property filter via existing PropertyMultiSelect. |
+| Top 10 Properties by Revenue Exposure (Exec) | Executives need to know which properties are burning the most money from extended vacancies. Ranked-list tables are the standard executive pattern for "where to focus." | LOW | Sorted PropertyInsight[] by revenueExposure desc, top 10. Shares computePropertyInsights() with RM view. |
+| Consistent terminology across all views | "Make Ready", "Vacant", and "District Manager" were internal Airtable labels, not client business terminology. Using "Turns", "Jobs", "Off Market", and "Regional Manager" is expected by users who were asked to verify the v1.1 build. | LOW | Display string changes only. Airtable field values (status enums) do not change. TypeScript identifiers updated in second pass. |
+| Optimistic UI for inline edits | Users expect immediate feedback when they update a field. A 1-2 second lag before seeing their change registered (waiting for Airtable write + cache bust) makes the interface feel broken. | MEDIUM | Already implemented for job status updates in v1.0. v1.2 extends the useOptimistic + useTransition + sonner toast pattern to lease-ready date entry. |
+| Loading states on new pages/sections | Any new route or Suspense boundary without a loading skeleton will show a blank flash. This is a table stakes UX concern. | LOW | loading.tsx convention for new routes. Skeleton shapes matching KPI card dimensions and table rows. |
 
 ### Differentiators (Competitive Advantage)
 
-Features that make this dashboard better than Airtable or generic project management tools for this specific domain.
+Features that make this dashboard demonstrably better than the Airtable native interface — the standard it competes against. These map directly to the app's stated core value: "fewer clicks to the information that matters."
 
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
-| Smart notification panel (derived alerts) | Automatically surfaces "NEEDS ATTENTION" jobs, counter quotes pending review, approaching deadlines. Users never miss critical items. Airtable has no notification layer | MEDIUM | Derive notifications from Airtable data (not a separate table). Middle column in layout. Logic: jobs with status "NEEDS ATTENTION", counter quotes populated, jobs within 2 days of end date, turns past target |
-| Inline pricing approval | Accept or flag vendor quotes directly from the turn detail. Currently requires navigating multiple Airtable views. Saves 5+ clicks per decision | MEDIUM | Server action writes approval to Airtable. Show current price from Vendor_Pricing, counter quote if exists, approve/flag buttons |
-| District Manager portfolio view | Multi-property overview with drill-down. Airtable has no concept of a "portfolio" view. DMs currently manually check each property | MEDIUM | Property cards grid with mini-stats (active turns, completion rate, pending approvals). Drill-down reuses PM components |
-| Role-appropriate dashboards (3 distinct views) | Each role gets exactly what they need. Executive = health snapshot. PM = daily action list. DM = portfolio overview. Airtable gives everyone the same interface | HIGH | Three separate route groups with distinct layouts and data queries. Major UX win but significant build effort |
-| Color-coded alert cards (pink/yellow severity) | Visual urgency hierarchy. Pink = past target (action required NOW). Yellow = trending past target (act soon). White = on track. Immediate visual triage without reading every row | LOW | CSS classes on KPI cards. Already visible in reference screenshots. Simple but high-impact UX |
-| Notes on turn requests | Add contextual notes per turn. Currently PMs communicate about turns via separate channels (email, text). Centralizes communication on the business object | LOW | Text area in turn detail, server action appends to Airtable Notes field. Simple but valuable for accountability |
-| Charts and data visualization | Vendor performance bar charts, completion gauges, trend indicators. Transforms raw numbers into actionable insight. Airtable's native charts are limited | MEDIUM | Recharts library. Vendor bar chart, semi-circular gauge, trend arrows with percentages |
-| Backlog delta KPI | "Jobs opened minus jobs completed" over 30 days. Negative = clearing backlog, positive = falling behind. Simple metric but not available in standard Airtable views | LOW | Computed from two existing queries. Powerful executive insight in a single number |
+| Turn vs. Job separation (semantic clarity) | Airtable conflates "units being turned" with "jobs assigned to vendors." The redesign surfaces turns as the primary object and jobs as the work attached to them. This matches how PMs actually think. No competitor has this separation built around a custom turnover workflow. | HIGH | The central architectural change of v1.2. Every feature depends on this conceptual model being clear in the UI. |
+| Revenue Exposure with null-date disclosure | Most PM dashboards show a revenue number without qualifying it. Surfacing "X turns excluded (no target date)" prevents the KPI from lying to users. This is a trust-building differentiator — users know the number means what it says. | LOW | Extra line on KPI box. Negligible implementation cost for high credibility gain. |
+| RM property drill-down reusing PM components | RM clicks a property in the Property Insights list and sees the full PM view scoped to that property — no duplicate UI. The drill-down is seamless. Competitors either show flat tables at the RM level or separate views that feel disconnected. | MEDIUM | /property?property=X pattern already in place. RM drill-down is routing, not a new component build. |
+| Single-call RM aggregation (no per-property API cost) | RM Property Insights are computed in JS from one Airtable call, not N calls per property. This means no perceptible slowdown as the RM's portfolio grows from 2 to 10 properties. Generic BI tools hit the data source once per widget. | MEDIUM | groupTurnsByProperty() in rm-kpis.ts. Critical for performance scaling without infrastructure changes. |
+| Color-coded turn time bar graph | Green/amber/red bars on the Avg Turn Time chart give the RM an instant visual triage — no numbers required to identify a problem property. Color thresholds (7/14 days) align with industry benchmarks for make-ready targets. | LOW | getBarColor() function. Already established pattern in VendorCompletionChart. |
+| Role-appropriate KPI box selections | Each of the three roles gets 6 boxes chosen for their scope of work: PM sees unit-level action items; RM sees cross-property comparison metrics; Exec sees portfolio health and exposure. No other view in the app is designed for the wrong person. | MEDIUM | Three distinct compute functions + component sets. High design value for low marginal cost once one role is done. |
+| Lease-ready date as turn-closing signal | Using the lease-ready date (rather than a status dropdown) as the turn-closing event ties the workflow to a real business event: "the unit is ready to rent." This prevents premature turn closure and ensures the Revenue Exposure stop-clock only resets when the work is actually done. | MEDIUM | Requires careful design decision: the turn "Done" state must be gated on readyToLeaseDate presence. Server action sets both fields atomically. |
 
 ### Anti-Features (Commonly Requested, Often Problematic)
 
+Features that seem useful at v1.2 scale but should be deliberately excluded.
+
 | Feature | Why Requested | Why Problematic | Alternative |
 |---------|---------------|-----------------|-------------|
-| Real-time chat/messaging | "PMs and vendors need to communicate" | Adds massive complexity (WebSocket, message persistence, notifications). Communication about turns already happens via phone/email and is fine. Building chat pulls focus from the core value: visibility | Notes on turn requests. If richer communication needed later, integrate with existing tools (Slack, email) |
-| Photo/video uploads for unit conditions | "Need to document unit condition during turns" | Storage complexity (Airtable attachment limits, image processing, CDN). Significant scope expansion. Photos are already uploaded directly to Airtable by field staff | Defer to v2. Airtable attachment field can display existing photos read-only in the dashboard without upload complexity |
-| Admin panel for user management | "Need to add/remove users without touching Supabase" | Only 6-15 users, changes happen rarely (new PM hire). Building a full admin panel is disproportionate effort | Manual Supabase account creation. Add admin panel if/when user count grows significantly |
-| OAuth/social login | "Easier than remembering passwords" | Adds OAuth provider configuration complexity. These are internal business users, not consumers. Password managers solve the problem | Email/password via Supabase. 6-15 internal users can handle a password |
-| Custom report builder | "Let users create their own KPI views" | Massive complexity. The whole point of the dashboard is opinionated views per role. Customization undermines the "fewer clicks to what matters" value proposition | Fixed, well-designed KPI cards per role. If new metrics needed, add them to the codebase |
-| Mobile native app | "PMs are on-site, need mobile" | Two codebases (or React Native complexity). Responsive web covers mobile use cases. PWA possible later if needed | Responsive web design. Test on mobile Safari/Chrome. Add to home screen works fine |
-| Real-time data sync (WebSocket/SSE) | "I want to see updates immediately when vendors complete jobs" | Airtable has no WebSocket API. Would require polling or a webhook relay. 60s cache is already near-real-time for this domain. Turns take days, not seconds | 60-second cache revalidation + immediate cache bust on writes from the dashboard. For the weekly/daily check cadence, this is more than sufficient |
-| Vendor portal (self-service for vendors) | "Let vendors update their own job status" | Entirely different user base, auth model, and permission system. Vendors use phone/text to communicate with PMs. Building a vendor-facing app is a separate product | Keep vendor communication out-of-band. PM updates job status based on vendor communication. Consider vendor portal as a separate v2+ product if demand exists |
-| Airtable schema modifications | "The schema could be better organized" | The dashboard reads existing schema as-is. Changing schema breaks existing Airtable automations, views, and workflows that other stakeholders depend on | Work with existing schema. Map Airtable field names to clean TypeScript interfaces in the API layer |
-| Offline mode | "PMs walk properties without internet" | Complex sync logic, conflict resolution, storage. The dashboard is a read-heavy tool with occasional writes | Progressive enhancement: cache last-viewed data in service worker for read-only offline access (v2+) |
+| Real-time push updates (WebSocket / SSE) | "I want to see when a vendor completes a job without refreshing" | Airtable has no WebSocket API. Polling + cache creates complexity without meaningful UX gain — turns take days, not seconds. The 60s cache revalidation is already near-real-time for this domain's cadence. | Cache bust on writes (already in place). Natural 60s revalidation for reads. |
+| Configurable KPI boxes (drag-to-reorder, pick metrics) | "Can I choose which 6 boxes I see?" | With 6-15 users, the cost of building a configuration system exceeds the value. The three role-specific views already represent the right customization for this org. Config UIs also tend to reveal gaps in the default design. | Fixed, opinionated KPI sets per role. Add/change KPIs in code if users request specific changes — the code is approachable and changes take minutes. |
+| Multi-column sort on Active Jobs table | "I want to sort by status, then by days open, then by vendor" | Complex multi-column sort for an internal table used by 6-15 users is engineering overhead with near-zero payoff. Single-column sort covers 95% of use cases (sort by days open to find stale jobs). | Single-column sort with toggle direction. Follow the existing VendorTable pattern. |
+| Date range filtering on Completed Jobs | "Show me only jobs completed between March 1 and March 15" | Date range filtering requires a date picker or two date inputs, state management, and edge-case handling (invalid ranges, future dates). Property filter alone covers the RM/PM workflow (see which properties need attention). Date filtering can be added in a targeted future phase if usage data shows the need. | Property filter via existing PropertyMultiSelect. Filter to a specific property is the primary use case for Completed Jobs. |
+| Editable job fields inline in the Active Jobs table | "Can I update the vendor or job type from the table?" | The Active Jobs table is a view, not an edit surface. Updating job details requires navigating to the Airtable record or a future turn-detail edit surface. Adding inline editing to the table adds optimistic state management and cache invalidation complexity for fields that change infrequently. | Keep Active Jobs table read-only except for status (already handled by inline status updates on the turn list). |
+| Per-user notification preferences | "I only want to see alerts for certain properties" | Notification preferences require a settings model, persistence (Supabase table or user metadata), and UI. At 6-15 users with already-scoped data (each user only sees their properties), preferences add no meaningful signal reduction. | Role-based data scoping already limits noise. Exec sees all properties; PM sees only theirs. No preferences needed. |
+| Avg Turn Time trend over time (time series chart) | "Show me whether turn times are improving week over week" | Requires storing historical snapshots (Airtable data is point-in-time). The existing caching layer does not accumulate historical state. Building a time series would require either a database for snapshots or a computed rollup. | Current-period Avg Turn Time KPI box is sufficient. Trend arrow (delta vs. last period) is a v2 feature if historical data storage is added. |
+| Revenue Exposure forecast | "Project next month's exposure based on current trends" | Forecasting requires historical vacancy data, move-out scheduling data, and statistical modeling. None of this is in scope for a dashboard that reads only current Airtable state. | Surface current actual exposure clearly. Forecasting is a separate product capability. |
+
+---
 
 ## Feature Dependencies
 
 ```
-[Supabase Auth + Role Mapping]
+[Terminology Rename (display strings + TS identifiers)]
     |
-    +--requires--> [Property-Scoped Data Queries]
-    |                   |
-    |                   +--requires--> [Turn Request List]
-    |                   |                   |
-    |                   |                   +--requires--> [Turn Detail / Job View]
-    |                   |                   |                   |
-    |                   |                   |                   +--enhances--> [Inline Status Updates]
-    |                   |                   |                   +--enhances--> [Pricing Approval]
-    |                   |                   |                   +--enhances--> [Notes]
-    |                   |                   |
-    |                   |                   +--enhances--> [Overdue-First Sorting]
-    |                   |
-    |                   +--requires--> [KPI Aggregation Functions]
-    |                   |                   |
-    |                   |                   +--requires--> [Executive KPI Dashboard]
-    |                   |                   +--requires--> [PM KPI Cards]
-    |                   |                   +--requires--> [DM Portfolio Overview]
-    |                   |
-    |                   +--requires--> [Vendor Data Queries]
-    |                                       |
-    |                                       +--requires--> [Vendor Metrics Page]
-    |                                       +--enhances--> [Charts / Visualizations]
+    (must complete before new components are written)
     |
-    +--requires--> [Layout Shell (Sidebar + Content)]
-                        |
-                        +--enhances--> [Notification Panel (Middle Column)]
+    v
+[New KPI Compute Functions (pm-kpis.ts, executive-kpis.ts, rm-kpis.ts NEW)]
+    |
+    +--required-by--> [PM 6-Box KPI Component]
+    +--required-by--> [RM 6-Box KPI Component]
+    +--required-by--> [Executive 6-Box KPI Component]
+    +--required-by--> [Revenue Exposure KPI Box]
+    |
+    v
+[fetchJobsForUser() (new function in jobs.ts)]
+    |
+    +--required-by--> [Active Jobs Table component]
+    +--required-by--> [Completed Jobs Page]
 
-[Design System Components]
+[setLeaseReadyDate() Server Action (new)]
     |
-    +--required-by--> [All Views]
-    +--required-by--> [KPI Cards]
-    +--required-by--> [Status Badges]
+    +--required-by--> [Inline Lease-Ready Date Input]
+    +--required-by--> [Manual "Done" on turns]
 
-[Airtable API Layer + Cache + Rate Limiter]
+[Active Jobs Table component]
     |
-    +--required-by--> [All Data Queries]
+    +--required-by--> [Completed Jobs Page]  (reused with isCompleted filter)
+
+[computePropertyInsights() in rm-kpis.ts]
+    |
+    +--required-by--> [Property Insights List (RM view)]
+    +--required-by--> [Avg Turn Time Bar Graph (RM view)]
+    +--required-by--> [Top 10 Properties by Revenue Exposure (Exec view)]
+
+[/regional route (new)]
+    |
+    +--requires--> [middleware ROLE_ALLOWED_ROUTES updated for rm role]
+    +--requires--> [RM KPI compute functions]
+
+[Completed Jobs Page (/property/completed-jobs)]
+    |
+    +--requires--> [Active Jobs Table component]
+    +--enhances--> [property filter via PropertyMultiSelect]
 ```
 
 ### Dependency Notes
 
-- **Auth requires Property Scoping:** Without knowing which properties a user is assigned to, no data can be fetched correctly. Auth and role mapping must come before any view.
-- **All views require the Airtable API layer:** The data layer (client, caching, rate limiting, type definitions) must exist before any view can render real data.
-- **Design system required by all views:** Button, Card, KPICard, Badge, Table components are used across every view. Build these first to avoid duplication.
-- **Turn Detail requires Turn List:** The detail page is a drill-down from the list. The list must exist for navigation to work.
-- **Notification Panel enhances Layout Shell:** The notification panel occupies the middle column. The shell layout must support three columns, but notifications can be added after the shell works with two columns.
-- **Charts enhance Vendor Metrics:** Charts add visual impact but the vendor metrics page works as a plain table first.
+- **Terminology rename before new components:** New components should use final terminology from day 1. Renaming after building doubles the work and creates a gap where old/new strings coexist.
+- **KPI compute functions before KPI components:** Components that render new boxes cannot be written until the compute functions are defined and tested. The function signature is the contract.
+- **computePropertyInsights() is shared:** Both RM Property Insights and Executive Top 10 depend on the same function. Build once in rm-kpis.ts, import in executive-kpis.ts.
+- **Active Jobs Table before Completed Jobs Page:** The Completed Jobs Page is the Active Jobs Table with a filter flipped. Reversing the order would create the more complex component first and then have to simplify it.
+- **fetchJobsForUser() is the Active Jobs table's data source:** The table cannot be built without this function. The function should be built and tested before the table component is touched.
+- **setLeaseReadyDate() must set both readyToLeaseDate AND status atomically:** The lease-ready date is the turn-closing signal. The server action must set both fields in one Airtable PATCH to avoid the state conflict pitfall (turn Done status mismatches lease-ready date presence).
 
-## MVP Definition
+---
 
-### Launch With (v1)
+## MVP Definition (v1.2 Milestone)
 
-The minimum to replace the Airtable interface for daily PM workflows.
+### Milestone Core (Ship Together)
 
-- [ ] Supabase auth with role-based login and property scoping -- users must log in and see only their data
-- [ ] Design system components (Button, Card, KPICard, Badge, Table, StatusBadge) -- every view depends on these
-- [ ] Layout shell with sidebar navigation -- structural foundation for all views
-- [ ] Airtable API layer with caching and rate limiting -- every feature depends on data access
-- [ ] Property Manager turn list with overdue-first sorting -- the #1 daily workflow
-- [ ] Turn detail with linked jobs and status badges -- the core drill-down
-- [ ] PM KPI cards (active make readys, completed 30d/7d, avg time, projected spend, past target) -- at-a-glance health
-- [ ] Executive KPI dashboard (all 8+ metrics from reference screenshot) -- weekly health snapshot
-- [ ] Inline job status updates -- the core "fewer clicks" value prop
-- [ ] Responsive layout (desktop + tablet + mobile basics) -- PMs check on-site
+The features that constitute the v1.2 Dashboard Redesign milestone. All are required; none can be deferred to v1.3 without leaving the dashboard in a partially-redesigned state.
 
-### Add After Validation (v1.x)
+- [ ] Terminology rename — all views use "Turns", "Jobs", "Off Market", "Regional Manager". TypeScript identifiers and display strings both updated.
+- [ ] PM 6-Box KPI row — new boxes with updated calculations (active turns, avg turn time, revenue exposure, completed this period, jobs in progress, turns near deadline)
+- [ ] Revenue Exposure KPI box — dollar figure with null-target-date count disclosed
+- [ ] Inline lease-ready date entry on Open Turns list — date input per row, optimistic update, blur-triggered server action
+- [ ] Manual "Done" button on Open Turns list — reuses updateTurnRequestStatus()
+- [ ] Active Jobs table on PM dashboard — sortable, filtered to non-completed, data from flatMap over turn requests
+- [ ] RM dashboard at /regional — 6 aggregated KPI boxes
+- [ ] Property Insights list on RM dashboard — per-property stats, drill-down links
+- [ ] Avg Turn Time bar graph on RM dashboard — color-coded by threshold
+- [ ] Executive dashboard redesign — 6 updated KPI boxes
+- [ ] Top 10 Properties by Revenue Exposure on Executive dashboard
+- [ ] Completed Jobs page (/property/completed-jobs) — property filter, reuses ActiveJobsTable
+- [ ] Middleware updated to route rm → /regional
 
-Features to add once core workflows are validated with real users.
+### Add After v1.2 Validation
 
-- [ ] Inline pricing approval -- add when PMs confirm the approval workflow matches their needs
-- [ ] Notes on turn requests -- add when PMs confirm they want centralized notes vs. existing communication channels
-- [ ] District Manager portfolio view -- add when DM user validates the portfolio card layout and drill-down
-- [ ] Smart notification panel (middle column) -- add after validating that derived alerts match what users actually need to see
-- [ ] Charts and data visualization (vendor bar charts, gauges) -- add after confirming which visualizations executives actually reference
+Features in PROJECT.md Future scope, triggered by user feedback:
 
-### Future Consideration (v2+)
+- [ ] Inline pricing approval — after PMs confirm the approval workflow is the right UX
+- [ ] Notes on turn requests — after confirming PMs want centralized notes vs. out-of-band communication
+- [ ] Middle column notification/alert system — after validating that derived alerts match actual user needs
+- [ ] Maintenance Manager role view — after confirming Maintenance Manager hire and workflow requirements
 
-Features to defer until product-market fit is established.
+### Deliberately Out of Scope (v1.2)
 
-- [ ] Photo display from Airtable attachments -- read-only display of existing photos. Defer upload capability
-- [ ] Vendor metrics page with charts -- useful but not core to PM/DM daily workflow
-- [ ] Weekly summary digest (email or in-app) -- valuable for executives but requires notification infrastructure
-- [ ] Admin panel for user management -- only when user count grows beyond manual Supabase management
-- [ ] PWA / offline support -- only if PMs report connectivity issues on-site
-- [ ] Audit log for status changes and pricing approvals -- accountability feature, add when compliance requirements emerge
+Items explicitly excluded to keep v1.2 bounded:
 
-## Feature Prioritization Matrix
+- [ ] Configurable KPI boxes — fixed per-role sets only
+- [ ] Date range filtering on Completed Jobs — property filter is sufficient
+- [ ] Revenue Exposure forecasting — current exposure only, no projections
+- [ ] Avg Turn Time historical trending — point-in-time metric only
+- [ ] Editable job fields in Active Jobs table — read-only except status
+
+---
+
+## Feature Prioritization Matrix (v1.2)
 
 | Feature | User Value | Implementation Cost | Priority |
 |---------|------------|---------------------|----------|
-| Supabase auth + role mapping | HIGH | MEDIUM | P1 |
-| Design system components | HIGH | MEDIUM | P1 |
-| Layout shell (3-column) | HIGH | MEDIUM | P1 |
-| Airtable API layer + cache | HIGH | HIGH | P1 |
-| PM turn list (overdue first) | HIGH | LOW | P1 |
-| Turn detail with jobs | HIGH | LOW | P1 |
-| PM KPI cards | HIGH | MEDIUM | P1 |
-| Executive KPI dashboard | HIGH | MEDIUM | P1 |
-| Inline job status updates | HIGH | MEDIUM | P1 |
-| Responsive layout | HIGH | MEDIUM | P1 |
-| Inline pricing approval | HIGH | MEDIUM | P2 |
-| Notes on turns | MEDIUM | LOW | P2 |
-| DM portfolio view | MEDIUM | MEDIUM | P2 |
-| Notification panel | MEDIUM | MEDIUM | P2 |
-| Charts / visualizations | MEDIUM | MEDIUM | P2 |
-| Property filter dropdown | MEDIUM | LOW | P2 |
-| Vendor metrics page | LOW | LOW | P2 |
-| Photo display (read-only) | LOW | MEDIUM | P3 |
-| Admin panel | LOW | MEDIUM | P3 |
-| PWA / offline | LOW | HIGH | P3 |
+| Terminology rename | HIGH (correctness/trust) | LOW | P1 |
+| New PM 6-box KPI row | HIGH | MEDIUM | P1 |
+| Revenue Exposure KPI | HIGH | MEDIUM | P1 |
+| Inline lease-ready date entry | HIGH | MEDIUM | P1 |
+| Active Jobs table | HIGH | MEDIUM | P1 |
+| Completed Jobs page | HIGH | LOW | P1 |
+| RM /regional dashboard | HIGH | MEDIUM | P1 |
+| Property Insights list (RM) | HIGH | MEDIUM | P1 |
+| Top 10 by Revenue Exposure (Exec) | MEDIUM | LOW | P1 |
+| Avg Turn Time bar graph (RM) | MEDIUM | LOW | P1 |
+| Executive 6-box redesign | MEDIUM | MEDIUM | P1 |
+| Manual "Done" button on turns | MEDIUM | LOW | P1 |
+| Middleware RM route update | HIGH (blocker) | LOW | P1 |
+| Revenue Exposure null disclosure | MEDIUM | LOW | P2 (add to KPI box) |
+| Color-coded bar chart thresholds | LOW | LOW | P2 |
 
 **Priority key:**
-- P1: Must have for launch -- daily PM and weekly executive workflows depend on these
-- P2: Should have, add when possible -- enhance the experience but don't block initial adoption
-- P3: Nice to have, future consideration -- defer until validated need
+- P1: Required for the v1.2 milestone to be considered complete
+- P2: Should add within v1.2 but does not block milestone completion
+- P3: Future — does not belong in v1.2
+
+---
+
+## Industry Context: What This Domain Considers Standard
+
+Research findings from property management dashboard platforms (Buildium, Second Nature, Leonardo247, Bold BI, Revela) and general dashboard UX pattern analysis:
+
+**KPI card conventions:**
+- Property management dashboards universally lead with a summary row of 4-8 KPI cards
+- Cards follow: label (top), value (large center), delta/trend (bottom smaller text)
+- Color-coded status indicators (green/amber/red) are expected, not differentiating
+- Currency formatting for financial KPIs is expected (Intl.NumberFormat is sufficient)
+
+**Turn/vacancy tracking standards:**
+- "Days-to-Lease" (vacancy duration) is an industry-standard KPI tracked by every property management platform
+- Revenue loss from vacancy is calculated as daily rent × days vacant — the specific constant ($60/day in this app) is a client-defined business rule, not an industry formula
+- "Make-ready time" (turn time) benchmarks: under 72 hours for simple turns; 7-10 days for full refurbs. Color thresholds of 7/14 days are reasonable for bar chart coloring
+- Most property management platforms separate "turns" (unit lifecycle events) from "work orders/jobs" (vendor tasks). The v1.2 redesign aligns with this industry standard
+
+**Role hierarchy patterns:**
+- Property management software universally implements: Site/PM level, Regional/Portfolio level, Executive/Owner level
+- PM level: unit-specific, actionable, daily cadence
+- Regional level: property comparison, weekly cadence, identifies outliers
+- Executive level: portfolio health, financial exposure, exception reports (Top N problems)
+
+**Interactive table standards:**
+- Status updates inline in tables are expected; navigation away to edit is a UX regression
+- Single-column sort with toggle direction is table stakes for any multi-row list
+- "Completed" items should be filterable out of the default view (a separate page or a hidden-by-default section)
+
+**Dashboard UX table stakes (general):**
+- Loading states / skeletons for any async data fetch
+- Empty states with actionable messaging (not just blank cards)
+- Toast feedback on inline writes (success/error)
+- Consistent card layout (title position, value position, supplementary text position)
+
+---
 
 ## Competitor Feature Analysis
 
-| Feature | Airtable Native (current) | Yardi / RealPage (enterprise) | AppFolio (mid-market) | Our Approach |
-|---------|---------------------------|-------------------------------|------------------------|--------------|
-| Role-based views | No -- everyone sees the same interface | Yes -- complex role hierarchy | Yes -- simplified roles | Three distinct views (PM, DM, Exec) with property scoping |
-| Turn tracking | Table rows with filters | Full work order system with vendor dispatch | Basic maintenance tracking | Turn-centric with linked jobs per turn |
-| KPI dashboard | Airtable Interface blocks (limited) | Extensive reporting module | Basic reporting | Opinionated KPI cards matching existing Airtable metrics, optimized for at-a-glance |
-| Vendor management | Separate table, manual lookups | Full vendor portal with bidding | Basic vendor directory | Read-only vendor metrics with performance data from Airtable rollups |
-| Notifications | None | In-app + email + SMS | Email alerts | Derived from data (no separate notification table). In-app notification panel |
-| Pricing approval | Navigate to record, edit field | Workflow engine with approval chains | Not specialized for turns | Inline approve/flag buttons on turn detail page |
-| Mobile | Airtable mobile app (generic) | Dedicated mobile apps | Mobile app | Responsive web -- no app store friction |
-| Cost | $20-45/user/month for Airtable licenses | $5-12/unit/month (enterprise pricing) | $1.40+/unit/month | Vercel hosting (free tier or ~$20/month). Eliminates per-user Airtable license costs |
+| Feature | Airtable Native (baseline) | Leonardo247 | Buildium / AppFolio | Our v1.2 Approach |
+|---------|---------------------------|-------------|---------------------|-------------------|
+| Turn tracking | Table rows, manual status | Make Ready Board with real-time task status, mobile check-in/out | Basic maintenance tracking | Turn list + Active Jobs table separated; Open Turns as primary PM view |
+| KPI dashboard | Airtable Interface blocks (rigid) | Not KPI-focused | Summary metrics on main dashboard | 6-box KPI rows per role, role-appropriate metrics |
+| Revenue exposure | Not tracked | Not native | Vacancy rate % only (no dollar calc) | Dollar-denominated Revenue Exposure per turn, disclosed null handling |
+| RM / regional view | None — everyone sees same interface | Multi-property overview | Portfolio views (enterprise plans) | /regional route with Property Insights list + drill-down to PM view |
+| Completed jobs history | Filter on status column | Archived tasks | Basic history | Dedicated /property/completed-jobs with property filter |
+| Inline status updates | Edit record in modal | Mobile task check-in/out | Mostly edit record | Inline update in list row with optimistic UI |
+| Terminology | "Make Ready" / "Vacant" | "Make Ready" / "Unit Turn" | "Work Orders" | "Turns" / "Jobs" / "Off Market" (client-specific) |
+
+---
 
 ## Sources
 
-- Project context: `.planning/PROJECT.md` -- validated requirements and constraints
-- Existing interface: `AirtableReference/` screenshots (ExecutiveDashboard.png, PropertyView.png, PropertyView2.png, VendorMetrics.png) -- current feature baseline
-- Airtable schema: `SnapshotData/` CSV exports -- data model and field inventory
-- Implementation plan: `PLAN.md` -- detailed architecture and phase breakdown
-- Design language: `THEME.md` -- visual design constraints and component specifications
-- Domain knowledge: Property management turnover operations, vendor coordination workflows, multi-property portfolio management patterns (MEDIUM confidence -- based on training data, not verified against current market sources)
+- Project requirements: `.planning/PROJECT.md` — v1.2 milestone Active requirements (HIGH confidence)
+- Architecture analysis: `.planning/research/ARCHITECTURE.md` — integration map and data shapes confirmed (HIGH confidence)
+- Industry KPI standards: [Buildium — 11 Property Management KPIs](https://www.buildium.com/blog/property-management-kpis-to-track/), [Revela — Top 12 KPIs](https://www.revela.co/resources/property-management-kpis), [Second Nature — Top 20 KPIs](https://www.secondnature.com/blog/property-management-kpis) (MEDIUM confidence — general PM domain, not turn-specific)
+- Turn tracking software patterns: [Leonardo247 — Make Ready Streamlining](https://leonardo247.com/2023/property-operations/make-ready-made-easy-streamlining-your-unit-turn-process/), [Lula — What is a Make-Ready](https://lula.life/articles/what-is-a-make-ready) (MEDIUM confidence)
+- Dashboard UX patterns: [Pencil & Paper — Dashboard Design Patterns](https://www.pencilandpaper.io/articles/ux-pattern-analysis-data-dashboards), [UXPin — Dashboard Design Principles](https://www.uxpin.com/studio/blog/dashboard-design-principles/) (MEDIUM confidence — general, not PM-specific)
+- Role-based dashboard conventions: [Bold BI Property Management Dashboard](https://www.boldbi.com/dashboard-examples/property-management/property-management-dashboard/), [inetsoft — Rental Property Management Dashboards](https://www.inetsoft.com/info/rental-property-management-dashboards/) (MEDIUM confidence)
 
 ---
-*Feature research for: Property management unit turnover dashboard*
-*Researched: 2026-03-08*
+
+*Feature research for: UnitFlowSolutions v1.2 Dashboard Redesign*
+*Researched: 2026-03-18*
+*Scope: v1.2 milestone features only — v1.0 feature baseline documented in prior version of this file (2026-03-08)*

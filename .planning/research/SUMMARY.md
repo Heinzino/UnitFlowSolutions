@@ -1,177 +1,213 @@
 # Project Research Summary
 
-**Project:** UnitFlowSolutions (ScheduleSimple) -- Property Management Turnover Dashboard
-**Domain:** Property management operations (unit turnover / make-ready tracking)
-**Researched:** 2026-03-08
+**Project:** UnitFlowSolutions — v1.2 Dashboard Redesign
+**Domain:** Property management turnover dashboard — Turn/Job separation, role-specific KPIs, inline editing, property-level aggregation
+**Researched:** 2026-03-18
 **Confidence:** HIGH
 
 ## Executive Summary
 
-UnitFlowSolutions is a server-first read-heavy dashboard that replaces an Airtable-native interface for tracking unit turnovers in property management. The product serves three distinct user roles (Property Manager, District Manager, Executive) with 6-15 total users. The core architectural challenge is that Airtable serves as both the source of truth and the API layer, meaning every design decision flows from Airtable's constraints: a 5 req/sec rate limit, callback-based SDK, no referential integrity, and no real-time capabilities. The recommended approach is a Next.js App Router application using Server Components for all data fetching, `unstable_cache` (or its stable successor) for caching, and Server Actions for mutations -- deployed on Vercel with Supabase handling only authentication and role assignment.
+This is a milestone-scoped enhancement (v1.2) to an existing, production Next.js 16 dashboard backed by Airtable and Supabase Auth. The central goal is a conceptual redesign: separating Turn lifecycle (unit-level events) from Job lifecycle (vendor tasks), giving each user role a purpose-built view, and surfacing actionable financial metrics absent in the current build. Research is grounded entirely in direct source analysis of the 8,753-LOC codebase — every pattern reference points to a validated, in-production file. Zero new npm dependencies are required.
 
-The recommended stack is well-established and largely pre-decided by the project requirements. Next.js 15 with TypeScript, Tailwind CSS, Recharts, and the Airtable SDK form the core. No ORM, no client-side state management, no real-time infrastructure. The architecture is deliberately simple: a monolith with a clean data access layer that encapsulates all Airtable complexity (caching, rate limiting, property scoping, field name mapping, pagination). Feature research confirms that the MVP must deliver role-based auth, property-scoped turn request lists with overdue-first sorting, inline job status updates, and KPI dashboards for PMs and Executives. Differentiators like the notification panel, pricing approval, and DM portfolio view should follow after core workflows are validated.
+The recommended approach follows three sequenced concerns: first establish correct data model and compute functions in pure TypeScript (testable before any UI exists), then fix terminology globally before writing new components, then build dashboards from the highest-urgency role (PM) to the lowest (Executive). Every new UI feature has an exact existing analog to follow: `JobStatusDropdown` for inline date entry, `VendorTable` for the Active Jobs table, `VendorCompletionChart` for the Avg Turn Time bar graph. The architecture pattern throughout is Server Component data fetch to typed props to Client Island for interactivity.
 
-The most dangerous risks are not technical complexity but data integrity issues hiding in the Airtable schema: property name mismatches between tables that cause silent empty results, duplicate vendor records that skew metrics, NaN values in computed fields that poison aggregations, and linked record fields that return opaque IDs requiring careful batch resolution to avoid N+1 query explosions. The Airtable data layer (Phase 3 in the suggested roadmap) is the make-or-break phase -- it must handle all of these issues before any view can be reliably built.
+The primary risks are behavioral rather than technical: the Turn "Done" state can be set via two competing paths if the old `TurnStatusDropdown` is not gated; Revenue Exposure silently returns incorrect values when `targetDate` is null; and the Active Jobs table will generate N+1 Airtable calls if implemented naively. All three risks have clear prevention strategies documented in PITFALLS.md and are addressed by the phased build order derived from ARCHITECTURE.md.
+
+---
 
 ## Key Findings
 
 ### Recommended Stack
 
-The stack is a standard Next.js App Router application with no exotic dependencies. All major technology choices (Next.js, Supabase, Airtable, Recharts, Tailwind) were pre-decided in project planning documents. Research confirms these are the right choices and identifies what NOT to use (no ORM, no tRPC, no Redux, no real-time infrastructure, no Storybook).
+The base stack (Next.js 16, Tailwind v4, Supabase Auth, Airtable SDK, Recharts 3.8.0, Vitest, lucide-react, sonner) is unchanged and fully installed. No new packages are warranted for v1.2. Every new feature maps directly to an existing production pattern, and the primary risk is adding unnecessary dependencies rather than missing ones.
 
-**Core technologies:**
-- **Next.js 15 (App Router)**: Full-stack framework -- Server Components for data fetching, Server Actions for mutations, `unstable_cache` for Airtable response caching, native Vercel deployment
-- **TypeScript 5.6+**: Type safety -- essential for mapping 9 Airtable tables with messy field names to clean typed interfaces
-- **Supabase (@supabase/ssr)**: Auth only -- cookie-based sessions, role mapping via `user_profiles` table, middleware integration
-- **Airtable SDK (airtable npm)**: Data source -- callback-based pagination, server-side only, wrapped in Promise-based helpers with caching
-- **Tailwind CSS (v3.4 or v4)**: Styling -- use whichever version `create-next-app` scaffolds, do not manually switch
-- **Recharts**: Visualization -- bar charts and gauges for vendor metrics and KPI displays
-- **Supporting**: clsx + tailwind-merge (cn utility), date-fns (date calculations), zod (runtime validation of Airtable responses)
+**Core technologies — unchanged:**
+- `Next.js 16 App Router` — routing, Server Components, `'use cache'` + `cacheTag` for Airtable caching
+- `Recharts 3.8.0` — all new bar charts follow the existing `VendorCompletionChart` pattern; no migration needed
+- `Airtable SDK 0.12.2` — data layer via `lib/airtable/tables/`; existing `TurnRequest` and `Job` types carry all fields needed for v1.2
+- `useOptimistic` + `useTransition` (React 19) — inline edit pattern established in `JobStatusDropdown`; extended to `LeaseReadyInput`
+- `Intl.NumberFormat` — currency formatting already used in `pm-kpis.tsx`; no number-formatting library needed
 
-**Critical version note:** Library versions should be verified with `npm view` before scaffolding. Pin Next.js to an exact version to prevent `unstable_cache` API breakage on upgrade.
+**Confirmed non-additions (do not add):**
+- Any date picker library — native `<input type="date">` is sufficient for a single inline field
+- TanStack Table — `VendorTable` already implements sort/filter in ~120 lines
+- `date-fns` — day-diff arithmetic is 2 lines of raw `Date` math
+- Zustand/Jotai — sort/filter state is local to one component
+
+See `.planning/research/STACK.md` for full alternatives-considered table and per-feature pattern mapping.
 
 ### Expected Features
 
-**Must have (table stakes -- launch blockers):**
-- Role-based auth with property-scoped data visibility (the #1 reason for the dashboard)
-- Turn request list with overdue-first sorting (PM daily workflow)
-- Turn detail with linked jobs and status badges (core drill-down)
-- Inline job status updates (the "fewer clicks" value proposition)
-- KPI summary cards for PMs and Executives (dashboard's reason to exist)
-- Responsive layout (PMs check on-site from tablets/phones)
-- Loading skeletons (remote API with 60s cache means visible load times)
+All v1.2 features are mandatory for the milestone to be considered complete — none can be deferred to v1.3 without leaving the dashboard in a partially redesigned state.
 
-**Should have (differentiators -- add after validation):**
-- Smart notification panel deriving alerts from data (no notification table needed)
-- Inline pricing approval (saves 5+ clicks per decision)
-- District Manager portfolio view (multi-property overview with drill-down)
-- Charts and data visualization (vendor bar charts, gauges)
-- Notes on turn requests (centralized communication)
+**Must have (table stakes):**
+- 6 KPI boxes per role (PM, RM, Executive) — industry-standard lead row; role-appropriate metrics
+- Turn list with inline lease-ready date entry and manual "Done" — core PM daily workflow; without write capability turns stay open indefinitely
+- Active Jobs table on PM dashboard — flat, sortable; turns are the unit lifecycle, jobs are the work; this separation is the central redesign goal
+- Revenue Exposure KPI — dollar figure with null-target-date count disclosed; industry standard metric
+- Avg Turn Time KPI and bar graph — universally tracked in property management operations
+- RM dashboard at `/regional` — RMs currently land on the PM view; a dedicated aggregated view is required
+- Property Insights list (RM) — per-property stats with drill-down to PM view
+- Executive Top 10 Properties by Revenue Exposure — exception-based executive reporting
+- Completed Jobs page with property filter — auditable history; separate route from active work
+- Terminology rename (Turns/Jobs/Off Market/Regional Manager) — display string and TypeScript identifier correctness
 
-**Defer (v2+):**
-- Photo/attachment display, vendor metrics page with charts, admin panel, PWA/offline, vendor portal, custom reports
+**Should have (differentiators):**
+- Revenue Exposure null-date disclosure ("3 turns excluded") — builds trust that the KPI number means what it says
+- Color-coded turn time bar chart (green/amber/red at 7/14-day thresholds) — instant visual triage without reading numbers
+- Single-call RM aggregation (one fetch, in-memory partition) — zero performance degradation as portfolio grows
+- Lease-ready date as the turn-closing signal — ties workflow to a real business event rather than a status dropdown
+
+**Defer to v2+:**
+- Configurable KPI boxes — unnecessary at 6-15 users; role-specific defaults already represent correct customization
+- Date range filtering on Completed Jobs — property filter covers the primary RM/PM use case
+- Revenue Exposure forecasting — requires historical data storage not in current architecture
+- Avg Turn Time trend (time series) — requires snapshot accumulation; point-in-time metric is sufficient now
+- Real-time push updates — Airtable has no WebSocket API; 60s cache revalidation matches domain cadence
+
+See `.planning/research/FEATURES.md` for the full dependency graph, competitor analysis, and feature prioritization matrix.
 
 ### Architecture Approach
 
-The system is a server-first monolith with three clearly separated concerns: Supabase for auth (login, roles, property assignment), Airtable for all business data (9 tables, read via SDK, write via Server Actions), and Next.js App Router for presentation and caching. Route groups are organized by role (`/executive`, `/property`, `/district`) because these are fundamentally different applications sharing a data layer. All Airtable access is encapsulated in `src/lib/airtable/` with one file per table, a shared cache wrapper, and a rate limiter.
+The v1.2 integration is additive: two new routes (`/regional`, `/property/completed-jobs`), one new KPI module (`rm-kpis.ts`), one new server action (`turn-request-dates.ts`), and one new data fetch function (`fetchJobsForUser()`). Existing routes and data functions are modified but not restructured. The four established architectural patterns — Server Component data fetch, Client Island for interactivity, pure compute functions in `lib/kpis/`, Server Action + `revalidateTag` for writes — are sufficient for every new feature. No Airtable schema changes are needed.
 
 **Major components:**
-1. **Middleware** -- auth gate, session refresh, role-based route protection (runs on every request, must be fast)
-2. **Data Access Layer (`lib/airtable/`)** -- typed query functions per table, `unstable_cache` with 60s TTL, tag-based invalidation, token-bucket rate limiter, property scoping via `filterByFormula`
-3. **Server Components (pages)** -- async data fetching with `Promise.all()` for parallelism, render HTML server-side, pass data as props
-4. **Server Actions** -- mutations (status updates, pricing approval, notes) that write to Airtable then call `revalidateTag()`
-5. **Client Islands** -- minimal interactive elements (dropdowns, forms, optimistic updates) using `'use client'`
-6. **Design System (`components/ui/`)** -- hand-built primitives (Button, Card, KPICard, Badge, Table) matching THEME.md specifications
+1. `rm-kpis.ts` (new) — `computeRMKPIs()`, `computePropertyInsights()`, `computeRevenueExposure()` — pure aggregations shared by both RM and Executive views
+2. `ActiveJobsTable` (new client component) — sortable jobs table following `VendorTable` pattern; data from `fetchJobsForUser()` (one filtered Airtable call, not via `resolveLinkedJobs` N+1)
+3. `LeaseReadyInput` (new client component) — inline `<input type="date">` with `useOptimistic` + `useTransition`; follows `JobStatusDropdown` exactly
+4. `/regional/page.tsx` (new route) — Server Component Suspense-wrapped RM dashboard; `ROLE_ROUTES.rm` updated from `/property` to `/regional`
+5. `setLeaseReadyDate()` (new server action in `turn-request-dates.ts`) — writes `readyToLeaseDate` to Airtable, busts both `CACHE_TAGS.turnRequests` (list) and `CACHE_TAGS.turnRequest(id)` (per-record)
+6. Modified `pm-kpis.ts` + `executive-kpis.ts` — new `PMKPIResult` and `ExecutiveKPIResult` interfaces; existing tests break by design and guide the refactor
+
+**Key data flow decisions:**
+- Active Jobs table data source: `fetchJobsForUser()` — one filtered Airtable call, not via `resolveLinkedJobs` N+1
+- RM Property Insights: one `fetchTurnRequestsForUser()` call for all properties, partitioned in JS with `groupTurnsByProperty()` — not N per-property calls
+- Completed Jobs filter: applied at Airtable query level in `fetchJobsForUser({ completedOnly: true })` — not client-side
+
+See `.planning/research/ARCHITECTURE.md` for the full component responsibility table, data flow diagrams, and anti-pattern guide.
 
 ### Critical Pitfalls
 
-1. **Property name mismatch (Supabase vs Airtable)** -- `Property_Managers` table says "Park Point Apartments" but `Properties` table says "Park Point". Users will see empty dashboards with no error. Build a normalization layer and use `FIND()` for partial matching.
-2. **Linked record N+1 queries** -- Turn Requests return opaque job record IDs, not data. Naive resolution causes 40+ API calls per page. Batch-resolve with `OR(RECORD_ID()=...)` in chunks of 10-15, and prefer Airtable lookup fields that return pre-resolved values.
-3. **Rate limit cascade under concurrent users** -- 5 req/sec is per API key, not per user. Cache is the primary defense (not rate limiting). With 60s cache, rate limiter should rarely activate. Monitor for 429 responses.
-4. **`unstable_cache` API instability** -- may be renamed/replaced in future Next.js versions. Wrap behind an abstraction layer in `cache.ts` so the caching mechanism can be swapped without touching every data function. Pin Next.js version.
-5. **Stale write conflicts** -- Airtable has no optimistic concurrency control. Server actions must read-before-write to prevent reverting changes made by other users between page load and action execution.
+1. **Turn "Done" signal conflict** — `TurnStatusDropdown` still writes `Done` to `status` while the new design uses `readyToLeaseDate` as the closing signal. Gate or remove the old dropdown in the redesigned turn list; write a single `markTurnDone()` server action that sets both fields atomically. Define the closing contract before writing any UI code.
+
+2. **Revenue Exposure silent undercount with null `targetDate`** — using `?? 0` fallback produces a KPI card that understates reality. Explicitly bucket turns into "over target", "on target", and "no target date set". Surface the excluded count on the card as: "Revenue Exposure: $4,200 (3 turns excluded)".
+
+3. **Revenue Exposure negative values for on-target turns** — computing `(today - targetDate) × $60` without `Math.max(0, ...)` produces negative exposure for turns ahead of schedule. Always clamp: `Math.max(0, daysSinceTarget)`.
+
+4. **Active Jobs table N+1 via `resolveLinkedJobs`** — reusing the `fetchTurnRequestsForUser` path to populate a flat jobs table calls one Airtable API per job record. Add `fetchJobsForUser()` to `jobs.ts` for a single filtered fetch instead.
+
+5. **RM middleware route not updated** — the new `/regional` route is unreachable through normal login flow if `ROLE_ROUTES.rm` is not changed from `/property` to `/regional` in `auth.ts`. The middleware update is a required deliverable of the RM phase, not a follow-up.
+
+6. **Cache tag split on inline date write** — `setLeaseReadyDate()` must bust both `CACHE_TAGS.turnRequests` (list cache) and `CACHE_TAGS.turnRequest(id)` (per-record cache). Missing the per-record tag causes stale data on the turn detail page.
+
+See `.planning/research/PITFALLS.md` for all 11 critical pitfalls with warning signs, recovery strategies, and a "Looks Done But Isn't" checklist.
+
+---
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure:
+Based on combined research, the following 6-phase structure is recommended. Each phase is independently shippable and depends on all preceding phases.
 
-### Phase 1: Project Scaffolding and Design System
-**Rationale:** No dependencies. UI primitives can be built with mock data. Establishes visual foundation and development environment.
-**Delivers:** Next.js project scaffold, Tailwind theme configuration matching THEME.md tokens, all UI primitives (Button, Card, KPICard, Badge, Table, StatusBadge, Skeleton), layout shell (sidebar + main content area), cn() utility.
-**Addresses:** Loading skeletons, responsive layout foundation, color-coded alert cards.
-**Avoids:** Pitfall 4 -- pin Next.js to exact version during scaffolding.
+### Phase 1: Shared KPI Foundations
+**Rationale:** Pure TypeScript compute functions with no UI. Test suite confirms math correctness before any component depends on it. The KPI interfaces are the contracts that all downstream components import — they must be stable and tested first. Existing tests break by design at the start of this phase; that breakage is the intended regression guard.
+**Delivers:** `rm-kpis.ts` (new), updated `pm-kpis.ts` and `executive-kpis.ts` with v1.2 interfaces, all KPI tests updated with maintained coverage count.
+**Addresses:** Revenue Exposure, Avg Turn Time, Property Insights aggregation, Executive portfolio KPIs.
+**Avoids:** Pitfall 2 (Revenue Exposure null handling), Pitfall 7 (test count loss during rename), Pitfall 8 (negative Revenue Exposure).
 
-### Phase 2: Authentication and Role System
-**Rationale:** Every data query depends on knowing the user's role and assigned properties. Must come before any Airtable integration.
-**Delivers:** Supabase login/logout flow, middleware with session refresh and role-based route protection, user profile types, role-based redirects (root -> role dashboard), property assignment resolution.
-**Addresses:** Role-based authentication, property-scoped data visibility foundation.
-**Avoids:** Pitfall 10 -- cache role in JWT/cookie, do not query `user_profiles` on every request. Pitfall 1 -- validate assigned_properties against Airtable canonical names (requires Phase 3 data layer to complete).
+### Phase 2: Terminology Rename
+**Rationale:** Display strings and TypeScript identifiers must use final terminology before new components are written. New code should be born with correct labels, not renamed post-hoc. This is a standalone, fully reviewable diff with zero logic changes — the cleanest possible PR.
+**Delivers:** All UI labels, section headers, TypeScript identifiers, test descriptions, and inline comments using "Turns", "Jobs", "Off Market", "Regional Manager". Verified with `grep -r "Make Ready\|makeReady"` returning 0 results in `src/`.
+**Avoids:** Pitfall 3 (partial rename creating permanent cognitive dissonance).
 
-### Phase 3: Airtable Data Layer
-**Rationale:** This is the most critical phase. Every view depends on it. The data layer must handle caching, rate limiting, property scoping, field name mapping, NaN coercion, linked record resolution, and pagination -- all before any view is built.
-**Delivers:** Typed interfaces for all 9 tables, field name mapping (messy Airtable names -> clean TS keys), SDK client with Promise-based wrappers, cache abstraction layer (tag-based, 60s TTL), token-bucket rate limiter, property scoping via filterByFormula, batch linked record resolution, KPI aggregation functions, property name normalization layer.
-**Addresses:** Airtable API integration, cache infrastructure, rate limiting, data validation.
-**Avoids:** Pitfall 1 (property name mismatch), Pitfall 2 (N+1 linked records), Pitfall 3 (rate limit cascade), Pitfall 5 (URL length limits), Pitfall 6 (pagination truncation), Pitfall 11 (messy field names), Pitfall 12 (NaN values).
+### Phase 3: PM Dashboard Redesign
+**Rationale:** PMs are the primary daily users. Unblocked after Phases 1 and 2. `ActiveJobsTable` and `LeaseReadyInput` are independent workstreams within this phase and can be developed in parallel by two developers.
+**Delivers:** Updated `PMKPIs` component (6 new boxes), `fetchJobsForUser()` in `jobs.ts` (with tests), `ActiveJobsTable` client component, `setLeaseReadyDate()` server action (with tests), `LeaseReadyInput` client component, updated `PMTurnList` with inline date entry per row.
+**Uses:** `useOptimistic` + `useTransition` pattern from `JobStatusDropdown`; `VendorTable` sort/filter pattern; Server Action + `revalidateTag` pattern from `job-status.ts`.
+**Avoids:** Pitfall 1 (Turn Done signal — define contract before writing UI), Pitfall 4 (cache tag split — bust both list and per-record tags), Pitfall 6 (duplicate jobs fetch — extract from already-fetched turns), Pitfall 10 (N+1 via resolveLinkedJobs — use fetchJobsForUser instead).
 
-### Phase 4: Executive Dashboard (Read-Only)
-**Rationale:** Simplest view to build first -- read-only KPI cards with no mutations. Validates that the data layer produces correct aggregations. Quick win for stakeholder buy-in.
-**Delivers:** Executive KPI dashboard with 8+ metrics, KPI cards with severity coloring (pink/yellow/white), responsive grid layout.
-**Addresses:** Executive KPI dashboard, color-coded alert cards, KPI summary cards.
-**Avoids:** Pitfall 13 -- use Promise.all() for parallel fetches, single page-level data load to avoid cold start timeouts.
+### Phase 4: Completed Jobs Page
+**Rationale:** Trivial after Phase 3. Reuses `ActiveJobsTable` with `isCompleted` filter applied at the fetch layer, not the component. One new route with a sidebar link.
+**Delivers:** `/property/completed-jobs/page.tsx`, `loading.tsx`, sidebar link, `completedOnly` filter parameter added to `fetchJobsForUser()`.
+**Avoids:** Pitfall 11 (client-side `isCompleted` filter sending active job data to browser).
 
-### Phase 5: Property Manager View (Read + Write)
-**Rationale:** The core user workflow. Depends on data layer (Phase 3) and can reuse design system from Phase 1. More complex than Executive view because it includes Server Actions for mutations.
-**Delivers:** Turn request list with overdue-first sorting, turn detail with linked jobs, inline job status updates (Server Actions), PM KPI cards, property filter dropdown.
-**Addresses:** PM turn list, turn detail drill-down, inline status updates, PM KPIs, property filter.
-**Avoids:** Pitfall 7 -- implement read-before-write pattern in all server actions to prevent stale write conflicts.
+### Phase 5: RM Dashboard
+**Rationale:** Depends on Phase 1 (`rm-kpis.ts`). The route change (`rm: '/regional'`) is the highest-risk change in the milestone — doing it after PM work is stable means RM users still have `/property` as a fallback during development. The middleware update is a mandatory deliverable of this phase, not optional cleanup.
+**Delivers:** `ROLE_ROUTES.rm = '/regional'` and updated `ROLE_ALLOWED_ROUTES` in `auth.ts`, `/regional/page.tsx` + `loading.tsx`, `RMKPIs` component (6 aggregated boxes), `PropertyInsightsList` Server Component, `AvgTurnTimeBarChart` Recharts client component (color-coded by 7/14-day thresholds).
+**Uses:** `computePropertyInsights()` from Phase 1; existing `fetchTurnRequestsForUser()` (single call for all RM properties); `VendorCompletionChart` as the chart template.
+**Avoids:** Pitfall 5 (N per-property fetches — one call, partition in JS), Pitfall 9 (RM middleware route missing — middleware update is in scope).
 
-### Phase 6: District Manager View
-**Rationale:** Depends on Property Manager components (Phase 5) for drill-down reuse. The portfolio overview is new, but the property detail view reuses PM components.
-**Delivers:** Portfolio overview with property summary cards, drill-down to property-level turn list (reuses Phase 5 components), DM-specific KPIs.
-**Addresses:** DM portfolio view, multi-property overview.
-
-### Phase 7: Enhancements, Notifications, and Charts
-**Rationale:** Polish and differentiator features that enhance but don't block core workflows. All views must be functional first.
-**Delivers:** Smart notification panel (derived from data, middle column), Recharts integration (vendor bar charts, gauges), inline pricing approval, notes on turn requests, vendor metrics page.
-**Addresses:** Notification panel, charts/visualization, pricing approval, notes, vendor metrics.
-**Avoids:** Pitfall 8 -- aggregate vendor metrics by name not record ID to handle duplicates.
+### Phase 6: Executive Dashboard Redesign
+**Rationale:** Fewest users, lowest urgency, no downstream dependencies. `computePropertyInsights()` from Phase 1 already handles the Top 10 Properties calculation. This phase is primarily UI composition over pre-existing logic.
+**Delivers:** Updated `ExecutiveKPIs` component (6 new boxes using updated `executive-kpis.ts`), `TopPropertiesTable` Server Component (sorted `PropertyInsight[]`, top 10 by Revenue Exposure), updated `ExecutiveCharts` layout.
+**Uses:** `computePropertyInsights()` from Phase 1 (shared with RM view); existing `fetchTurnRequests()` (unscoped exec call).
 
 ### Phase Ordering Rationale
 
-- **Dependency chain is strict:** Scaffolding -> Auth -> Data Layer -> Views. No phase can be meaningfully parallelized except Phases 4/5 (Executive and PM views could be built simultaneously if two developers are available).
-- **Data layer is the keystone:** 10 of 13 identified pitfalls cluster in Phase 3. Getting the data layer right eliminates most risk for subsequent phases.
-- **Executive view before PM view:** The executive dashboard is read-only and simpler, making it a better first test of the data layer. If aggregations are wrong, it surfaces immediately in KPI cards.
-- **DM view last among the three roles:** It depends on PM components for drill-down reuse. Building it after PM view is pure composition.
-- **Enhancements last:** Notification panel, charts, and pricing approval are differentiators that enhance validated workflows. Shipping core views first allows user feedback to shape these features.
+- KPI logic before UI: tests confirm formula correctness before any component uses the results; TypeScript interface changes are the intended early-warning mechanism
+- Terminology before new components: no post-build rename pass; every new component is born with correct labels
+- PM before RM: higher daily urgency; RM drill-down also benefits from seeing PM view stable first
+- Completed Jobs after Active Jobs: shares the same component; building it first would mean building the more complex version first and then simplifying
+- RM route change after PM is stable: minimizes disruption during development; RM users have `/property` as fallback
+- Executive last: lowest usage frequency; nothing downstream depends on it
 
 ### Research Flags
 
-Phases likely needing deeper research during planning:
-- **Phase 3 (Airtable Data Layer):** Most pitfall-dense phase. Needs research into current `unstable_cache` / `cacheTag` API status in the installed Next.js version. Also needs validation of the batch linked-record resolution approach against real data volumes.
-- **Phase 2 (Auth):** Needs research into `@supabase/ssr` current API for role caching in JWT claims vs cookies. The middleware performance pattern is critical.
+Phases with standard patterns — no additional research needed before planning:
+- **Phase 2 (Terminology Rename):** Pure string and identifier replacement; no design decisions required.
+- **Phase 4 (Completed Jobs Page):** Reuses Phase 3 component; only decision is the fetch filter parameter.
+- **Phase 6 (Executive Redesign):** Chart and table patterns established; data function shared from Phase 1.
 
-Phases with standard patterns (skip deep research):
-- **Phase 1 (Scaffolding + Design System):** Standard `create-next-app` setup with Tailwind theming. Well-documented.
-- **Phase 4 (Executive Dashboard):** Standard Server Component data fetching with KPI card rendering. No novel patterns.
-- **Phase 5 (PM View):** Server Actions for mutations are well-documented in Next.js. The read-before-write pattern is straightforward.
+Phases that warrant a focused design decision before execution begins:
+- **Phase 3 (PM Dashboard):** The Turn closing signal decision (Pitfall 1) must be made and documented before any turn-closing UI is written. The "Done" state contract — `readyToLeaseDate` presence vs. status dropdown — determines whether `TurnStatusDropdown` is gated or removed entirely from the redesigned turn list.
+- **Phase 5 (RM Dashboard):** Revenue Exposure definition for RM Property Insights needs client confirmation: is `$60/day × max(0, days over 10-day target)` correct for the RM-level per-property aggregation, or does the rate/target vary by property?
+
+---
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All technologies pre-decided and well-established. Version numbers need verification with `npm view`. |
-| Features | HIGH | Based on existing Airtable interface screenshots, CSV data analysis, and explicit project requirements. Clear MVP boundary. |
-| Architecture | HIGH | Standard Next.js App Router patterns. Server-first with external API is a well-known architecture. Cache strategy is the only area with API stability risk. |
-| Pitfalls | HIGH | Multiple pitfalls discovered from direct analysis of project CSV data (property name mismatch, duplicate vendors, NaN values). Airtable API constraints are well-documented. |
+| Stack | HIGH | All claims verified against `package.json` and in-production source files; no external API research required; zero new dependencies identified |
+| Features | HIGH | v1.2 requirements from `PROJECT.md` are the primary source; industry context (Buildium, Leonardo247, AppFolio) is MEDIUM confidence but used only for framing, not decisions |
+| Architecture | HIGH | Every component reference, data shape, cache tag, and routing constant confirmed by direct file reads; no assumptions from training data |
+| Pitfalls | HIGH | All 11 pitfalls derived from actual code analysis — type definitions, function signatures, cache topology, middleware source; not inferred from general best practices |
 
-**Overall confidence:** HIGH
+**Overall confidence: HIGH**
 
 ### Gaps to Address
 
-- **Exact library versions:** Web search was unavailable during research. Run `npm view <package> version` for all dependencies before scaffolding to confirm version numbers.
-- **`unstable_cache` API status:** Check whether Next.js 15.x has stabilized this as `cacheLife`/`cacheTag` or `use cache`. The cache abstraction layer design depends on which API is available.
-- **Supabase `@supabase/ssr` version:** May have reached 1.0 with API changes. Verify current API for server-side session management and JWT claim customization.
-- **Airtable record volume:** Current CSV snapshots show ~40 jobs and ~15 turn requests. Verify whether production data is significantly larger, which would affect batch resolution chunk sizes and pagination strategy.
-- **Property name mapping completeness:** The CSV analysis found one mismatch ("Park Point Apartments" vs "Park Point"). A full audit of all property names across tables should happen during Phase 3 implementation.
+- **Revenue Exposure rate and target days:** The `$60/day` and `10-day target` constants are treated as business rules in research files but have not been verified with the client. Confirm before Phase 1 compute function implementation, or define them as named constants in a single config file so a client-directed change is a one-line update.
+- **PM KPI box definitions 4-6:** ARCHITECTURE.md notes the exact fields for the remaining 3 PM KPI boxes (beyond active turns, avg turn time, revenue exposure) are "TBD with client." Phase 3 is blocked until these are defined.
+- **Executive KPI box definitions:** All 6 Executive KPI box definitions change in v1.2. The exact new definitions are not specified in the research files. Phase 6 requires client input before implementation.
+- **Turn closing contract:** Whether "Done" is set via lease-ready date entry only, or whether `TurnStatusDropdown` retains a "Done" option, is a product decision not yet made explicit. Must be resolved as the first action of Phase 3 (see Pitfall 1).
+
+---
 
 ## Sources
 
-### Primary (HIGH confidence)
-- `.planning/PROJECT.md` -- validated requirements, constraints, user roles, key decisions
-- `PLAN.md` -- detailed architecture plan, phase breakdown, Airtable schema reference
-- `THEME.md` -- design language constraints, color tokens, component specifications
-- `AirtableReference/` screenshots -- existing interface baseline (ExecutiveDashboard.png, PropertyView.png, VendorMetrics.png)
-- `SnapshotData/` CSV exports -- actual Airtable data for 9 tables, used to discover data quality pitfalls
+### Primary (HIGH confidence — direct source file analysis)
+- `src/lib/types/auth.ts` — ROLE_ROUTES, ROLE_ALLOWED_ROUTES, UserRole
+- `src/lib/airtable/cache-tags.ts` — full cache tag topology
+- `src/lib/airtable/tables/turn-requests.ts` — fetchTurnRequestsForUser, resolveLinkedJobs
+- `src/lib/airtable/tables/jobs.ts` — fetchJobs, fetchJobsByIds
+- `src/lib/airtable/tables/mappers.ts` — all mapped TurnRequest and Job fields confirmed
+- `src/lib/kpis/pm-kpis.ts` — current PMKPIResult interface and computePMKPIs
+- `src/app/(dashboard)/property/_components/job-status-dropdown.tsx` — useOptimistic + useTransition pattern
+- `src/app/(dashboard)/vendors/_components/vendor-table.tsx` — sort/filter table pattern
+- `src/app/(dashboard)/executive/_components/vendor-completion-chart.tsx` — BarChart pattern
+- `src/app/actions/job-status.ts` — Server Action + revalidateTag syntax confirmed
+- `package.json` — all installed package versions confirmed
+- `.planning/PROJECT.md` — v1.2 milestone requirements
 
-### Secondary (MEDIUM confidence)
-- Next.js App Router documentation -- Server Components, `unstable_cache`, Server Actions patterns (training data cutoff ~May 2025)
-- Airtable REST API documentation -- rate limits, pagination, filterByFormula, attachment URL expiry
-- Supabase documentation -- `@supabase/ssr` cookie-based auth, middleware patterns
-
-### Tertiary (LOW confidence)
-- Exact version numbers for all npm packages -- based on training data, must verify with `npm view`
-- `unstable_cache` current API surface -- may have changed post-training-data cutoff
+### Secondary (MEDIUM confidence — industry sources)
+- Buildium — [11 Property Management KPIs](https://www.buildium.com/blog/property-management-kpis-to-track/) — KPI card conventions
+- Revela — [Top 12 KPIs](https://www.revela.co/resources/property-management-kpis) — vacancy duration metrics
+- Leonardo247 — [Make Ready Streamlining](https://leonardo247.com/2023/property-operations/make-ready-made-easy-streamlining-your-unit-turn-process/) — turn/job separation patterns
+- Bold BI — [Property Management Dashboard](https://www.boldbi.com/dashboard-examples/property-management/property-management-dashboard/) — role hierarchy patterns
+- React docs — [useOptimistic](https://react.dev/reference/react/useOptimistic) — optimistic UI pattern
+- Recharts GitHub — [v3 release notes](https://github.com/recharts/recharts/releases) — v3 feature notes
 
 ---
-*Research completed: 2026-03-08*
+
+*Research completed: 2026-03-18*
 *Ready for roadmap: yes*
