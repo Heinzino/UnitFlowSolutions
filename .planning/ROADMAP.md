@@ -117,7 +117,7 @@ Plans:
 | 9. Documentation & Verification Cleanup | v1.0 | 2/2 | Complete | 2026-03-15 |
 | 10. Admin User Creation | v1.1 | 4/4 | Complete | 2026-03-16 |
 | 11. Off Market Unit Entry | v1.1 | 3/3 | Complete | 2026-03-18 |
-| 12. Terminology Rename | 2/2 | Complete   | 2026-03-19 | - |
+| 12. Terminology Rename | 2/2 | Complete    | 2026-03-19 | - |
 | 13. PM Dashboard Redesign | v1.2 | 0/TBD | Not started | - |
 | 14. Completed Jobs Page | v1.2 | 0/TBD | Not started | - |
 | 15. RM Dashboard | v1.2 | 0/TBD | Not started | - |
