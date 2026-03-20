@@ -32,7 +32,7 @@
 ### Executive Dashboard
 
 - [x] **EXEC-01**: Executive dashboard displays 6 redesigned KPI boxes (portfolio-level metrics)
-- [ ] **EXEC-02**: Executive can view Top 10 Properties by Revenue Exposure ranked table
+- [x] **EXEC-02**: Executive can view Top 10 Properties by Revenue Exposure ranked table
 
 ### Completed Jobs
 
@@ -94,7 +94,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RMDB-04 | Phase 15 | Complete |
 | RMDB-05 | Phase 15 | Complete |
 | EXEC-01 | Phase 16 | Complete |
-| EXEC-02 | Phase 16 | Pending |
+| EXEC-02 | Phase 16 | Complete |
 
 **Coverage:**
 - v1.2 requirements: 20 total

@@ -41,7 +41,7 @@
 - [x] **Phase 13: PM Dashboard Redesign** — PM gets 6 KPI boxes, Open Turns with inline date entry, Active Jobs table, and Revenue Exposure (completed 2026-03-19)
 - [x] **Phase 14: Completed Jobs Page** — Auditable completed jobs history with property filter at its own route (completed 2026-03-20)
 - [x] **Phase 15: RM Dashboard** — Regional Managers get a dedicated /regional route with aggregated KPIs, property insights, drill-down, and turn time chart (completed 2026-03-20)
-- [ ] **Phase 16: Executive Dashboard Redesign** — Executive gets 6 redesigned portfolio KPIs and Top 10 Properties by Revenue Exposure
+- [x] **Phase 16: Executive Dashboard Redesign** — Executive gets 6 redesigned portfolio KPIs and Top 10 Properties by Revenue Exposure (completed 2026-03-20)
 
 ## Phase Details
 
@@ -109,7 +109,7 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. The Executive dashboard displays 6 KPI boxes with portfolio-level metrics that differ from the v1.1 layout
   2. The Executive dashboard includes a Top 10 Properties by Revenue Exposure table, ranked highest to lowest, showing the property name and its exposure dollar amount
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 Plans:
 - [ ] 16-01-PLAN.md — Redesign KPI boxes with contextual footer subtitles, clean interface, update skeleton
 - [ ] 16-02-PLAN.md — Create Top 10 Properties table, restructure page, delete obsolete components
@@ -133,4 +133,4 @@ Plans:
 | 13. PM Dashboard Redesign | v1.2 | Complete    | 2026-03-20 | 2026-03-19 |
 | 14. Completed Jobs Page | 1/1 | Complete    | 2026-03-20 | - |
 | 15. RM Dashboard | 2/2 | Complete    | 2026-03-20 | - |
-| 16. Executive Dashboard Redesign | 1/2 | In Progress|  | - |
+| 16. Executive Dashboard Redesign | 2/2 | Complete   | 2026-03-20 | - |

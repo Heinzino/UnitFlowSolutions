@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Dashboard Redesign
-status: unknown
-stopped_at: "Completed 16-01-PLAN.md"
-last_updated: "2026-03-20T03:20:24Z"
+status: complete
+stopped_at: Completed 16-02-PLAN.md
+last_updated: "2026-03-20T03:31:24.003Z"
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 10
-  completed_plans: 9
+  completed_plans: 10
 ---
 
 # Project State
@@ -23,8 +23,8 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 
 ## Current Position
 
-Phase: 16 (executive-dashboard-redesign) — EXECUTING
-Plan: 2 of 2
+Phase: 16 (executive-dashboard-redesign) — COMPLETE
+Plan: 2 of 2 (all plans complete)
 
 ## Performance Metrics
 
@@ -68,6 +68,8 @@ All v1.0 and v1.1 decisions archived — see `.planning/milestones/` for details
 - [Phase 15-rm-dashboard]: Drill-down reuses PMKPIs/PMTurnList/ActiveJobs with role='rm' — no duplication
 - [Phase 16-01]: CurrencyDisplay imported and rendered in Projected Cost Exposure footer; KPICard value remains typed as number to avoid modifying kpi-card.tsx
 - [Phase 16-01]: ExecutiveKPIResult reduced to 6 fields — activeTurnsOpen, pastTargetAlerts, trendingAlerts removed along with Turn Overview and Alert Card sections
+- [Phase 16]: ExecutiveTop10 uses fetchTurnRequests (all turns) not fetchTurnRequestsForUser — executive sees all properties
+- [Phase 16]: revenueExposure per-property computed via computePMKPIs(turns).revenueExposure — single source of truth
 
 ### Pending Todos
 
@@ -79,6 +81,6 @@ None blocking roadmap. Phase 13 and Phase 16 each have open product questions (s
 
 ## Session Continuity
 
-Last session: 2026-03-20T03:20:24Z
-Stopped at: Completed 16-01-PLAN.md
-Resume with: `/gsd:execute-phase 16` (next: Plan 02 — remaining executive dashboard work)
+Last session: 2026-03-20T03:31:23.995Z
+Stopped at: Completed 16-02-PLAN.md
+Resume with: Phase 16 complete — v1.2 Dashboard Redesign milestone finished
