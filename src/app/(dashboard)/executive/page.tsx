@@ -3,8 +3,8 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { ExecutiveKPIs } from './_components/executive-kpis';
 import { ExecutiveKPISkeleton } from './_components/executive-kpi-skeleton';
-import { ExecutiveCharts } from './_components/executive-charts';
-import { ExecutiveChartsSkeleton } from './_components/executive-charts-skeleton';
+import { ExecutiveTop10 } from './_components/executive-top10';
+import { ExecutiveTop10Skeleton } from './_components/executive-top10-skeleton';
 
 export default async function ExecutivePage() {
   const supabase = await createClient();
@@ -37,8 +37,8 @@ export default async function ExecutivePage() {
         <ExecutiveKPIs />
       </Suspense>
 
-      <Suspense fallback={<ExecutiveChartsSkeleton />}>
-        <ExecutiveCharts />
+      <Suspense fallback={<ExecutiveTop10Skeleton />}>
+        <ExecutiveTop10 />
       </Suspense>
     </div>
   );
