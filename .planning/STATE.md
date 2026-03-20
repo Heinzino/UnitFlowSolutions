@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Dashboard Redesign
 status: unknown
-stopped_at: Completed 13-03-PLAN.md (Phase 13 complete)
-last_updated: "2026-03-20T00:14:45.595Z"
+stopped_at: Completed 14-01-PLAN.md
+last_updated: "2026-03-20T00:53:40.924Z"
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
+  completed_phases: 3
+  total_plans: 6
+  completed_plans: 6
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Property Managers can instantly see which turns are overdue, which jobs are stuck, and take action without hunting through Airtable — fewer clicks to the information that matters.
-**Current focus:** Phase 13 — pm-dashboard-redesign
+**Current focus:** Phase 14 — completed-jobs-page
 
 ## Current Position
 
-Phase: 13 (pm-dashboard-redesign) — COMPLETE
-Plan: 3 of 3 (all plans complete)
+Phase: 14 (completed-jobs-page) — EXECUTING
+Plan: 1 of 1
 
 ## Performance Metrics
 
@@ -59,6 +59,8 @@ All v1.0 and v1.1 decisions archived — see `.planning/milestones/` for details
 - [Phase 13-03]: KPICard footer prop added for supplemental content rendered inside card box with border-t separator
 - [Phase 13-03]: JobDateInput mirrors LeaseReadyDateInput pattern; takes both dates + field discriminator for single server action call
 - [Phase 13-03]: Job links in ActiveJobsTable guarded with turnRequestId !== undefined check
+- [Phase 14-completed-jobs-page]: isCompleted boolean used to filter completed jobs (not status string) — catches all completed statuses
+- [Phase 14-completed-jobs-page]: ActiveJobsTable title prop defaults to 'Active Jobs' for backwards compat; View completed jobs link conditional on title === 'Active Jobs'
 
 ### Pending Todos
 
@@ -70,6 +72,6 @@ None blocking roadmap. Phase 13 and Phase 16 each have open product questions (s
 
 ## Session Continuity
 
-Last session: 2026-03-19T05:00:00.000Z
-Stopped at: Completed 13-03-PLAN.md (Phase 13 complete)
+Last session: 2026-03-20T00:53:40.917Z
+Stopped at: Completed 14-01-PLAN.md
 Resume with: `/gsd:execute-phase 16` (next: Executive dashboard)

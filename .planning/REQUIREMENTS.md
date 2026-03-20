@@ -36,9 +36,9 @@
 
 ### Completed Jobs
 
-- [ ] **COMP-01**: User can navigate to Completed Jobs page at /property/completed-jobs
-- [ ] **COMP-02**: User can filter completed jobs by property via PropertyMultiSelect
-- [ ] **COMP-03**: Completed Jobs table reuses Active Jobs table component with server-side isCompleted filter
+- [x] **COMP-01**: User can navigate to Completed Jobs page at /property/completed-jobs
+- [x] **COMP-02**: User can filter completed jobs by property via PropertyMultiSelect
+- [x] **COMP-03**: Completed Jobs table reuses Active Jobs table component with server-side isCompleted filter
 
 ## Future Requirements
 
@@ -85,9 +85,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PMDB-04 | Phase 13 | Complete |
 | PMDB-05 | Phase 13 | Complete |
 | PMDB-06 | Phase 13 | Complete |
-| COMP-01 | Phase 14 | Pending |
-| COMP-02 | Phase 14 | Pending |
-| COMP-03 | Phase 14 | Pending |
+| COMP-01 | Phase 14 | Complete |
+| COMP-02 | Phase 14 | Complete |
+| COMP-03 | Phase 14 | Complete |
 | RMDB-01 | Phase 15 | Pending |
 | RMDB-02 | Phase 15 | Pending |
 | RMDB-03 | Phase 15 | Pending |
