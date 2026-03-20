@@ -41,7 +41,9 @@ Declared values (must be multiples of 4):
 | 2xl | 48px | Major section breaks |
 | 3xl | 64px | Page-level spacing |
 
-Exceptions: Table cell uses `py-3 px-4` (12px vertical, 16px horizontal) — confirmed from `src/components/ui/table.tsx`. PropertyMultiSelect trigger uses `px-3 py-2` (12px, 8px) — confirmed from `src/components/ui/property-multi-select.tsx`. Page header subtitle uses `mt-0.5` (2px) — confirmed from `src/app/(dashboard)/property/_components/pm-dashboard.tsx`.
+Exceptions: None for this phase.
+
+Note: `py-3 px-4` (12px vertical, 16px horizontal) in `src/components/ui/table.tsx` and `px-3 py-2` (12px, 8px) in `src/components/ui/property-multi-select.tsx` are codebase-inherited values from existing components that are NOT modified by phase 14. They are not declared as part of this phase's spacing contract. The page header subtitle uses `mt-1` (4px) — within scale.
 
 ---
 
@@ -49,10 +51,9 @@ Exceptions: Table cell uses `py-3 px-4` (12px vertical, 16px horizontal) — con
 
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
-| Body | 14px (text-sm) | 400 (regular) | 1.5 |
-| Label | 12px (text-xs) | 500 (medium) | 1.4 |
+| Body | 14px (text-sm) | 500 (medium) | 1.5 |
+| Label / Table Header | 12px (text-xs) | 500 (medium), uppercase, tracking-wider | 1.4 |
 | Heading | 20px (text-xl) | 700 (bold) | 1.2 |
-| Table Header | 12px (text-xs) | 500 (medium), uppercase, tracking-wider | 1.4 |
 
 Source: `pm-dashboard.tsx` uses `text-xl font-bold` for page heading; `active-jobs-table.tsx` uses `text-xl font-bold` for card heading; table headers use `text-xs uppercase tracking-wider font-medium` from `src/components/ui/table.tsx`. All confirmed from codebase reads.
 
@@ -111,7 +112,7 @@ AppShell (from layout.tsx)
 └── flex flex-col gap-4
     ├── Page header block
     │   ├── h1: "Completed Jobs"  [font-heading font-bold text-xl text-white]
-    │   └── p:  "Full history of completed jobs across your properties"  [text-white/70 text-sm mt-0.5]
+    │   └── p:  "Full history of completed jobs across your properties"  [text-white/70 text-sm mt-1]
     └── Suspense (fallback: PMTurnListSkeleton)
         └── CompletedJobs (server)
             └── CompletedJobsClient (client)
@@ -166,9 +167,12 @@ Source: `14-RESEARCH.md` Pitfall 4 and Pattern 4; Open Question 1 resolved as ca
 | Filter placeholder | "Filter by property" |
 | Empty state heading | "No completed jobs" |
 | Empty state body | "No jobs have been marked as completed yet." |
-| Error state | Not applicable — this page is read-only; data errors surface via Next.js error boundary with standard "Something went wrong" messaging |
+| Error state heading | "Unable to load completed jobs" |
+| Error state body | "Refresh the page or contact support if the problem persists." |
 | Destructive confirmation | None — no destructive actions in this phase |
 | ActiveJobsTable card heading | "Completed Jobs" — override the existing "Active Jobs" heading when rendering on this page |
+
+Error state copy is rendered by the Next.js `error.tsx` boundary (or Suspense error path) at `src/app/(dashboard)/property/completed-jobs/error.tsx`. The boundary must render the heading and body above — do not rely on a generic "Something went wrong" fallback.
 
 Note: The `ActiveJobsTable` currently hardcodes "Active Jobs" as the card heading. For the completed jobs page, the card heading must read "Completed Jobs." Implementation options: (a) add an optional `title` prop to `ActiveJobsTable` defaulting to "Active Jobs", or (b) accept that COMP-03 requires exact reuse and tolerate the "Active Jobs" heading. Option (a) is preferred — minimal prop addition, no behavior change.
 
