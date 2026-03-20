@@ -21,9 +21,10 @@ function getDaysOpen(job: Job): number | null {
 
 interface ActiveJobsTableProps {
   jobs: (Job & { unitNumber?: string; turnRequestId?: number })[]
+  title?: string
 }
 
-export function ActiveJobsTable({ jobs }: ActiveJobsTableProps) {
+export function ActiveJobsTable({ jobs, title = 'Active Jobs' }: ActiveJobsTableProps) {
   const [sortCol, setSortCol] = useState<SortCol>('daysOpen')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
 
@@ -58,12 +59,26 @@ export function ActiveJobsTable({ jobs }: ActiveJobsTableProps) {
   if (jobs.length === 0) {
     return (
       <Card>
-        <div className="px-6 py-3 bg-card border-b border-card-border">
-          <h2 className="font-heading text-xl font-bold text-text-primary">Active Jobs</h2>
+        <div className="px-6 py-3 bg-card border-b border-card-border flex items-center justify-between">
+          <h2 className="font-heading text-xl font-bold text-text-primary">{title}</h2>
+          {title === 'Active Jobs' && (
+            <Link
+              href="/property/completed-jobs"
+              className="text-sm text-emerald hover:underline"
+            >
+              View completed jobs
+            </Link>
+          )}
         </div>
         <div className="px-6 py-12 text-center">
-          <h3 className="font-heading font-semibold text-text-primary mb-1">No active jobs</h3>
-          <p className="text-sm text-text-secondary">There are no in-flight jobs across your open turns.</p>
+          <h3 className="font-heading font-semibold text-text-primary mb-1">
+            {title === 'Active Jobs' ? 'No active jobs' : 'No completed jobs'}
+          </h3>
+          <p className="text-sm text-text-secondary">
+            {title === 'Active Jobs'
+              ? 'There are no in-flight jobs across your open turns.'
+              : 'No jobs have been marked as completed yet.'}
+          </p>
         </div>
       </Card>
     )
@@ -71,8 +86,16 @@ export function ActiveJobsTable({ jobs }: ActiveJobsTableProps) {
 
   return (
     <Card variant="flush" className="overflow-hidden">
-      <div className="px-6 py-3 bg-card border-b border-card-border">
-        <h2 className="font-heading text-xl font-bold text-text-primary">Active Jobs</h2>
+      <div className="px-6 py-3 bg-card border-b border-card-border flex items-center justify-between">
+        <h2 className="font-heading text-xl font-bold text-text-primary">{title}</h2>
+        {title === 'Active Jobs' && (
+          <Link
+            href="/property/completed-jobs"
+            className="text-sm text-emerald hover:underline"
+          >
+            View completed jobs
+          </Link>
+        )}
       </div>
       <Table>
         <TableHeader>
