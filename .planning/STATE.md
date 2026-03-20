@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Dashboard Redesign
 status: unknown
-stopped_at: Phase 16 context gathered
-last_updated: "2026-03-20T02:47:54.880Z"
+stopped_at: "Completed 16-01-PLAN.md"
+last_updated: "2026-03-20T03:20:24Z"
 progress:
   total_phases: 5
   completed_phases: 4
-  total_plans: 8
-  completed_plans: 8
+  total_plans: 10
+  completed_plans: 9
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Property Managers can instantly see which turns are overdue, which jobs are stuck, and take action without hunting through Airtable — fewer clicks to the information that matters.
-**Current focus:** Phase 16 — executive-dashboard (next)
+**Current focus:** Phase 16 — executive-dashboard-redesign
 
 ## Current Position
 
-Phase: 15 (rm-dashboard) — COMPLETE
-Plan: 2 of 2 (all plans complete)
+Phase: 16 (executive-dashboard-redesign) — EXECUTING
+Plan: 2 of 2
 
 ## Performance Metrics
 
@@ -66,10 +66,12 @@ All v1.0 and v1.1 decisions archived — see `.planning/milestones/` for details
 - [Phase 15-rm-dashboard]: PropertyInsights renders both table and chart — single Suspense boundary per RESEARCH.md
 - [Phase 15-rm-dashboard]: getBarColor amber threshold >=7 days so 7 days is amber not green
 - [Phase 15-rm-dashboard]: Drill-down reuses PMKPIs/PMTurnList/ActiveJobs with role='rm' — no duplication
+- [Phase 16-01]: CurrencyDisplay imported and rendered in Projected Cost Exposure footer; KPICard value remains typed as number to avoid modifying kpi-card.tsx
+- [Phase 16-01]: ExecutiveKPIResult reduced to 6 fields — activeTurnsOpen, pastTargetAlerts, trendingAlerts removed along with Turn Overview and Alert Card sections
 
 ### Pending Todos
 
-- Confirm Executive KPI box definitions before Phase 16 plan execution begins
+None.
 
 ### Blockers/Concerns
 
@@ -77,6 +79,6 @@ None blocking roadmap. Phase 13 and Phase 16 each have open product questions (s
 
 ## Session Continuity
 
-Last session: 2026-03-20T02:47:54.848Z
-Stopped at: Phase 16 context gathered
-Resume with: `/gsd:execute-phase 16` (next: Executive dashboard)
+Last session: 2026-03-20T03:20:24Z
+Stopped at: Completed 16-01-PLAN.md
+Resume with: `/gsd:execute-phase 16` (next: Plan 02 — remaining executive dashboard work)
