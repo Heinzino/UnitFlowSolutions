@@ -97,7 +97,7 @@ Plans:
   3. The Property Insights list shows a row per property with active turns, avg turn time, and revenue exposure for that property
   4. Clicking a property in the Property Insights list opens a PM-level view scoped to that single property, showing its turns and jobs
   5. The Avg Turn Time bar chart shows one bar per property, color-coded green for under 7 days, amber for 7-14 days, and red for over 14 days
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 Plans:
 - [ ] 15-01-PLAN.md — Update auth routing, sidebar, and bottom-tab-bar for RM /regional route
 - [ ] 15-02-PLAN.md — Create RM dashboard page with KPIs, Property Insights, chart, and drill-down
@@ -129,5 +129,5 @@ Plans:
 | 12. Terminology Rename | v1.2 | 2/2 | Complete | 2026-03-19 |
 | 13. PM Dashboard Redesign | v1.2 | Complete    | 2026-03-20 | 2026-03-19 |
 | 14. Completed Jobs Page | 1/1 | Complete    | 2026-03-20 | - |
-| 15. RM Dashboard | v1.2 | 0/2 | Planning complete | - |
+| 15. RM Dashboard | 1/2 | In Progress|  | - |
 | 16. Executive Dashboard Redesign | v1.2 | 0/TBD | Not started | - |

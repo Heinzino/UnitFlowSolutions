@@ -23,7 +23,7 @@
 
 ### RM Dashboard
 
-- [ ] **RMDB-01**: RM dashboard served at /regional route with middleware routing rm role to /regional
+- [x] **RMDB-01**: RM dashboard served at /regional route with middleware routing rm role to /regional
 - [ ] **RMDB-02**: RM dashboard displays 6 aggregated KPI boxes (cross-property metrics)
 - [ ] **RMDB-03**: RM can view Property Insights list showing per-property stats (active turns, avg turn time, revenue exposure)
 - [ ] **RMDB-04**: RM can drill down from Property Insights to PM-level view scoped to selected property
@@ -88,7 +88,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COMP-01 | Phase 14 | Complete |
 | COMP-02 | Phase 14 | Complete |
 | COMP-03 | Phase 14 | Complete |
-| RMDB-01 | Phase 15 | Pending |
+| RMDB-01 | Phase 15 | Complete |
 | RMDB-02 | Phase 15 | Pending |
 | RMDB-03 | Phase 15 | Pending |
 | RMDB-04 | Phase 15 | Pending |
