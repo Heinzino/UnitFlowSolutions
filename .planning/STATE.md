@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Dashboard Redesign
 status: unknown
-stopped_at: Completed 13-02-PLAN.md
-last_updated: "2026-03-19T03:44:11.812Z"
+stopped_at: Completed 13-03-PLAN.md
+last_updated: "2026-03-19T05:00:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 5
-  completed_plans: 4
+  completed_plans: 5
 ---
 
 # Project State
@@ -23,8 +23,8 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 
 ## Current Position
 
-Phase: 13 (pm-dashboard-redesign) — EXECUTING
-Plan: 2 of 3
+Phase: 13 (pm-dashboard-redesign) — COMPLETE
+Plan: 3 of 3 (all plans complete)
 
 ## Performance Metrics
 
@@ -32,8 +32,8 @@ Plan: 2 of 3
 
 - v1.0: 24 plans across 9 phases (2026-03-09 → 2026-03-15)
 - v1.1: 7 plans across 2 phases (2026-03-15 → 2026-03-17)
-- v1.2: 3 plans across 1 phase (in progress)
-- Total shipped: 34 plans, 12 phases, 241 tests
+- v1.2: 3 plans across 1 phase (complete)
+- Total shipped: 37 plans, 13 phases, 241 tests
 
 ## Accumulated Context
 
@@ -56,11 +56,12 @@ All v1.0 and v1.1 decisions archived — see `.planning/milestones/` for details
 - [Phase 12-terminology-rename]: Type-layer rename creates intentional TypeScript compile errors in consumers, making Plan 02 self-verifying via tsc --noEmit
 - [Phase 13]: ActiveJobs excludes Completed/Invoice Sent/Scheduled; Ready status included as in-flight workload
 - [Phase 13]: Airtable field clear uses undefined not null per SDK TypeScript constraint
+- [Phase 13-03]: KPICard footer prop added for supplemental content rendered inside card box with border-t separator
+- [Phase 13-03]: JobDateInput mirrors LeaseReadyDateInput pattern; takes both dates + field discriminator for single server action call
+- [Phase 13-03]: Job links in ActiveJobsTable guarded with turnRequestId !== undefined check
 
 ### Pending Todos
 
-- Resolve "Turn closing contract" before Phase 13 plan execution begins
-- Confirm PM KPI boxes 4-6 definitions before Phase 13 plan execution begins
 - Confirm Executive KPI box definitions before Phase 16 plan execution begins
 
 ### Blockers/Concerns
@@ -69,6 +70,6 @@ None blocking roadmap. Phase 13 and Phase 16 each have open product questions (s
 
 ## Session Continuity
 
-Last session: 2026-03-19T03:44:11.795Z
-Stopped at: Completed 13-02-PLAN.md
-Resume with: `/gsd:execute-phase 13`
+Last session: 2026-03-19T05:00:00.000Z
+Stopped at: Completed 13-03-PLAN.md (Phase 13 complete)
+Resume with: `/gsd:execute-phase 16` (next: Executive dashboard)

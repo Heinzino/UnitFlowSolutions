@@ -15,9 +15,9 @@
 ### PM Dashboard
 
 - [x] **PMDB-01**: PM dashboard displays 6 KPI boxes (active turns, avg turn time, revenue exposure, completed this period, jobs in progress, turns near deadline)
-- [ ] **PMDB-02**: PM can view Open Turns list with turn age and status visible
+- [x] **PMDB-02**: PM can view Open Turns list with turn age and status visible
 - [x] **PMDB-03**: PM can enter a lease-ready date inline on each Open Turn row (blur-triggered server action with optimistic UI)
-- [ ] **PMDB-04**: PM can mark a turn as "Done" via inline button on the Open Turns list
+- [x] **PMDB-04**: PM can mark a turn as "Done" via inline button on the Open Turns list
 - [x] **PMDB-05**: PM can view Active Jobs table showing all in-flight jobs across their turns (sortable by vendor, status, days open)
 - [x] **PMDB-06**: Revenue Exposure KPI displays dollar amount ($60/day × days over target) with count of excluded turns (no target date)
 
@@ -64,7 +64,7 @@
 | Date range filtering on Completed Jobs | Property filter covers primary use case |
 | Revenue Exposure forecasting | Requires historical data storage not in scope |
 | Avg Turn Time historical trending | Point-in-time metric only; no snapshot storage |
-| Editable job fields in Active Jobs table | Read-only except status; edit in Airtable |
+| Bulk editable job fields in Active Jobs table | Status, Start Date, End Date editable inline; bulk/multi-field edit in Airtable |
 | Real-time push updates (WebSocket/SSE) | Airtable has no WebSocket API; 60s cache sufficient |
 | Multi-column sort on tables | Single-column sort covers 95% of use cases |
 | Per-user notification preferences | Role-based scoping already limits noise |
@@ -80,9 +80,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TERM-03 | Phase 12 | Complete |
 | TERM-04 | Phase 12 | Complete |
 | PMDB-01 | Phase 13 | Complete |
-| PMDB-02 | Phase 13 | Pending |
+| PMDB-02 | Phase 13 | Complete |
 | PMDB-03 | Phase 13 | Complete |
-| PMDB-04 | Phase 13 | Pending |
+| PMDB-04 | Phase 13 | Complete |
 | PMDB-05 | Phase 13 | Complete |
 | PMDB-06 | Phase 13 | Complete |
 | COMP-01 | Phase 14 | Pending |
@@ -103,4 +103,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-03-18*
-*Last updated: 2026-03-18 — traceability populated after roadmap creation*
+*Last updated: 2026-03-19 — Phase 13 complete, all PMDB-* requirements marked complete*

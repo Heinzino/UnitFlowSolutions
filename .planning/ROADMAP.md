@@ -38,7 +38,7 @@
 ### v1.2 Dashboard Redesign
 
 - [x] **Phase 12: Terminology Rename** — All dashboards use correct Turns/Jobs/Off Market labels and TypeScript identifiers (completed 2026-03-19)
-- [ ] **Phase 13: PM Dashboard Redesign** — PM gets 6 KPI boxes, Open Turns with inline date entry, Active Jobs table, and Revenue Exposure
+- [x] **Phase 13: PM Dashboard Redesign** — PM gets 6 KPI boxes, Open Turns with inline date entry, Active Jobs table, and Revenue Exposure (completed 2026-03-19)
 - [ ] **Phase 14: Completed Jobs Page** — Auditable completed jobs history with property filter at its own route
 - [ ] **Phase 15: RM Dashboard** — Regional Managers get a dedicated /regional route with aggregated KPIs, property insights, drill-down, and turn time chart
 - [ ] **Phase 16: Executive Dashboard Redesign** — Executive gets 6 redesigned portfolio KPIs and Top 10 Properties by Revenue Exposure
@@ -69,11 +69,11 @@ Plans:
   3. A PM can click "Done" on any Open Turn row to close the turn inline without navigating away
   4. The Active Jobs table shows all in-flight vendor jobs across the PM's turns and can be sorted by vendor, status, or days open
   5. The Revenue Exposure KPI displays a dollar amount calculated at $60/day over target, and discloses how many turns are excluded because they have no target date set
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 Plans:
-- [ ] 13-01-PLAN.md — TDD: Update PMKPIResult interface and computePMKPIs with new KPI fields
-- [ ] 13-02-PLAN.md — Create server action and client components (LeaseReadyDateInput, ActiveJobsTable)
-- [ ] 13-03-PLAN.md — Wire new KPIs, inline date input, and Active Jobs into PM dashboard UI
+- [x] 13-01-PLAN.md — TDD: Update PMKPIResult interface and computePMKPIs with new KPI fields
+- [x] 13-02-PLAN.md — Create server action and client components (LeaseReadyDateInput, ActiveJobsTable)
+- [x] 13-03-PLAN.md — Wire new KPIs, inline date input, and Active Jobs into PM dashboard UI
 
 ### Phase 14: Completed Jobs Page
 **Goal**: Any user can review the full history of completed jobs filtered by property, on a dedicated page separate from active work
@@ -122,7 +122,7 @@ Plans:
 | 10. Admin User Creation | v1.1 | 4/4 | Complete | 2026-03-16 |
 | 11. Off Market Unit Entry | v1.1 | 3/3 | Complete | 2026-03-18 |
 | 12. Terminology Rename | v1.2 | 2/2 | Complete | 2026-03-19 |
-| 13. PM Dashboard Redesign | 2/3 | In Progress|  | - |
+| 13. PM Dashboard Redesign | v1.2 | 3/3 | Complete | 2026-03-19 |
 | 14. Completed Jobs Page | v1.2 | 0/TBD | Not started | - |
 | 15. RM Dashboard | v1.2 | 0/TBD | Not started | - |
 | 16. Executive Dashboard Redesign | v1.2 | 0/TBD | Not started | - |
