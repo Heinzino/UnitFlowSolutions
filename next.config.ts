@@ -4,9 +4,9 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   cacheLife: {
     airtableData: {
-      stale: 60,
-      revalidate: 60,
-      expire: 300,
+      stale: 900,
+      revalidate: 900,
+      expire: 3600,
     },
   },
 };
