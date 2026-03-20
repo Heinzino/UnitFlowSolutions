@@ -54,13 +54,25 @@ async function resolveLinkedJobs(
 // Fetch functions
 // ---------------------------------------------------------------------------
 
+// Only fetch the fields mapTurnRequest actually reads
+const TR_FIELDS = [
+  'Request ID', 'Ready To Lease Date', 'Vacant Date', 'Target Date',
+  'Status', 'Jobs', 'Time to Complete Unit (Days)', 'Notes',
+  'Price (from Quote Price) (from Jobs)', 'Total Cost', 'Value',
+  'Property Name', 'Street Address (from Properties)',
+  'Unit Number (from Properties)', 'Floor Plan (from Properties)',
+  'City (from Properties)', 'State (from Properties)',
+  'Bedrooms (from Properties)', 'Bathrooms (from Properties)',
+  'Days Vacant Until Ready', 'Created',
+]
+
 export async function fetchTurnRequests(): Promise<TurnRequest[]> {
   'use cache'
   cacheLife('airtableData')
   cacheTag(CACHE_TAGS.turnRequests)
 
   await rateLimiter.acquire()
-  const records = await base<FieldSet>('Turn Requests').select().all()
+  const records = await base<FieldSet>('Turn Requests').select({ fields: TR_FIELDS }).all()
   const turnRequests = records.map(mapTurnRequest)
   return resolveLinkedJobs(turnRequests)
 }

@@ -8,13 +8,23 @@ import type { Job } from '@/lib/types/airtable'
 // Re-export for consumers that need them
 export { mapJob, buildJobFilterFormula } from './mappers'
 
+// Only fetch the fields mapJob actually reads — cuts payload size
+const JOB_FIELDS = [
+  'Job ID', 'Request Type', 'Status', 'Status Message',
+  'Start Date', 'End Date', 'Vendor Name', 'Vendor Type',
+  'Contact Name (from Vendor)', 'Email (from Vendor)', 'Phone (from Vendor)',
+  'Price (from Quote Price)', 'Quote Price',
+  'Request ID (from Turn Requests)', 'Property Name',
+  'Duration (Days, If Completed)', 'Delta', 'Is Completed', 'Created',
+]
+
 export async function fetchJobs(): Promise<Job[]> {
   'use cache'
   cacheLife('airtableData')
   cacheTag(CACHE_TAGS.jobs)
 
   await rateLimiter.acquire()
-  const records = await base<FieldSet>('Jobs').select().all()
+  const records = await base<FieldSet>('Jobs').select({ fields: JOB_FIELDS }).all()
   return records.map(mapJob)
 }
 
