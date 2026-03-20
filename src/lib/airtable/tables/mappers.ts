@@ -12,6 +12,7 @@ import type { Job, TurnRequest, JobStatus } from '@/lib/types/airtable'
 export function mapJob(record: AirtableRecord<FieldSet>): Job {
   const f = record.fields as Record<string, unknown>
   return {
+    recordId: record.id,
     jobId: Number(f['Job ID']),
     requestType: f['Request Type'] ? String(f['Request Type']) : null,
     status: (f['Status'] as JobStatus) ?? 'NEEDS ATTENTION',

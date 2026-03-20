@@ -2,8 +2,8 @@ import { cacheTag, cacheLife } from 'next/cache'
 import type { FieldSet } from 'airtable'
 import { base, rateLimiter } from '../client'
 import { CACHE_TAGS } from '../cache-tags'
-import { mapTurnRequest, mapJob } from './mappers'
-import { fetchJobsByIds } from './jobs'
+import { mapTurnRequest } from './mappers'
+import { fetchJobs } from './jobs'
 import { filterByProperties } from '@/lib/normalize-property-name'
 import type { TurnRequest } from '@/lib/types/airtable'
 import type { UserRole } from '@/lib/types/auth'
@@ -15,58 +15,39 @@ export { mapTurnRequest } from './mappers'
 // Linked record resolution (batch, no N+1)
 // ---------------------------------------------------------------------------
 
-async function fetchJobsByRecordIds(recordIds: string[]) {
-  if (recordIds.length === 0) return []
-  await rateLimiter.acquire()
-  // Airtable SDK: fetch specific records by their record IDs
-  const results = await Promise.all(
-    recordIds.map((id) => base<FieldSet>('Jobs').find(id))
-  )
-  return results.map(mapJob)
-}
-
 async function resolveLinkedJobs(
   turnRequests: TurnRequest[]
 ): Promise<TurnRequest[]> {
-  // Prefer record IDs (from API linked field), fall back to numeric job IDs
-  const allRecordIds = Array.from(
-    new Set(turnRequests.flatMap((tr) => tr.jobRecordIds))
-  )
+  // Fetch ALL jobs in one API call instead of N+1 individual lookups
+  const allJobs = await fetchJobs()
 
-  if (allRecordIds.length > 0) {
-    const jobs = await fetchJobsByRecordIds(allRecordIds)
-    const recordIdToJob = new Map<string, typeof jobs[number]>()
-    // Map each record ID to its resolved job
-    allRecordIds.forEach((recId, i) => {
-      if (jobs[i]) recordIdToJob.set(recId, jobs[i])
-    })
-
-    return turnRequests.map((tr) => {
-      const resolved = tr.jobRecordIds
-        .map((recId) => recordIdToJob.get(recId))
-        .filter(Boolean) as typeof jobs
-      return {
-        ...tr,
-        jobs: resolved,
-        jobIds: resolved.map((j) => j.jobId),
-      }
-    })
+  // Build lookup maps for both record IDs and numeric job IDs
+  const byRecordId = new Map<string, typeof allJobs[number]>()
+  const byJobId = new Map<number, typeof allJobs[number]>()
+  for (const job of allJobs) {
+    if (job.recordId) byRecordId.set(job.recordId, job)
+    byJobId.set(job.jobId, job)
   }
 
-  // Fallback: numeric job IDs
-  const allJobIds = Array.from(
-    new Set(turnRequests.flatMap((tr) => tr.jobIds))
-  )
+  return turnRequests.map((tr) => {
+    // Prefer record ID resolution, fall back to numeric job IDs
+    let resolved: typeof allJobs
+    if (tr.jobRecordIds.length > 0) {
+      resolved = tr.jobRecordIds
+        .map((recId) => byRecordId.get(recId))
+        .filter(Boolean) as typeof allJobs
+    } else {
+      resolved = tr.jobIds
+        .map((id) => byJobId.get(id))
+        .filter(Boolean) as typeof allJobs
+    }
 
-  if (allJobIds.length === 0) return turnRequests
-
-  const jobs = await fetchJobsByIds(allJobIds)
-  const jobMap = new Map(jobs.map((j) => [j.jobId, j]))
-
-  return turnRequests.map((tr) => ({
-    ...tr,
-    jobs: tr.jobIds.map((id) => jobMap.get(id)).filter(Boolean) as typeof jobs,
-  }))
+    return {
+      ...tr,
+      jobs: resolved,
+      jobIds: resolved.map((j) => j.jobId),
+    }
+  })
 }
 
 // ---------------------------------------------------------------------------

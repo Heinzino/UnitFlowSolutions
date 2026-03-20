@@ -38,6 +38,7 @@ export interface TurnRequest {
 }
 
 export interface Job {
+  recordId: string
   jobId: number
   requestType: string | null
   status: JobStatus
