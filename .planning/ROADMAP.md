@@ -129,5 +129,5 @@ Plans:
 | 12. Terminology Rename | v1.2 | 2/2 | Complete | 2026-03-19 |
 | 13. PM Dashboard Redesign | v1.2 | Complete    | 2026-03-20 | 2026-03-19 |
 | 14. Completed Jobs Page | 1/1 | Complete    | 2026-03-20 | - |
-| 15. RM Dashboard | 2/2 | Complete   | 2026-03-20 | - |
+| 15. RM Dashboard | 2/2 | Complete    | 2026-03-20 | - |
 | 16. Executive Dashboard Redesign | v1.2 | 0/TBD | Not started | - |
