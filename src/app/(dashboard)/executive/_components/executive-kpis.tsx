@@ -5,14 +5,12 @@ import {
   BarChart2,
   Clock,
   DollarSign,
-  Home,
-  AlertTriangle,
-  AlertCircle,
 } from 'lucide-react';
 import { fetchJobs } from '@/lib/airtable/tables/jobs';
 import { fetchTurnRequests } from '@/lib/airtable/tables/turn-requests';
 import { computeExecutiveKPIs, computeKPITrends } from '@/lib/kpis/executive-kpis';
 import { KPICard } from '@/components/ui/kpi-card';
+import { CurrencyDisplay } from '@/components/ui/currency-display';
 
 
 export async function ExecutiveKPIs() {
@@ -25,86 +23,68 @@ export async function ExecutiveKPIs() {
       ? `${Math.round(kpis.avgTimeToComplete)} days`
       : 'N/A';
 
-  const costDisplay = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(kpis.projectedCostExposure);
+  // Footer subtitles
+  const riskPercent = kpis.activeJobsOpen > 0
+    ? Math.round((kpis.jobsTrendingPastTarget / kpis.activeJobsOpen) * 100)
+    : 0
 
-  const hasAlerts = kpis.pastTargetAlerts.length > 0 || kpis.trendingAlerts.length > 0;
+  const completedTrendSubtitle = trends.jobsCompleted
+    ? `${trends.jobsCompleted.direction === 'up' ? '\u2191' : '\u2193'} ${Math.round(trends.jobsCompleted.percentage)}% vs prior 30 days`
+    : 'No prior period data'
+
+  const backlogSubtitle = kpis.backlogDelta >= 0
+    ? 'More opening than closing'
+    : 'More closing than opening'
+
+  const avgTimeTrendSubtitle = trends.avgTimeToComplete
+    ? `${trends.avgTimeToComplete.direction === 'up' ? '\u2191' : '\u2193'} ${Math.round(trends.avgTimeToComplete.percentage)}% over target \u00b7 target 8 days`
+    : 'target 8 days'
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* KPI grid: 3 columns, 2 rows */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <KPICard
-          icon={Briefcase}
-          label="Active Jobs Open"
-          value={kpis.activeJobsOpen}
-          trend={trends.activeJobsOpen ? { ...trends.activeJobsOpen, isGood: false } : undefined}
-        />
-        <KPICard
-          icon={TrendingUp}
-          label={`Jobs Trending Past Target\n2 days from completion date`}
-          value={kpis.jobsTrendingPastTarget}
-        />
-        <KPICard
-          icon={CheckCircle}
-          label="Jobs Completed (30d)"
-          value={kpis.jobsCompleted30d}
-          trend={trends.jobsCompleted ?? undefined}
-        />
-        <KPICard
-          icon={BarChart2}
-          label="Backlog Delta"
-          value={kpis.backlogDelta}
-        />
-        <KPICard
-          icon={Clock}
-          label="Avg Time to Complete"
-          value={avgTimeDisplay}
-          trend={trends.avgTimeToComplete ? { ...trends.avgTimeToComplete, isGood: false } : undefined}
-        />
-        <KPICard
-          icon={DollarSign}
-          label="Projected Cost Exposure"
-          value={costDisplay}
-        />
-      </div>
-
-      {/* Turn Overview */}
-      <div>
-        <h2 className="font-heading font-semibold text-lg text-white mb-2">
-          Turn Overview
-        </h2>
-        <KPICard
-          icon={Home}
-          label="Active Turns Open"
-          value={kpis.activeTurnsOpen}
-        />
-      </div>
-
-      {/* Alert cards — hidden when count is 0 */}
-      {hasAlerts && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {kpis.pastTargetAlerts.length > 0 && (
-            <KPICard
-              icon={AlertTriangle}
-              label="Turns Past Target Time"
-              value={kpis.pastTargetAlerts.length}
-              variant="alert-past"
-            />
-          )}
-          {kpis.trendingAlerts.length > 0 && (
-            <KPICard
-              icon={AlertCircle}
-              label="Turns Trending Past Target Date"
-              value={kpis.trendingAlerts.length}
-              variant="alert-trending"
-            />
-          )}
-        </div>
-      )}
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <KPICard
+        icon={Briefcase}
+        label="Active Jobs Open"
+        value={kpis.activeJobsOpen}
+        trend={trends.activeJobsOpen ? { ...trends.activeJobsOpen, isGood: false } : undefined}
+        footer={<p className="text-xs text-text-secondary">{kpis.backlogDelta} backlog delta this week</p>}
+      />
+      <KPICard
+        icon={TrendingUp}
+        label="Jobs Trending Past Target"
+        value={kpis.jobsTrendingPastTarget}
+        footer={<p className="text-xs text-text-secondary">{riskPercent}% of active jobs at risk</p>}
+      />
+      <KPICard
+        icon={CheckCircle}
+        label="Jobs Completed (30d)"
+        value={kpis.jobsCompleted30d}
+        trend={trends.jobsCompleted ?? undefined}
+        footer={<p className="text-xs text-text-secondary">{completedTrendSubtitle}</p>}
+      />
+      <KPICard
+        icon={BarChart2}
+        label="Backlog Delta"
+        value={kpis.backlogDelta}
+        footer={<p className="text-xs text-text-secondary">{backlogSubtitle}</p>}
+      />
+      <KPICard
+        icon={Clock}
+        label="Avg Time to Complete"
+        value={avgTimeDisplay}
+        trend={trends.avgTimeToComplete ? { ...trends.avgTimeToComplete, isGood: false } : undefined}
+        footer={<p className="text-xs text-text-secondary">{avgTimeTrendSubtitle}</p>}
+      />
+      <KPICard
+        icon={DollarSign}
+        label="Projected Cost Exposure"
+        value={kpis.projectedCostExposure}
+        footer={
+          <p className="text-xs text-text-secondary">
+            <CurrencyDisplay amount={kpis.projectedCostExposure} /> &middot; ~$60/unit on delayed jobs
+          </p>
+        }
+      />
     </div>
   );
 }
