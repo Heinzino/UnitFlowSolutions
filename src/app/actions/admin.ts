@@ -108,7 +108,7 @@ export async function createProperty(data: {
   }
 
   // 3. Invalidate properties cache
-  revalidateTag(CACHE_TAGS.properties)
+  revalidateTag(CACHE_TAGS.properties, { expire: 0 })
 
   return { name, streetAddress }
 }

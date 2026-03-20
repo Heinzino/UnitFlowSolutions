@@ -13,9 +13,11 @@ import type { TurnRequest, Job } from '@/lib/types/airtable'
 
 function makeJob(overrides: Partial<Job> = {}): Job {
   return {
+    recordId: 'rec_test',
     jobId: 1,
     requestType: null,
     status: 'In Progress',
+    statusMessage: null,
     startDate: null,
     endDate: null,
     vendorName: null,

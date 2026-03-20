@@ -46,7 +46,7 @@ export function BottomTabBar({ activePath }: BottomTabBarProps) {
       supabase.auth.getUser().then(({ data: { user } }) => {
         if (user) {
           setRole((user.app_metadata?.role as UserRole) ?? "pm");
-          setIsAdmin(ADMIN_EMAILS.includes(user.email ?? ""));
+          setIsAdmin(ADMIN_EMAILS.includes(user.email as typeof ADMIN_EMAILS[number]));
         }
       }).catch(() => {});
     } catch {

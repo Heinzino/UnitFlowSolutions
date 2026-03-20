@@ -180,7 +180,7 @@ describe('addVacantUnits', () => {
       { unitNumber: '101', floorPlan: '2br 1ba' },
     ])
 
-    expect(mockRevalidateTag).toHaveBeenCalledWith('properties')
+    expect(mockRevalidateTag).toHaveBeenCalledWith('properties', { expire: 0 })
   })
 
   it('does NOT call revalidateTag when all units fail', async () => {

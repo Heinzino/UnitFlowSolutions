@@ -205,6 +205,6 @@ describe('createProperty', () => {
       floorPlan: '1br 1ba',
     })
 
-    expect(mockRevalidateTag).toHaveBeenCalledWith('properties')
+    expect(mockRevalidateTag).toHaveBeenCalledWith('properties', { expire: 0 })
   })
 })

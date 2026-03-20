@@ -71,7 +71,7 @@ export async function addVacantUnits(
 
   // 3. Invalidate cache only when at least one unit was created
   if (created.length > 0) {
-    revalidateTag(CACHE_TAGS.properties)
+    revalidateTag(CACHE_TAGS.properties, { expire: 0 })
   }
 
   return { created, failed }
