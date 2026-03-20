@@ -9,6 +9,7 @@ import {
   LogOut,
   UserPlus,
   DoorOpen,
+  ClipboardCheck,
 } from "lucide-react";
 import { clsx } from "clsx";
 import type { LucideIcon } from "lucide-react";
@@ -28,6 +29,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: "Executive", href: "/executive", roles: ["exec"] },
   { icon: Building2, label: "Properties", href: "/property" },
+  { icon: ClipboardCheck, label: "Completed Jobs", href: "/property/completed-jobs" },
   { icon: Users, label: "Vendors", href: "/vendors" },
   { icon: DoorOpen, label: "Add Off Market", href: "/vacant" },
 ];
