@@ -55,9 +55,11 @@ Source: `src/components/ui/kpi-card.tsx`, `src/app/(dashboard)/property/_compone
 | Role | Size | Weight | Line Height | Font | Notes |
 |------|------|--------|-------------|------|-------|
 | Body | 14px (text-sm) | 400 (regular) | 1.5 | Geist Sans | Table cells, secondary labels, tooltip text |
-| Label | 14px (text-sm) | 500 (medium) | 1.5 | Geist Sans | KPI card label above value, column headers |
+| Label | 14px (text-sm) | 700 (bold) | 1.5 | Geist Sans | KPI card label above value, column headers |
 | Heading | 20px (text-xl) | 700 (bold) | 1.2 | Plus Jakarta Sans | Section headings (Card titles: "Property Insights", "Avg Turn Time by Property") |
 | Display | 30px (text-3xl) | 700 (bold) | 1.0 | Plus Jakarta Sans | KPI card values (tabular-nums) |
+
+Two weights only: 400 (regular) for Body; 700 (bold) for Label, Heading, and Display.
 
 Axis tick labels (Recharts): 10px, weight 400, color `#6b7280` — matches VendorCompletionChart.
 
@@ -98,6 +100,12 @@ Source: `src/app/globals.css`, `15-RESEARCH.md` (chart color logic), `src/compon
 | `alert-trending` | `#FEF3C7` | Turns Near Deadline when > 0 |
 
 Source: `src/components/ui/kpi-card.tsx`, `src/app/(dashboard)/property/_components/pm-kpis.tsx`
+
+---
+
+## Visual Focal Point
+
+Primary visual anchor: KPI row (6 aggregated cards in a 3×2 grid, display-size values at 30px/bold) — renders at the top of the page and carries the highest typographic weight, drawing the eye before the Property Insights table and chart below.
 
 ---
 
