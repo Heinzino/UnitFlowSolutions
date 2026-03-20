@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { fetchProperties } from '@/lib/airtable/tables/properties';
 import { PMDashboard } from './_components/pm-dashboard';
 import { PMKPIs } from './_components/pm-kpis';
 import { PMKPISkeleton } from './_components/pm-kpi-skeleton';
@@ -20,9 +21,15 @@ export default async function PropertyPage({
     redirect('/login');
   }
 
-  const assignedProperties: string[] = user.app_metadata?.property_ids ?? [];
   const role: string = user.app_metadata?.role ?? 'pm';
   const displayName: string = user.user_metadata?.full_name ?? user.email ?? 'Unknown';
+
+  // Exec sees all properties; PM/RM see their assigned set
+  let assignedProperties: string[] = user.app_metadata?.property_ids ?? [];
+  if (role === 'exec' && assignedProperties.length === 0) {
+    const allProps = await fetchProperties();
+    assignedProperties = [...new Set(allProps.map((p) => p.propertyName))].sort();
+  }
 
   const { property } = await searchParams;
   const effectiveProperties =
@@ -37,6 +44,7 @@ export default async function PropertyPage({
     <PMDashboard
       assignedProperties={assignedProperties}
       displayName={displayName}
+      role={role}
     >
       <Suspense key={`kpis-${filterKey}`} fallback={<PMKPISkeleton />}>
         <PMKPIs assignedProperties={effectiveProperties} role={role} />

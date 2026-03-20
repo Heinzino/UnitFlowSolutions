@@ -6,12 +6,20 @@ import { PropertySelector } from '@/components/layout/property-selector';
 interface PMDashboardProps {
   assignedProperties: string[];
   displayName: string;
+  role?: string;
   children: React.ReactNode;
 }
+
+const ROLE_TITLES: Record<string, string> = {
+  exec: 'Executive Dashboard',
+  rm: 'Regional Dashboard',
+  pm: 'Property Manager Dashboard',
+};
 
 export function PMDashboard({
   assignedProperties,
   displayName,
+  role = 'pm',
   children,
 }: PMDashboardProps) {
   const router = useRouter();
@@ -29,20 +37,23 @@ export function PMDashboard({
     router.push(`/property${qs ? `?${qs}` : ''}`);
   }
 
+  // Show filter for all roles except PM with only one property
+  const showFilter = role !== 'pm' || assignedProperties.length > 1;
+
   return (
     <div className="flex flex-col gap-4">
       {/* Page header */}
       <div>
         <h1 className="font-heading font-bold text-xl text-white">
-          Property Manager Dashboard
+          {ROLE_TITLES[role] ?? 'Dashboard'}
         </h1>
         <p className="text-white/70 text-sm mt-0.5">
           Welcome, {displayName}
         </p>
       </div>
 
-      {/* Property filter — hidden when PM has only one property */}
-      {assignedProperties.length > 1 && (
+      {/* Property filter — hidden only for PM with a single property */}
+      {showFilter && (
         <div>
           <PropertySelector
             properties={['All Properties', ...assignedProperties]}
