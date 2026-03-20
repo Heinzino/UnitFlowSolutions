@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { PropertySelector } from '@/components/layout/property-selector';
+import { PropertyMultiSelect, type PropertyOption } from '@/components/ui/property-multi-select';
 
 interface PMDashboardProps {
   assignedProperties: string[];
@@ -24,14 +24,24 @@ export function PMDashboard({
 }: PMDashboardProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const selectedProperty = searchParams.get('property') ?? '';
 
-  function handleSelect(value: string) {
+  // Parse comma-separated properties from URL
+  const propertiesParam = searchParams.get('properties') ?? '';
+  const selectedNames = propertiesParam ? propertiesParam.split(',').map(decodeURIComponent) : [];
+
+  const propertyOptions: PropertyOption[] = assignedProperties.map((name) => ({
+    name,
+    streetAddress: '',
+  }));
+
+  const selectedOptions = propertyOptions.filter((p) => selectedNames.includes(p.name));
+
+  function handleChange(selected: PropertyOption[]) {
     const params = new URLSearchParams(searchParams.toString());
-    if (value === 'All Properties' || value === '') {
-      params.delete('property');
+    if (selected.length === 0) {
+      params.delete('properties');
     } else {
-      params.set('property', value);
+      params.set('properties', selected.map((p) => encodeURIComponent(p.name)).join(','));
     }
     const qs = params.toString();
     router.push(`/property${qs ? `?${qs}` : ''}`);
@@ -52,13 +62,14 @@ export function PMDashboard({
         </p>
       </div>
 
-      {/* Property filter — hidden only for PM with a single property */}
+      {/* Property filter — searchable multi-select, same as completed-jobs */}
       {showFilter && (
-        <div>
-          <PropertySelector
-            properties={['All Properties', ...assignedProperties]}
-            selectedProperty={selectedProperty === '' ? 'All Properties' : selectedProperty}
-            onSelect={handleSelect}
+        <div className="max-w-sm">
+          <PropertyMultiSelect
+            properties={propertyOptions}
+            selected={selectedOptions}
+            onChange={handleChange}
+            placeholder="Filter by property"
           />
         </div>
       )}

@@ -218,11 +218,10 @@ export function PropertyMultiSelect({
             )}
           </div>
 
-          {/* Divider */}
-          <div className="border-t border-gray-100" />
+          {/* Divider + Create new property section — only when handler provided */}
+          {onCreateProperty && <div className="border-t border-gray-100" />}
 
-          {/* Create new property section */}
-          {!creating ? (
+          {onCreateProperty && !creating && (
             <button
               type="button"
               onClick={() => setCreating(true)}
@@ -231,7 +230,8 @@ export function PropertyMultiSelect({
               <Plus size={14} />
               Create new property
             </button>
-          ) : (
+          )}
+          {onCreateProperty && creating && (
             <div className="p-3 space-y-2">
               <input
                 type="text"

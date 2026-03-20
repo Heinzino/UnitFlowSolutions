@@ -12,7 +12,7 @@ import { ActiveJobs } from './_components/active-jobs';
 export default async function PropertyPage({
   searchParams,
 }: {
-  searchParams: Promise<{ property?: string }>;
+  searchParams: Promise<{ properties?: string }>;
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -31,14 +31,17 @@ export default async function PropertyPage({
     assignedProperties = [...new Set(allProps.map((p) => p.propertyName))].sort();
   }
 
-  const { property } = await searchParams;
-  const effectiveProperties =
-    property && assignedProperties.includes(property)
-      ? [property]
-      : assignedProperties;
+  // Parse comma-separated properties filter from URL
+  const { properties: propertiesParam } = await searchParams;
+  const selectedProperties = propertiesParam
+    ? propertiesParam.split(',').map(decodeURIComponent).filter((p) => assignedProperties.includes(p))
+    : [];
+
+  // If properties selected, use those; otherwise show all assigned
+  const effectiveProperties = selectedProperties.length > 0 ? selectedProperties : assignedProperties;
 
   // Key forces Suspense remount when property filter changes
-  const filterKey = property ?? 'all';
+  const filterKey = propertiesParam ?? 'all';
 
   return (
     <PMDashboard

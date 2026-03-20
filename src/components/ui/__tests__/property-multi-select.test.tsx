@@ -183,6 +183,7 @@ describe("PropertyMultiSelect - inline create", () => {
         properties={testProperties}
         selected={[]}
         onChange={vi.fn()}
+        onCreateProperty={vi.fn()}
       />
     );
     const trigger = screen.getByRole("button", { name: /select properties/i });
@@ -197,6 +198,7 @@ describe("PropertyMultiSelect - inline create", () => {
         properties={testProperties}
         selected={[]}
         onChange={vi.fn()}
+        onCreateProperty={vi.fn()}
       />
     );
     const trigger = screen.getByRole("button", { name: /select properties/i });
