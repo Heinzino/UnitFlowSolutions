@@ -20,7 +20,7 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 - ✓ Inline job status updates (move jobs through stages without leaving the page) — v1.0
 - ✓ Airtable API integration layer with server-side-only access, caching (60s), rate limiting, batch resolution — v1.0
 - ✓ Visual polish per THEME.md — dark forest green background, white cards, emerald accents — v1.0
-- ✓ Charts and data visualization (vendor bar charts, health gauge, trend indicators) — v1.0
+- ✓ Charts and data visualization (vendor bar charts, trend indicators) — v1.0 (health gauge removed in v1.2 Phase 16)
 - ✓ Vendor metrics page (completion rates, job assignments, sortable table) — v1.0
 - ✓ Responsive layout — desktop sidebar + mobile bottom tabs — v1.0
 - ✓ Admin-only user creation form (restricted to allowlisted emails) — v1.1
@@ -32,7 +32,7 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 - ✓ Dashboard terminology rename (Make Ready → Turns/Jobs, Vacant → Off Market) — Validated in Phase 12: terminology-rename
 - ✓ PM dashboard with 6 KPI boxes, Open Turns list with lease-ready date entry, Active Jobs table, Revenue Exposure — Validated in Phase 13: pm-dashboard-redesign
 - ✓ RM dashboard with 6 aggregated boxes, Property Insights list, Avg Turn Time bar graph, plus PM-level drill-down — Validated in Phase 15: rm-dashboard
-- [ ] Executive dashboard redesigned with 6 boxes and Top 10 Properties by Revenue Exposure
+- ✓ Executive dashboard redesigned with 6 contextual KPI boxes and Top 10 Properties by Revenue Exposure — Validated in Phase 16: executive-dashboard-redesign
 - [ ] Completed Jobs page with property filter
 
 ### Future
@@ -58,7 +58,7 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 - ~6-15 active users across PM, RM, and Executive roles
 - Shipped v1.1 with 8,753 LOC TypeScript/TSX across 11 phases
 - Tech stack: Next.js 16 (Turbopack), Tailwind v4, Supabase Auth, Airtable API, Recharts, Vitest
-- 202 tests passing (unit + integration)
+- 205 tests passing (unit + integration)
 - Admin user creation and off market unit entry fully operational
 - Properties fetch function now consumed by both admin and off market features
 - 4 of 9 Airtable table fetch functions still unused by UI (Quotes, Executives, PropertyManagers, MaintenanceManagers)
@@ -100,4 +100,4 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 - Completed Jobs page with property filter
 
 ---
-*Last updated: 2026-03-19 after Phase 15 rm-dashboard complete*
+*Last updated: 2026-03-19 after Phase 16 executive-dashboard-redesign complete*
