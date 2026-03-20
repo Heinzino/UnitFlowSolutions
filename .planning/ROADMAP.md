@@ -109,7 +109,10 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. The Executive dashboard displays 6 KPI boxes with portfolio-level metrics that differ from the v1.1 layout
   2. The Executive dashboard includes a Top 10 Properties by Revenue Exposure table, ranked highest to lowest, showing the property name and its exposure dollar amount
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 16-01-PLAN.md — Redesign KPI boxes with contextual footer subtitles, clean interface, update skeleton
+- [ ] 16-02-PLAN.md — Create Top 10 Properties table, restructure page, delete obsolete components
 
 ## Progress
 
@@ -130,4 +133,4 @@ Plans:
 | 13. PM Dashboard Redesign | v1.2 | Complete    | 2026-03-20 | 2026-03-19 |
 | 14. Completed Jobs Page | 1/1 | Complete    | 2026-03-20 | - |
 | 15. RM Dashboard | 2/2 | Complete    | 2026-03-20 | - |
-| 16. Executive Dashboard Redesign | v1.2 | 0/TBD | Not started | - |
+| 16. Executive Dashboard Redesign | v1.2 | 0/2 | Not started | - |
