@@ -259,73 +259,6 @@ describe('computeExecutiveKPIs', () => {
     })
   })
 
-  // EXEC-04: activeTurnsOpen
-  describe('activeTurnsOpen', () => {
-    it('counts turn requests where status !== Done', () => {
-      const trs = [
-        makeTurnRequest({ status: 'In progress' }),
-        makeTurnRequest({ status: 'Needs Attention' }),
-        makeTurnRequest({ status: 'To Do' }),
-        makeTurnRequest({ status: 'Done' }), // excluded
-      ]
-      const { activeTurnsOpen } = computeExecutiveKPIs([], trs)
-      expect(activeTurnsOpen).toBe(3)
-    })
-
-    it('returns 0 for empty turn requests', () => {
-      const { activeTurnsOpen } = computeExecutiveKPIs([], [])
-      expect(activeTurnsOpen).toBe(0)
-    })
-
-    it('returns 0 when all are Done', () => {
-      const trs = [makeTurnRequest({ status: 'Done' })]
-      const { activeTurnsOpen } = computeExecutiveKPIs([], trs)
-      expect(activeTurnsOpen).toBe(0)
-    })
-  })
-
-  // EXEC-05: pastTargetAlerts
-  describe('pastTargetAlerts', () => {
-    it('returns items with daysOffMarketUntilReady > 10', () => {
-      const trs = [
-        makeTurnRequest({ propertyName: 'Oak Ridge', unitNumber: '204', daysOffMarketUntilReady: 11 }),
-        makeTurnRequest({ propertyName: 'Sunrise', unitNumber: '101', daysOffMarketUntilReady: 10 }), // excluded (not >10)
-        makeTurnRequest({ propertyName: 'Park View', unitNumber: '305', daysOffMarketUntilReady: 15 }),
-        makeTurnRequest({ propertyName: 'Test', unitNumber: '001', daysOffMarketUntilReady: null }), // excluded
-      ]
-      const { pastTargetAlerts } = computeExecutiveKPIs([], trs)
-      expect(pastTargetAlerts).toHaveLength(2)
-      expect(pastTargetAlerts[0]).toEqual({ propertyName: 'Oak Ridge', unitNumber: '204' })
-      expect(pastTargetAlerts[1]).toEqual({ propertyName: 'Park View', unitNumber: '305' })
-    })
-
-    it('returns empty array when no TR exceeds 10 days', () => {
-      const trs = [makeTurnRequest({ daysOffMarketUntilReady: 5 })]
-      const { pastTargetAlerts } = computeExecutiveKPIs([], trs)
-      expect(pastTargetAlerts).toEqual([])
-    })
-  })
-
-  // EXEC-05: trendingAlerts
-  describe('trendingAlerts', () => {
-    it('returns items with daysOffMarketUntilReady > 8', () => {
-      const trs = [
-        makeTurnRequest({ propertyName: 'Oak Ridge', unitNumber: '204', daysOffMarketUntilReady: 9 }),
-        makeTurnRequest({ propertyName: 'Sunrise', unitNumber: '101', daysOffMarketUntilReady: 8 }), // excluded (not >8)
-        makeTurnRequest({ propertyName: 'Park View', unitNumber: '305', daysOffMarketUntilReady: 11 }),
-      ]
-      const { trendingAlerts } = computeExecutiveKPIs([], trs)
-      expect(trendingAlerts).toHaveLength(2)
-      expect(trendingAlerts[0]).toEqual({ propertyName: 'Oak Ridge', unitNumber: '204' })
-    })
-
-    it('returns empty array when no TR exceeds 8 days', () => {
-      const trs = [makeTurnRequest({ daysOffMarketUntilReady: 5 })]
-      const { trendingAlerts } = computeExecutiveKPIs([], trs)
-      expect(trendingAlerts).toEqual([])
-    })
-  })
-
   // EXEC-06: unfiltered arrays
   describe('operates on full unfiltered arrays', () => {
     it('computes KPIs across multiple properties without property-level scoping', () => {
@@ -341,7 +274,6 @@ describe('computeExecutiveKPIs', () => {
       const kpis = computeExecutiveKPIs(jobs, trs)
       expect(kpis.activeJobsOpen).toBe(2)
       expect(kpis.jobsCompleted30d).toBe(1)
-      expect(kpis.activeTurnsOpen).toBe(2)
     })
   })
 
@@ -355,9 +287,6 @@ describe('computeExecutiveKPIs', () => {
       expect(kpis.backlogDelta).toBe(0)
       expect(kpis.avgTimeToComplete).toBeNull()
       expect(kpis.projectedCostExposure).toBe(0)
-      expect(kpis.activeTurnsOpen).toBe(0)
-      expect(kpis.pastTargetAlerts).toEqual([])
-      expect(kpis.trendingAlerts).toEqual([])
     })
   })
 })

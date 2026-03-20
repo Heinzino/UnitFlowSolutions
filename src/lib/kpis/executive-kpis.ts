@@ -10,9 +10,6 @@ export interface ExecutiveKPIResult {
   backlogDelta: number
   avgTimeToComplete: number | null // null when no Done turn requests
   projectedCostExposure: number
-  activeTurnsOpen: number
-  pastTargetAlerts: { propertyName: string; unitNumber: string }[]
-  trendingAlerts: { propertyName: string; unitNumber: string }[]
 }
 
 // Real job statuses from Airtable snapshot: Blocked, Completed, In Progress,
@@ -91,23 +88,6 @@ export function computeExecutiveKPIs(
     return sum + price
   }, 0)
 
-  // ---------------------------------------------------------------------------
-  // EXEC-04: Active Turns Open — status !== 'Done'
-  // Safer than allowlist: catches any non-Done status including future values
-  // ---------------------------------------------------------------------------
-  const activeTurnsOpen = turnRequests.filter((tr) => tr.status !== 'Done').length
-
-  // ---------------------------------------------------------------------------
-  // EXEC-05: Alert arrays — filtered by daysOffMarketUntilReady threshold
-  // ---------------------------------------------------------------------------
-  const pastTargetAlerts = turnRequests
-    .filter((tr) => (tr.daysOffMarketUntilReady ?? 0) > 10)
-    .map((tr) => ({ propertyName: tr.propertyName, unitNumber: tr.unitNumber }))
-
-  const trendingAlerts = turnRequests
-    .filter((tr) => (tr.daysOffMarketUntilReady ?? 0) > 8)
-    .map((tr) => ({ propertyName: tr.propertyName, unitNumber: tr.unitNumber }))
-
   return {
     activeJobsOpen,
     jobsTrendingPastTarget,
@@ -115,9 +95,6 @@ export function computeExecutiveKPIs(
     backlogDelta,
     avgTimeToComplete,
     projectedCostExposure,
-    activeTurnsOpen,
-    pastTargetAlerts,
-    trendingAlerts,
   }
 }
 
