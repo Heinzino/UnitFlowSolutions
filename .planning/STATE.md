@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Dashboard Redesign
 status: unknown
-stopped_at: Completed 15-01-PLAN.md
-last_updated: "2026-03-20T02:13:55.622Z"
+stopped_at: Completed 15-02-PLAN.md
+last_updated: "2026-03-20T02:22:56.048Z"
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 8
-  completed_plans: 7
+  completed_plans: 8
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Property Managers can instantly see which turns are overdue, which jobs are stuck, and take action without hunting through Airtable — fewer clicks to the information that matters.
-**Current focus:** Phase 15 — rm-dashboard
+**Current focus:** Phase 16 — executive-dashboard (next)
 
 ## Current Position
 
-Phase: 15 (rm-dashboard) — EXECUTING
-Plan: 2 of 2
+Phase: 15 (rm-dashboard) — COMPLETE
+Plan: 2 of 2 (all plans complete)
 
 ## Performance Metrics
 
@@ -63,6 +63,9 @@ All v1.0 and v1.1 decisions archived — see `.planning/milestones/` for details
 - [Phase 14-completed-jobs-page]: ActiveJobsTable title prop defaults to 'Active Jobs' for backwards compat; View completed jobs link conditional on title === 'Active Jobs'
 - [Phase 15-rm-dashboard]: ROLE_ROUTES.rm changed to '/regional' — RM users route to regional dashboard on login; ROLE_ALLOWED_ROUTES.rm now includes '/regional'
 - [Phase 15-rm-dashboard]: Sidebar/BottomTabBar active state for /regional uses startsWith to support sub-route drill-down; all other nav items use exact match
+- [Phase 15-rm-dashboard]: PropertyInsights renders both table and chart — single Suspense boundary per RESEARCH.md
+- [Phase 15-rm-dashboard]: getBarColor amber threshold >=7 days so 7 days is amber not green
+- [Phase 15-rm-dashboard]: Drill-down reuses PMKPIs/PMTurnList/ActiveJobs with role='rm' — no duplication
 
 ### Pending Todos
 
@@ -74,6 +77,6 @@ None blocking roadmap. Phase 13 and Phase 16 each have open product questions (s
 
 ## Session Continuity
 
-Last session: 2026-03-20T02:13:55.615Z
-Stopped at: Completed 15-01-PLAN.md
+Last session: 2026-03-20T02:22:37.842Z
+Stopped at: Completed 15-02-PLAN.md
 Resume with: `/gsd:execute-phase 16` (next: Executive dashboard)

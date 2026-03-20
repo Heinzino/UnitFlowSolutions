@@ -24,10 +24,10 @@
 ### RM Dashboard
 
 - [x] **RMDB-01**: RM dashboard served at /regional route with middleware routing rm role to /regional
-- [ ] **RMDB-02**: RM dashboard displays 6 aggregated KPI boxes (cross-property metrics)
-- [ ] **RMDB-03**: RM can view Property Insights list showing per-property stats (active turns, avg turn time, revenue exposure)
-- [ ] **RMDB-04**: RM can drill down from Property Insights to PM-level view scoped to selected property
-- [ ] **RMDB-05**: RM can view Avg Turn Time bar graph with per-property bars color-coded by threshold (green <7d, amber 7-14d, red >14d)
+- [x] **RMDB-02**: RM dashboard displays 6 aggregated KPI boxes (cross-property metrics)
+- [x] **RMDB-03**: RM can view Property Insights list showing per-property stats (active turns, avg turn time, revenue exposure)
+- [x] **RMDB-04**: RM can drill down from Property Insights to PM-level view scoped to selected property
+- [x] **RMDB-05**: RM can view Avg Turn Time bar graph with per-property bars color-coded by threshold (green <7d, amber 7-14d, red >14d)
 
 ### Executive Dashboard
 
@@ -89,10 +89,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COMP-02 | Phase 14 | Complete |
 | COMP-03 | Phase 14 | Complete |
 | RMDB-01 | Phase 15 | Complete |
-| RMDB-02 | Phase 15 | Pending |
-| RMDB-03 | Phase 15 | Pending |
-| RMDB-04 | Phase 15 | Pending |
-| RMDB-05 | Phase 15 | Pending |
+| RMDB-02 | Phase 15 | Complete |
+| RMDB-03 | Phase 15 | Complete |
+| RMDB-04 | Phase 15 | Complete |
+| RMDB-05 | Phase 15 | Complete |
 | EXEC-01 | Phase 16 | Pending |
 | EXEC-02 | Phase 16 | Pending |
 
