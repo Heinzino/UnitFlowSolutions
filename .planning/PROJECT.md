@@ -30,7 +30,7 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 ### Active
 
 - ✓ Dashboard terminology rename (Make Ready → Turns/Jobs, Vacant → Off Market) — Validated in Phase 12: terminology-rename
-- [ ] PM dashboard with 6 KPI boxes, Open Turns list with lease-ready date entry, Active Jobs table, Revenue Exposure
+- ✓ PM dashboard with 6 KPI boxes, Open Turns list with lease-ready date entry, Active Jobs table, Revenue Exposure — Validated in Phase 13: pm-dashboard-redesign
 - [ ] RM dashboard with 6 aggregated boxes, Property Insights list, Avg Turn Time bar graph, plus PM-level drill-down
 - [ ] Executive dashboard redesigned with 6 boxes and Top 10 Properties by Revenue Exposure
 - [ ] Completed Jobs page with property filter
@@ -100,4 +100,4 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 - Completed Jobs page with property filter
 
 ---
-*Last updated: 2026-03-18 after Phase 12 terminology-rename complete*
+*Last updated: 2026-03-19 after Phase 13 pm-dashboard-redesign complete*
