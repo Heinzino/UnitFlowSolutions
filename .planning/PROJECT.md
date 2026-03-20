@@ -2,11 +2,11 @@
 
 ## What This Is
 
-A role-based Next.js dashboard for managing apartment unit turnovers (make readys) across multiple properties. Replaces Airtable's native interface with a polished, role-specific experience — Executives get portfolio-level KPIs and health gauges, Property Managers see overdue turns first with inline status updates, and Regional Managers view their multi-property portfolio. Airtable remains the single source of truth via API; Supabase handles authentication and role mapping.
+A role-based Next.js dashboard for managing apartment unit turnovers across multiple properties. Replaces Airtable's native interface with a polished, role-specific experience — Executives get portfolio-level KPIs with Top 10 revenue exposure rankings, Property Managers see overdue turns first with inline date entry and status updates, and Regional Managers get aggregated KPIs with per-property drill-down. Airtable remains the single source of truth via API; Supabase handles authentication and role mapping.
 
 ## Core Value
 
-Property Managers can instantly see which turns are overdue, which jobs are stuck, and take action (update status) without hunting through Airtable — fewer clicks to the information that matters.
+Property Managers can instantly see which turns are overdue, which jobs are stuck, and take action (update status, enter dates, mark done) without hunting through Airtable — fewer clicks to the information that matters.
 
 ## Requirements
 
@@ -14,26 +14,27 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 
 - ✓ Role-based authentication with Supabase (PM, RM, Executive) — v1.0
 - ✓ Property-scoped data — each user sees only their assigned properties — v1.0
-- ✓ Executive dashboard with KPI cards (active jobs, backlog delta, cost exposure, make ready overview, trends, health gauge) — v1.0
+- ✓ Executive dashboard with KPI cards (active jobs, backlog delta, cost exposure, trends) — v1.0
 - ✓ Property Manager view with overdue turns surfaced first, turn detail with linked jobs — v1.0
 - ✓ Regional Manager multi-property view (shares PM layout, role renamed from DM) — v1.0
 - ✓ Inline job status updates (move jobs through stages without leaving the page) — v1.0
 - ✓ Airtable API integration layer with server-side-only access, caching (60s), rate limiting, batch resolution — v1.0
 - ✓ Visual polish per THEME.md — dark forest green background, white cards, emerald accents — v1.0
-- ✓ Charts and data visualization (vendor bar charts, trend indicators) — v1.0 (health gauge removed in v1.2 Phase 16)
+- ✓ Charts and data visualization (vendor bar charts, trend indicators, turn time chart) — v1.0/v1.2
 - ✓ Vendor metrics page (completion rates, job assignments, sortable table) — v1.0
 - ✓ Responsive layout — desktop sidebar + mobile bottom tabs — v1.0
 - ✓ Admin-only user creation form (restricted to allowlisted emails) — v1.1
 - ✓ Add Off Market Units form (all roles, creates records in Airtable Properties table) — v1.1
 - ✓ Shared PropertyMultiSelect component with inline property creation — v1.1
+- ✓ Dashboard terminology rename (Make Ready → Turns/Jobs, Vacant → Off Market) — v1.2
+- ✓ PM dashboard with 6 KPI boxes, Open Turns with inline lease-ready date entry + Done action, Active Jobs table, Revenue Exposure — v1.2
+- ✓ RM dashboard with 6 aggregated boxes, Property Insights list, Avg Turn Time bar graph, PM-level drill-down — v1.2
+- ✓ Executive dashboard redesigned with 6 contextual KPI boxes and Top 10 Properties by Revenue Exposure — v1.2
+- ✓ Completed Jobs page with property filter — v1.2
 
 ### Active
 
-- ✓ Dashboard terminology rename (Make Ready → Turns/Jobs, Vacant → Off Market) — Validated in Phase 12: terminology-rename
-- ✓ PM dashboard with 6 KPI boxes, Open Turns list with lease-ready date entry, Active Jobs table, Revenue Exposure — Validated in Phase 13: pm-dashboard-redesign
-- ✓ RM dashboard with 6 aggregated boxes, Property Insights list, Avg Turn Time bar graph, plus PM-level drill-down — Validated in Phase 15: rm-dashboard
-- ✓ Executive dashboard redesigned with 6 contextual KPI boxes and Top 10 Properties by Revenue Exposure — Validated in Phase 16: executive-dashboard-redesign
-- [ ] Completed Jobs page with property filter
+(No active requirements — start next milestone with `/gsd:new-milestone`)
 
 ### Future
 
@@ -56,11 +57,11 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 ## Context
 
 - ~6-15 active users across PM, RM, and Executive roles
-- Shipped v1.1 with 8,753 LOC TypeScript/TSX across 11 phases
+- Shipped v1.2 with 9,667 LOC TypeScript/TSX across 16 phases
 - Tech stack: Next.js 16 (Turbopack), Tailwind v4, Supabase Auth, Airtable API, Recharts, Vitest
 - 205 tests passing (unit + integration)
-- Admin user creation and off market unit entry fully operational
-- Properties fetch function now consumed by both admin and off market features
+- Three milestone versions shipped: v1.0 MVP, v1.1 Admin Tools, v1.2 Dashboard Redesign
+- All three role dashboards redesigned with role-specific KPI layouts
 - 4 of 9 Airtable table fetch functions still unused by UI (Quotes, Executives, PropertyManagers, MaintenanceManagers)
 
 ## Constraints
@@ -82,22 +83,15 @@ Property Managers can instantly see which turns are overdue, which jobs are stuc
 | Three role-based views (not one configurable view) | Each role has distinct needs; simpler UX | ✓ Good — RM shares PM layout, exec gets own |
 | `use cache` with 60s revalidation + tag busting | Balance between freshness and API rate limits | ✓ Good — 5-tag cascade on writes |
 | DM → RM rename (Phase 6) | Client uses "Regional Manager" not "District Manager" | ✓ Good — aligned with real org |
-| NOTIF-01..04 descoped | Alert cards on KPI dashboard sufficient for v1.0 | ⚠️ Revisit — may need middle column for v1.2+ |
+| NOTIF-01..04 descoped | Alert cards on KPI dashboard sufficient for v1.0 | ⚠️ Revisit — may need middle column for future |
 | Admin email allowlist (v1.1) | Simple gate for two known admins | ✓ Good — no RBAC overhead needed |
 | Supabase Admin API for user creation (v1.1) | Service-role key server-side only | ✓ Good — secure isolation |
 | "Vacant" → "Off Market" rename (v1.1) | User feedback during verification | ✓ Good — aligned with business terminology |
-| Shared PropertyMultiSelect (v1.1) | Reusable across admin + off market features | ✓ Good — DRY, 13 tests |
-
-## Current Milestone: v1.2 Dashboard Redesign
-
-**Goal:** Redesign all three role dashboards with clearer Turn vs Job separation, updated terminology, new KPI calculations, detailed Active Jobs table, and property-level drill-down for RM.
-
-**Target features:**
-- Terminology rename across all dashboards (Make Ready → Turns/Jobs, Vacant → Off Market)
-- PM dashboard: 6 KPI boxes, Open Turns with lease-ready date entry + manual Done, detailed Active Jobs table, Revenue Exposure
-- RM dashboard: 6 aggregated boxes, Property Insights list, Avg Turn Time bar graph, PM-level drill-down with property filter
-- Executive dashboard: 6 redesigned boxes, Top 10 Properties by Revenue Exposure
-- Completed Jobs page with property filter
+| Shared PropertyMultiSelect (v1.1) | Reusable across admin + off market features | ✓ Good — DRY, reused in Completed Jobs too |
+| Reuse computePMKPIs across roles (v1.2) | RM and Executive dashboards compute same KPIs per property | ✓ Good — single source of truth for KPI logic |
+| RM gets own /regional route (v1.2) | Distinct from PM /property; middleware-enforced | ✓ Good — clean role separation |
+| Remove health gauge + charts in executive redesign (v1.2) | Replaced by Top 10 table; simpler, more actionable | ✓ Good — 7 obsolete files deleted cleanly |
+| ActiveJobsTable reused for Completed Jobs (v1.2) | Same columns/sort, just different data filter | ✓ Good — zero duplication |
 
 ---
-*Last updated: 2026-03-19 after Phase 16 executive-dashboard-redesign complete*
+*Last updated: 2026-03-20 after v1.2 Dashboard Redesign milestone*

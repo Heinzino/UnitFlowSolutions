@@ -87,14 +87,59 @@
 
 ---
 
+## Milestone: v1.2 — Dashboard Redesign
+
+**Shipped:** 2026-03-20
+**Phases:** 5 | **Plans:** 10 | **Tasks:** 22 | **Sessions:** ~3
+
+### What Was Built
+- Terminology rename across entire codebase — Make Ready → Turns/Jobs, Vacant → Off Market; zero legacy identifiers remaining
+- PM dashboard redesigned: 6 KPI boxes, Open Turns with inline lease-ready date entry + Done action, sortable Active Jobs table, Revenue Exposure with excluded-turn footnote
+- Completed Jobs page at /property/completed-jobs reusing ActiveJobsTable with PropertyMultiSelect filter
+- RM dashboard at /regional with 6 aggregated KPIs, Property Insights per-property list, PM-level drill-down via encoded URL, color-coded Avg Turn Time bar chart
+- Executive dashboard redesigned: 6 KPI cards with contextual footer subtitles, Top 10 Properties by Revenue Exposure table; 7 obsolete files removed
+
+### What Worked
+- computePMKPIs reused across PM, RM, and Executive dashboards — single source of truth for all KPI logic
+- Phase 12 terminology rename as standalone first phase created clean foundation — type-level rename made consumer updates self-verifying via tsc
+- ActiveJobsTable reuse for Completed Jobs page — zero duplication, just a filter toggle
+- RM drill-down reuses PM components (PMKPIs, PMTurnList, ActiveJobs) with role='rm' parameter — no component duplication
+- Two-day milestone execution (5 phases, 10 plans) — fastest milestone yet
+
+### What Was Inefficient
+- SUMMARY.md frontmatter `requirements-completed` field was inconsistently populated — 4 of 20 requirements not listed despite being verified (TERM-03, PMDB-03, PMDB-05, EXEC-01)
+- Mobile path for LeaseReadyDateInput not implemented — MobileTurnCard shows read-only date; PMDB-03 desktop-only
+- pm-kpis.test.ts `makeJob` factory missing `statusMessage: null` introduced tsc error — runtime tests pass but static analysis fails
+- Pre-existing tsc errors (revalidateTag, email literal) carried forward from v1.0/v1.1 without resolution
+
+### Patterns Established
+- KPICard `footer` prop for supplemental content rendered inside card with border-t separator
+- Per-property grouping + computePMKPIs for cross-property aggregation (RM, Executive)
+- Encoded property name in URL for drill-down (`encodeURIComponent` → `decodeURIComponent`)
+- getBarColor threshold function with unit tests for chart color coding
+
+### Key Lessons
+1. Reusing compute functions across roles is a force multiplier — computePMKPIs serves PM, RM, and Executive
+2. Type-level renames (Phase 12) create self-verifying consumer updates — tsc catches everything
+3. SUMMARY frontmatter should be validated against PLAN requirements during execution — prevents 3-source cross-reference gaps at audit time
+4. Mobile parity for interactive features should be a plan-level acceptance criterion, not discovered at audit
+
+### Cost Observations
+- Model mix: ~15% opus (orchestration), ~85% sonnet (research, planning, execution, verification)
+- Sessions: ~3 across 2 days
+- Notable: 5 phases completed in 2 days — computePMKPIs reuse and clean phase boundaries enabled fastest execution velocity
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
 
-| Milestone | Sessions | Phases | Key Change |
-|-----------|----------|--------|------------|
-| v1.0 | ~15 | 9 | Established GSD workflow with research → plan → verify → execute cycle |
-| v1.1 | ~4 | 2 | Smaller scope, reused shared components, user feedback during verification |
+| Milestone | Sessions | Phases | Plans | Days | Key Change |
+|-----------|----------|--------|-------|------|------------|
+| v1.0 | ~15 | 9 | 24 | 7 | Established GSD workflow with research → plan → verify → execute cycle |
+| v1.1 | ~4 | 2 | 7 | 3 | Smaller scope, reused shared components, user feedback during verification |
+| v1.2 | ~3 | 5 | 10 | 2 | Fastest velocity — compute reuse, type-level self-verification, component reuse across roles |
 
 ### Cumulative Quality
 
@@ -102,10 +147,13 @@
 |-----------|-------|----------|-----------------|
 | v1.0 | 158 | Unit + Integration | 4 |
 | v1.1 | 202 | Unit + Integration | 3 (reduced — Properties fetch now consumed) |
+| v1.2 | 205 | Unit + Integration | 7 (3 new + 4 pre-existing carried forward) |
 
 ### Top Lessons (Verified Across Milestones)
 
 1. Phase-based execution with verification loops catches integration issues before they compound
 2. Documentation phases (cleanup/verification) are worth the investment — they close audit gaps cleanly
-3. Shared components across features pay off quickly — PropertyMultiSelect reused in 2 phases
+3. Shared components across features pay off quickly — PropertyMultiSelect (v1.1), ActiveJobsTable (v1.2), computePMKPIs (v1.2)
 4. Domain terminology should be confirmed with stakeholders before building — rename rework is avoidable
+5. Type-level changes create self-verifying cascades — let the compiler find the consumers
+6. Reusing compute functions across role boundaries is a force multiplier — build once, aggregate differently
