@@ -50,7 +50,7 @@ function formatPrice(totalCost: string | null, quotePrice: string | null): strin
 function JobsCell({ turn }: { turn: TurnRequest }) {
   if (turn.jobs && turn.jobs.length > 0) {
     return (
-      <StopPropagation className="flex flex-wrap gap-1">
+      <StopPropagation className="flex flex-wrap gap-1 justify-center">
         {turn.jobs.map((job) => (
           <Link
             key={job.jobId}
@@ -86,18 +86,20 @@ function TurnTableRows({ turns }: { turns: TurnRequest[] }) {
           </TableCell>
           <TableCell>{turn.unitNumber}</TableCell>
           <TableCell>
-            <StopPropagation>
+            <StopPropagation className="flex justify-center">
               <TurnStatusDropdown requestId={turn.requestId} currentStatus={turn.status} />
             </StopPropagation>
           </TableCell>
           <TableCell>
-            <StopPropagation>
+            <StopPropagation className="flex justify-center">
               <LeaseReadyDateInput requestId={turn.requestId} currentDate={turn.readyToLeaseDate} />
             </StopPropagation>
           </TableCell>
           <TableCell>{formatDate(turn.offMarketDate)}</TableCell>
           <TableCell>
-            <JobsCell turn={turn} />
+            <div className="flex justify-center">
+              <JobsCell turn={turn} />
+            </div>
           </TableCell>
           <TableCell>{formatPrice(turn.totalCost, turn.quotePrice)}</TableCell>
         </ClickableTurnRow>
