@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   UserPlus,
   DoorOpen,
+  Map,
 } from "lucide-react";
 import { clsx } from "clsx";
 import type { LucideIcon } from "lucide-react";
@@ -25,6 +26,7 @@ interface TabItem {
 
 const tabItems: TabItem[] = [
   { icon: LayoutDashboard, label: "Executive", href: "/executive", roles: ["exec"] },
+  { icon: Map, label: "Regional Dashboard", href: "/regional", roles: ["rm"] },
   { icon: Building2, label: "Properties", href: "/property" },
   { icon: Users, label: "Vendors", href: "/vendors" },
   { icon: DoorOpen, label: "Add Off Market", href: "/vacant" },
@@ -60,7 +62,7 @@ export function BottomTabBar({ activePath }: BottomTabBarProps) {
     <nav className="md:hidden fixed bottom-4 left-4 right-4 bg-forest/95 backdrop-blur-sm rounded-2xl px-2 py-2 flex justify-around items-center shadow-2xl z-50">
       {visibleItems.map((item) => {
         const Icon = item.icon;
-        const isActive = activePath === item.href;
+        const isActive = item.href === '/regional' ? activePath.startsWith('/regional') : activePath === item.href;
 
         return (
           <Link

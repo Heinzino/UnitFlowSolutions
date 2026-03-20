@@ -43,12 +43,13 @@ import { AppShell } from "@/components/layout/app-shell";
 
 /* ─── Sidebar ──────────────────────────────────────────────────── */
 describe("Sidebar", () => {
-  it("renders exactly 3 navigation links (Properties, Vendors, Add Off Market)", () => {
+  it("renders exactly 4 navigation links (Properties, Completed Jobs, Vendors, Add Off Market)", () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
     render(<Sidebar activePath="/" />);
     const links = screen.getAllByRole("link");
-    expect(links.length).toBe(3);
+    expect(links.length).toBe(4);
     expect(links.some((link) => link.getAttribute("href") === "/property")).toBe(true);
+    expect(links.some((link) => link.getAttribute("href") === "/property/completed-jobs")).toBe(true);
     expect(links.some((link) => link.getAttribute("href") === "/vendors")).toBe(true);
     expect(links.some((link) => link.getAttribute("href") === "/vacant")).toBe(true);
   });

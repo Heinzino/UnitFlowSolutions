@@ -10,6 +10,7 @@ import {
   UserPlus,
   DoorOpen,
   ClipboardCheck,
+  Map,
 } from "lucide-react";
 import { clsx } from "clsx";
 import type { LucideIcon } from "lucide-react";
@@ -28,6 +29,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: "Executive", href: "/executive", roles: ["exec"] },
+  { icon: Map, label: "Regional Dashboard", href: "/regional", roles: ["rm"] },
   { icon: Building2, label: "Properties", href: "/property" },
   { icon: ClipboardCheck, label: "Completed Jobs", href: "/property/completed-jobs" },
   { icon: Users, label: "Vendors", href: "/vendors" },
@@ -83,7 +85,7 @@ export function Sidebar({ activePath }: SidebarProps) {
       <nav className="px-3 flex flex-col gap-1 flex-1">
         {visibleItems.map((item) => {
           const Icon = item.icon;
-          const isActive = activePath === item.href;
+          const isActive = item.href === '/regional' ? activePath.startsWith('/regional') : activePath === item.href;
           return (
             <Link
               key={item.href}
