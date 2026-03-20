@@ -140,13 +140,13 @@ function TurnSection({
             <Table>
               <TableHeader>
                 <TableRow className="border-b border-card-border hover:bg-transparent">
-                  <TableHead>Property</TableHead>
-                  <TableHead>Unit</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Ready To Lease</TableHead>
-                  <TableHead>Off Market Date</TableHead>
-                  <TableHead>Jobs</TableHead>
-                  <TableHead>Price</TableHead>
+                  <TableHead className="w-[14%]">Property</TableHead>
+                  <TableHead className="w-[8%]">Unit</TableHead>
+                  <TableHead className="w-[14%]">Status</TableHead>
+                  <TableHead className="w-[16%]">Ready To Lease</TableHead>
+                  <TableHead className="w-[16%]">Off Market Date</TableHead>
+                  <TableHead className="w-[14%]">Jobs</TableHead>
+                  <TableHead className="w-[10%]">Price</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
