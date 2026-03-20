@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest'
 import { ROLE_ROUTES, ROLE_LABELS, ROLE_ALLOWED_ROUTES } from '../types/auth'
 
 describe('auth type constants', () => {
-  it('ROLE_ROUTES.rm maps to /property', () => {
-    expect(ROLE_ROUTES.rm).toBe('/property')
+  it('ROLE_ROUTES.rm maps to /regional', () => {
+    expect(ROLE_ROUTES.rm).toBe('/regional')
   })
 
   it('ROLE_ROUTES does not have a dm key', () => {
@@ -22,8 +22,8 @@ describe('auth type constants', () => {
     expect(Object.keys(ROLE_LABELS).includes('dm')).toBe(false)
   })
 
-  it('ROLE_ALLOWED_ROUTES.rm includes /property, /vendors, and /vacant', () => {
-    expect(ROLE_ALLOWED_ROUTES.rm).toEqual(['/property', '/vendors', '/vacant'])
+  it('ROLE_ALLOWED_ROUTES.rm includes /regional, /property, /vendors, and /vacant', () => {
+    expect(ROLE_ALLOWED_ROUTES.rm).toEqual(['/regional', '/property', '/vendors', '/vacant'])
   })
 
   it('ROLE_ALLOWED_ROUTES.pm includes /property, /vendors, and /vacant', () => {
