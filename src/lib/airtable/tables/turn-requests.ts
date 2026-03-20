@@ -103,6 +103,8 @@ export async function fetchTurnRequestsForUser(
   cacheTag(CACHE_TAGS.turnRequests)
 
   const all = await fetchTurnRequests()
-  if (role === 'exec') return all
+  // Exec with no filter sees everything; otherwise filter by property names
+  if (role === 'exec' && assignedPropertyNames.length === 0) return all
+  if (assignedPropertyNames.length === 0) return all
   return filterByProperties(all, (tr) => tr.propertyName, assignedPropertyNames)
 }
