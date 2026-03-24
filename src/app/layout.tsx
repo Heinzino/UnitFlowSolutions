@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${plusJakarta.variable} ${GeistSans.variable}`}>
+    <html lang="en" className={`${plusJakarta.variable} ${GeistSans.variable}`} suppressHydrationWarning>
       <body className="bg-forest text-text-primary font-body antialiased">
         {children}
         <Toaster />

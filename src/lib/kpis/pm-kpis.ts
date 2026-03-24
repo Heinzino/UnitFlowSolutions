@@ -1,6 +1,5 @@
 // Pure KPI compute functions for the Property Manager Dashboard.
 // No I/O — takes typed arrays, returns typed result. Easily unit-tested.
-// Modeled on computeExecutiveKPIs from executive-kpis.ts.
 
 import type { TurnRequest } from '@/lib/types/airtable'
 
@@ -9,50 +8,57 @@ import type { TurnRequest } from '@/lib/types/airtable'
 // ---------------------------------------------------------------------------
 
 export const REVENUE_EXPOSURE_RATE_PER_DAY = 60
-export const NEAR_DEADLINE_DAYS = 3
+export const UPCOMING_JOBS_DUE_DAYS = 2
 export const COMPLETED_PERIOD_DAYS = 30
 
 export interface PMKPIResult {
-  activeTurns: number
-  completedThisPeriod: number
-  jobsInProgress: number
-  avgTurnTime: number | null // null when no Done turn requests
-  revenueExposure: number
+  openTurns: number
+  avgTurnTime: number | null // null when no Done turn requests in last 30 days
+  turnsPastTargetTime: number
+  jobsPastTargetTime: number
+  upcomingJobsDue: number
+  jobCompletionTracker: number
+  revenueExposure: number // kept for RM/Exec/Top10 usage
   revenueExposureExcludedCount: number
-  turnsNearDeadline: number
+}
+
+// ---------------------------------------------------------------------------
+// Per-turn revenue exposure — exported for use in turn list column
+// ---------------------------------------------------------------------------
+export function computeTurnRevenueExposure(tr: TurnRequest): number {
+  if (!tr.targetDate) return 0
+  const now = new Date()
+  const target = new Date(tr.targetDate)
+  if (target >= now) return 0
+  const daysPastTarget = Math.ceil(
+    (now.getTime() - target.getTime()) / (1000 * 60 * 60 * 24)
+  )
+  return daysPastTarget * REVENUE_EXPOSURE_RATE_PER_DAY
 }
 
 export function computePMKPIs(turnRequests: TurnRequest[]): PMKPIResult {
   const now = new Date()
   const thirtyDaysAgo = new Date(now.getTime() - COMPLETED_PERIOD_DAYS * 24 * 60 * 60 * 1000)
-
-  // Start of today in UTC (midnight)
-  const todayStart = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
-
-  // ---------------------------------------------------------------------------
-  // PM-01: Active Turns — TRs where status !== "Done"
-  // Safer than allowlist: catches any non-Done status including future values
-  // ---------------------------------------------------------------------------
-  const activeTurns = turnRequests.filter((tr) => tr.status !== 'Done').length
+  const twoDaysFromNow = new Date(now.getTime() + UPCOMING_JOBS_DUE_DAYS * 24 * 60 * 60 * 1000)
 
   // Active turn requests (reused across multiple KPIs)
   const activeTurnRequests = turnRequests.filter((tr) => tr.status !== 'Done')
 
   // ---------------------------------------------------------------------------
-  // completedThisPeriod — Done TRs with readyToLeaseDate in past COMPLETED_PERIOD_DAYS
-  // Same logic as old completedLast30d, renamed to reflect configurable period
+  // openTurns — TRs where status !== "Done"
+  // Independent of job completion — only updated when PM clicks "Done"
   // ---------------------------------------------------------------------------
-  const completedThisPeriod = turnRequests.filter((tr) => {
+  const openTurns = activeTurnRequests.length
+
+  // ---------------------------------------------------------------------------
+  // avgTurnTime — average timeToCompleteUnit for Done TRs in last 30 days
+  // Returns null when no Done turn requests exist in the period
+  // ---------------------------------------------------------------------------
+  const doneTurnRequests = turnRequests.filter((tr) => {
     if (tr.status !== 'Done') return false
     if (!tr.readyToLeaseDate) return false
     return new Date(tr.readyToLeaseDate) >= thirtyDaysAgo
-  }).length
-
-  // ---------------------------------------------------------------------------
-  // avgTurnTime — average timeToCompleteUnit for Done TRs (unchanged)
-  // Returns null when no Done turn requests exist
-  // ---------------------------------------------------------------------------
-  const doneTurnRequests = turnRequests.filter((tr) => tr.status === 'Done')
+  })
   const avgTurnTime =
     doneTurnRequests.length === 0
       ? null
@@ -60,56 +66,72 @@ export function computePMKPIs(turnRequests: TurnRequest[]): PMKPIResult {
         doneTurnRequests.length
 
   // ---------------------------------------------------------------------------
-  // jobsInProgress — count ALL non-completed jobs from active turns
-  // Per CONTEXT.md locked decision: uses !j.isCompleted (includes In Progress,
-  // Blocked, NEEDS ATTENTION, Ready — all represent active workload)
-  // Deduplicates by jobId across turns
+  // turnsPastTargetTime — active turns where targetDate is already past
+  // ---------------------------------------------------------------------------
+  const turnsPastTargetTime = activeTurnRequests.filter((tr) => {
+    if (!tr.targetDate) return false
+    return new Date(tr.targetDate) < now
+  }).length
+
+  // ---------------------------------------------------------------------------
+  // Collect unique non-completed jobs from active turns (reused below)
   // ---------------------------------------------------------------------------
   const allActiveJobs = activeTurnRequests.flatMap((tr) => tr.jobs ?? [])
-  const uniqueJobs = [...new Map(allActiveJobs.map((j) => [j.jobId, j])).values()]
-  const jobsInProgress = uniqueJobs.filter((j) => !j.isCompleted).length
+  const uniqueActiveJobs = [
+    ...new Map(allActiveJobs.map((j) => [j.jobId, j])).values(),
+  ].filter((j) => !j.isCompleted)
+
+  // ---------------------------------------------------------------------------
+  // jobsPastTargetTime — non-completed jobs where endDate is already past
+  // ---------------------------------------------------------------------------
+  const jobsPastTargetTime = uniqueActiveJobs.filter((j) => {
+    if (!j.endDate) return false
+    return new Date(j.endDate) < now
+  }).length
+
+  // ---------------------------------------------------------------------------
+  // upcomingJobsDue — non-completed jobs with endDate within next 2 days
+  // ---------------------------------------------------------------------------
+  const upcomingJobsDue = uniqueActiveJobs.filter((j) => {
+    if (!j.endDate) return false
+    const end = new Date(j.endDate)
+    return end >= now && end <= twoDaysFromNow
+  }).length
+
+  // ---------------------------------------------------------------------------
+  // jobCompletionTracker — completed jobs in last 30 days (across all turns)
+  // ---------------------------------------------------------------------------
+  const allJobs = turnRequests.flatMap((tr) => tr.jobs ?? [])
+  const uniqueAllJobs = [...new Map(allJobs.map((j) => [j.jobId, j])).values()]
+  const jobCompletionTracker = uniqueAllJobs.filter((j) => {
+    if (!j.isCompleted) return false
+    if (!j.endDate) return false
+    return new Date(j.endDate) >= thirtyDaysAgo
+  }).length
 
   // ---------------------------------------------------------------------------
   // revenueExposure — $RATE/day for each active turn over its target window
-  // Formula: max(0, daysOffMarketUntilReady - targetDays) * REVENUE_EXPOSURE_RATE_PER_DAY
-  // Turns with null targetDate or null offMarketDate contribute $0
   // ---------------------------------------------------------------------------
-  const revenueExposure = activeTurnRequests.reduce((sum, tr) => {
-    if (!tr.targetDate || !tr.offMarketDate) return sum
-    const targetDays = Math.ceil(
-      (new Date(tr.targetDate).getTime() - new Date(tr.offMarketDate).getTime()) /
-        (1000 * 60 * 60 * 24)
-    )
-    const daysOver = Math.max(0, (tr.daysOffMarketUntilReady ?? 0) - targetDays)
-    return sum + daysOver * REVENUE_EXPOSURE_RATE_PER_DAY
-  }, 0)
+  const revenueExposure = activeTurnRequests.reduce(
+    (sum, tr) => sum + computeTurnRevenueExposure(tr),
+    0
+  )
 
   // ---------------------------------------------------------------------------
-  // revenueExposureExcludedCount — active turns missing targetDate (can't compute)
-  // Done turns are NOT counted — only active turns
+  // revenueExposureExcludedCount — active turns missing targetDate
   // ---------------------------------------------------------------------------
   const revenueExposureExcludedCount = activeTurnRequests.filter(
     (tr) => tr.targetDate === null
   ).length
 
-  // ---------------------------------------------------------------------------
-  // turnsNearDeadline — active turns with targetDate within next NEAR_DEADLINE_DAYS
-  // Window: [todayStart, todayStart + NEAR_DEADLINE_DAYS * 86400000] inclusive
-  // ---------------------------------------------------------------------------
-  const deadlineWindowEnd = todayStart + NEAR_DEADLINE_DAYS * 86400000
-  const turnsNearDeadline = activeTurnRequests.filter((tr) => {
-    if (!tr.targetDate) return false
-    const targetMs = new Date(tr.targetDate).getTime()
-    return targetMs >= todayStart && targetMs <= deadlineWindowEnd
-  }).length
-
   return {
-    activeTurns,
-    completedThisPeriod,
-    jobsInProgress,
+    openTurns,
     avgTurnTime,
+    turnsPastTargetTime,
+    jobsPastTargetTime,
+    upcomingJobsDue,
+    jobCompletionTracker,
     revenueExposure,
     revenueExposureExcludedCount,
-    turnsNearDeadline,
   }
 }

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { fetchTurnRequestsForUser } from '@/lib/airtable/tables/turn-requests';
+import { computeTurnRevenueExposure } from '@/lib/kpis/pm-kpis';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -39,11 +40,15 @@ function formatPrice(totalCost: string | null, quotePrice: string | null): strin
   if (!raw) return '---';
   const num = parseFloat(raw.replace(/[^0-9.-]/g, ''));
   if (isNaN(num)) return '---';
+  return formatCurrency(num);
+}
+
+function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     maximumFractionDigits: 0,
-  }).format(num);
+  }).format(amount);
 }
 
 
@@ -102,6 +107,7 @@ function TurnTableRows({ turns }: { turns: TurnRequest[] }) {
             </div>
           </TableCell>
           <TableCell>{formatPrice(turn.totalCost, turn.quotePrice)}</TableCell>
+          <TableCell>{formatCurrency(computeTurnRevenueExposure(turn))}</TableCell>
         </ClickableTurnRow>
       ))}
     </>
@@ -140,13 +146,14 @@ function TurnSection({
             <Table>
               <TableHeader>
                 <TableRow className="border-b border-card-border hover:bg-transparent">
-                  <TableHead className="w-[14%]">Property</TableHead>
-                  <TableHead className="w-[8%]">Unit</TableHead>
-                  <TableHead className="w-[14%]">Status</TableHead>
-                  <TableHead className="w-[16%]">Ready To Lease</TableHead>
-                  <TableHead className="w-[16%]">Off Market Date</TableHead>
-                  <TableHead className="w-[14%]">Jobs</TableHead>
+                  <TableHead className="w-[13%]">Property</TableHead>
+                  <TableHead className="w-[7%]">Unit</TableHead>
+                  <TableHead className="w-[12%]">Status</TableHead>
+                  <TableHead className="w-[14%]">Ready To Lease</TableHead>
+                  <TableHead className="w-[14%]">Off Market Date</TableHead>
+                  <TableHead className="w-[12%]">Jobs</TableHead>
                   <TableHead className="w-[10%]">Price</TableHead>
+                  <TableHead className="w-[10%]">Rev Exposure</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -158,7 +165,7 @@ function TurnSection({
           {/* Mobile card list — hidden on md+ */}
           <div className="md:hidden">
             {turns.map((turn) => (
-              <MobileTurnCard key={turn.requestId} turn={turn} />
+              <MobileTurnCard key={turn.requestId} turn={turn} revenueExposure={computeTurnRevenueExposure(turn)} />
             ))}
           </div>
         </>
@@ -176,12 +183,13 @@ export async function PMTurnList({ assignedProperties, role }: PMTurnListProps) 
   // Only active turns (not Done)
   const activeTurns = turnRequests.filter((tr) => tr.status !== 'Done');
 
-  // Partition: overdue = daysOffMarketUntilReady > 10
+  // Partition: overdue = targetDate already past
+  const now = new Date();
   const overdue = activeTurns.filter(
-    (tr) => tr.daysOffMarketUntilReady !== null && tr.daysOffMarketUntilReady > 10
+    (tr) => tr.targetDate !== null && new Date(tr.targetDate) < now
   );
   const onSchedule = activeTurns.filter(
-    (tr) => tr.daysOffMarketUntilReady === null || tr.daysOffMarketUntilReady <= 10
+    (tr) => tr.targetDate === null || new Date(tr.targetDate) >= now
   );
 
   return (

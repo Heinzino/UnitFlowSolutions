@@ -1,9 +1,7 @@
 import {
   Home,
   CheckCircle,
-  Briefcase,
   Clock,
-  DollarSign,
   AlertTriangle,
 } from 'lucide-react';
 import { fetchTurnRequestsForUser } from '@/lib/airtable/tables/turn-requests';
@@ -25,55 +23,43 @@ export async function PMKPIs({ assignedProperties, role = 'pm' }: PMKPIsProps) {
       ? `${Math.round(kpis.avgTurnTime)} days`
       : 'N/A';
 
-  const revenueDisplay = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(kpis.revenueExposure);
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      {/* Row 1: Overview */}
+      {/* Row 1 */}
       <KPICard
         icon={Home}
-        label="Active Turns"
-        value={kpis.activeTurns}
+        label="Open Turns"
+        value={kpis.openTurns}
       />
       <KPICard
         icon={Clock}
-        label="Avg Turn Time"
+        label="Avg Turn Time (Last 30 days)"
         value={avgTimeDisplay}
       />
       <KPICard
-        icon={DollarSign}
-        label="Revenue Exposure"
-        value={revenueDisplay}
-        variant={kpis.revenueExposure > 0 ? 'alert-past' : 'default'}
-        footer={
-          kpis.revenueExposureExcludedCount > 0 ? (
-            <p className="text-xs text-text-secondary">
-              {kpis.revenueExposureExcludedCount} turn{kpis.revenueExposureExcludedCount !== 1 ? 's' : ''} excluded (no target date)
-            </p>
-          ) : undefined
-        }
+        icon={AlertTriangle}
+        label="Turns Past Target Time"
+        value={kpis.turnsPastTargetTime}
+        variant={kpis.turnsPastTargetTime > 0 ? 'alert-past' : 'default'}
       />
 
-      {/* Row 2: Action */}
-      <KPICard
-        icon={CheckCircle}
-        label="Completed This Period"
-        value={kpis.completedThisPeriod}
-      />
-      <KPICard
-        icon={Briefcase}
-        label="Jobs In Progress"
-        value={kpis.jobsInProgress}
-      />
+      {/* Row 2 */}
       <KPICard
         icon={AlertTriangle}
-        label="Turns Near Deadline"
-        value={kpis.turnsNearDeadline}
-        variant={kpis.turnsNearDeadline > 0 ? 'alert-trending' : 'default'}
+        label="Jobs Past Target Time"
+        value={kpis.jobsPastTargetTime}
+        variant={kpis.jobsPastTargetTime > 0 ? 'alert-past' : 'default'}
+      />
+      <KPICard
+        icon={Clock}
+        label="Upcoming Jobs Due"
+        value={kpis.upcomingJobsDue}
+        variant={kpis.upcomingJobsDue > 0 ? 'alert-trending' : 'default'}
+      />
+      <KPICard
+        icon={CheckCircle}
+        label="Job Completion Tracker"
+        value={kpis.jobCompletionTracker}
       />
     </div>
   );

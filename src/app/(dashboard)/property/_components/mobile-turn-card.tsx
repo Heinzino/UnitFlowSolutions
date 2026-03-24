@@ -27,7 +27,7 @@ function formatPrice(totalCost: string | null, quotePrice: string | null): strin
   }).format(num);
 }
 
-export function MobileTurnCard({ turn }: { turn: TurnRequest }) {
+export function MobileTurnCard({ turn, revenueExposure }: { turn: TurnRequest; revenueExposure?: number }) {
   const router = useRouter();
 
   return (
@@ -53,6 +53,11 @@ export function MobileTurnCard({ turn }: { turn: TurnRequest }) {
 
         <span className="text-text-secondary text-xs">Price</span>
         <span className="text-text-primary">{formatPrice(turn.totalCost, turn.quotePrice)}</span>
+
+        <span className="text-text-secondary text-xs">Rev Exposure</span>
+        <span className="text-text-primary">
+          {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(revenueExposure ?? 0)}
+        </span>
       </div>
       {turn.jobs && turn.jobs.length > 0 && (
         <div className="mt-2">

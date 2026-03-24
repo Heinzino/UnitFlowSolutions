@@ -14,12 +14,15 @@ import {
 
 export interface PropertyStat {
   propertyName: string
-  activeTurns: number
+  unitsOffMarket: number
   avgTurnTime: number | null
   revenueExposure: number
+  vsTarget: number | null
+  unitsPastTarget: number
+  jobsPastTarget: number
 }
 
-type SortCol = 'propertyName' | 'activeTurns' | 'avgTurnTime' | 'revenueExposure'
+type SortCol = 'propertyName' | 'unitsOffMarket' | 'avgTurnTime' | 'revenueExposure' | 'vsTarget' | 'unitsPastTarget' | 'jobsPastTarget'
 type SortDir = 'asc' | 'desc'
 
 export function PropertyInsightsTable({ data }: { data: PropertyStat[] }) {
@@ -40,10 +43,10 @@ export function PropertyInsightsTable({ data }: { data: PropertyStat[] }) {
     let cmp = 0
     if (sortCol === 'propertyName') {
       cmp = a.propertyName.localeCompare(b.propertyName)
-    } else if (sortCol === 'avgTurnTime') {
+    } else if (sortCol === 'avgTurnTime' || sortCol === 'vsTarget') {
       // nulls last
-      const aVal = a.avgTurnTime ?? (sortDir === 'asc' ? Infinity : -Infinity)
-      const bVal = b.avgTurnTime ?? (sortDir === 'asc' ? Infinity : -Infinity)
+      const aVal = a[sortCol] ?? (sortDir === 'asc' ? Infinity : -Infinity)
+      const bVal = b[sortCol] ?? (sortDir === 'asc' ? Infinity : -Infinity)
       cmp = aVal - bVal
     } else {
       cmp = (a[sortCol] as number) - (b[sortCol] as number)
@@ -58,6 +61,12 @@ export function PropertyInsightsTable({ data }: { data: PropertyStat[] }) {
       : <ChevronDown size={12} className="inline ml-1 text-text-secondary" />
   }
 
+  const fmt = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  })
+
   return (
     <Table>
       <TableHeader>
@@ -69,9 +78,9 @@ export function PropertyInsightsTable({ data }: { data: PropertyStat[] }) {
             </button>
           </TableHead>
           <TableHead className="text-right">
-            <button className="cursor-pointer" onClick={() => handleSort('activeTurns')}>
-              Active Turns
-              <SortIcon col="activeTurns" />
+            <button className="cursor-pointer" onClick={() => handleSort('unitsOffMarket')}>
+              Units Off Market
+              <SortIcon col="unitsOffMarket" />
             </button>
           </TableHead>
           <TableHead className="text-right">
@@ -82,8 +91,26 @@ export function PropertyInsightsTable({ data }: { data: PropertyStat[] }) {
           </TableHead>
           <TableHead className="text-right">
             <button className="cursor-pointer" onClick={() => handleSort('revenueExposure')}>
-              Revenue Exposure
+              Rev Exposure
               <SortIcon col="revenueExposure" />
+            </button>
+          </TableHead>
+          <TableHead className="text-right">
+            <button className="cursor-pointer" onClick={() => handleSort('vsTarget')}>
+              vs Target
+              <SortIcon col="vsTarget" />
+            </button>
+          </TableHead>
+          <TableHead className="text-right">
+            <button className="cursor-pointer" onClick={() => handleSort('unitsPastTarget')}>
+              Units Past Target
+              <SortIcon col="unitsPastTarget" />
+            </button>
+          </TableHead>
+          <TableHead className="text-right">
+            <button className="cursor-pointer" onClick={() => handleSort('jobsPastTarget')}>
+              Jobs Past Target
+              <SortIcon col="jobsPastTarget" />
             </button>
           </TableHead>
         </TableRow>
@@ -96,17 +123,20 @@ export function PropertyInsightsTable({ data }: { data: PropertyStat[] }) {
             onClick={() => router.push(`/regional/property/${encodeURIComponent(row.propertyName)}`)}
           >
             <TableCell>{row.propertyName}</TableCell>
-            <TableCell className="text-right">{row.activeTurns}</TableCell>
+            <TableCell className="text-right">{row.unitsOffMarket}</TableCell>
             <TableCell className="text-right">
               {row.avgTurnTime !== null ? `${Math.round(row.avgTurnTime)} days` : 'N/A'}
             </TableCell>
             <TableCell className="text-right">
-              {new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                maximumFractionDigits: 0,
-              }).format(row.revenueExposure)}
+              {fmt.format(row.revenueExposure)}
             </TableCell>
+            <TableCell className="text-right">
+              {row.vsTarget !== null
+                ? `${row.vsTarget >= 0 ? '+' : ''}${Math.round(row.vsTarget)} days`
+                : 'N/A'}
+            </TableCell>
+            <TableCell className="text-right">{row.unitsPastTarget}</TableCell>
+            <TableCell className="text-right">{row.jobsPastTarget}</TableCell>
           </TableRow>
         ))}
       </TableBody>

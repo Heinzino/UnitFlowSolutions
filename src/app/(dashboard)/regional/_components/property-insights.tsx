@@ -1,5 +1,5 @@
 import { fetchTurnRequestsForUser } from '@/lib/airtable/tables/turn-requests'
-import { computePMKPIs } from '@/lib/kpis/pm-kpis'
+import { computePMKPIs, computeTurnRevenueExposure } from '@/lib/kpis/pm-kpis'
 import { Card } from '@/components/ui/card'
 import { PropertyInsightsTable } from './property-insights-table'
 import { AvgTurnTimeChart } from './avg-turn-time-chart'
@@ -23,6 +23,7 @@ export async function PropertyInsights({ assignedProperties }: PropertyInsightsP
   }
 
   const turnRequests = await fetchTurnRequestsForUser('rm' as UserRole, assignedProperties)
+  const now = new Date()
 
   // Group turns by property
   const byProperty = new Map<string, TurnRequest[]>()
@@ -38,11 +39,45 @@ export async function PropertyInsights({ assignedProperties }: PropertyInsightsP
   const propertyStats = assignedProperties.map((propName) => {
     const propTurns = byProperty.get(propName) ?? []
     const kpis = computePMKPIs(propTurns)
+
+    const activeTurns = propTurns.filter((tr) => tr.status !== 'Done')
+
+    // vsTarget: average of (daysOffMarketUntilReady - targetDays) for active turns with both dates
+    const turnsWithTarget = activeTurns.filter((tr) => tr.targetDate && tr.offMarketDate)
+    let vsTarget: number | null = null
+    if (turnsWithTarget.length > 0) {
+      const totalDiff = turnsWithTarget.reduce((sum, tr) => {
+        const targetDays = Math.ceil(
+          (new Date(tr.targetDate!).getTime() - new Date(tr.offMarketDate!).getTime()) /
+            (1000 * 60 * 60 * 24)
+        )
+        return sum + ((tr.daysOffMarketUntilReady ?? 0) - targetDays)
+      }, 0)
+      vsTarget = totalDiff / turnsWithTarget.length
+    }
+
+    // unitsPastTarget: active turns where targetDate < now
+    const unitsPastTarget = activeTurns.filter(
+      (tr) => tr.targetDate && new Date(tr.targetDate) < now
+    ).length
+
+    // jobsPastTarget: non-completed jobs from active turns where endDate < now
+    const allJobs = activeTurns.flatMap((tr) => tr.jobs ?? [])
+    const uniqueJobs = [...new Map(allJobs.map((j) => [j.jobId, j])).values()]
+    const jobsPastTarget = uniqueJobs.filter((j) => {
+      if (j.isCompleted) return false
+      if (!j.endDate) return false
+      return new Date(j.endDate) < now
+    }).length
+
     return {
       propertyName: propName,
-      activeTurns: kpis.activeTurns,
+      unitsOffMarket: kpis.openTurns,
       avgTurnTime: kpis.avgTurnTime,
       revenueExposure: kpis.revenueExposure,
+      vsTarget,
+      unitsPastTarget,
+      jobsPastTarget,
     }
   })
 
