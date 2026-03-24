@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${plusJakarta.variable} ${GeistSans.variable}`} suppressHydrationWarning>
-      <body className="bg-forest text-text-primary font-body antialiased">
+      <body className="bg-forest text-text-primary font-body antialiased" suppressHydrationWarning>
         {children}
         <Toaster />
       </body>
