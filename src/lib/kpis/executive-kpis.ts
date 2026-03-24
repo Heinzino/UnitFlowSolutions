@@ -27,7 +27,7 @@ export function computeExecutiveKPIs(
   const portfolioAvgTurnTime =
     doneTurnRequests.length === 0
       ? null
-      : doneTurnRequests.reduce((sum, tr) => sum + (tr.timeToCompleteUnit ?? 0), 0) /
+      : doneTurnRequests.reduce((sum, tr) => sum + (tr.daysOffMarketUntilReady ?? 0), 0) /
         doneTurnRequests.length
 
   // ---------------------------------------------------------------------------
@@ -82,7 +82,7 @@ export function computeExecutiveKPIs(
     if (doneTurns.length === 0) continue
 
     const avgTurnTime =
-      doneTurns.reduce((sum, tr) => sum + (tr.timeToCompleteUnit ?? 0), 0) / doneTurns.length
+      doneTurns.reduce((sum, tr) => sum + (tr.daysOffMarketUntilReady ?? 0), 0) / doneTurns.length
 
     // Compute avg target window from turns with both targetDate and offMarketDate
     const turnsWithTarget = propTurns.filter((tr) => tr.targetDate && tr.offMarketDate)

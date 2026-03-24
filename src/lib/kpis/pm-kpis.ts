@@ -62,7 +62,7 @@ export function computePMKPIs(turnRequests: TurnRequest[]): PMKPIResult {
   const avgTurnTime =
     doneTurnRequests.length === 0
       ? null
-      : doneTurnRequests.reduce((sum, tr) => sum + (tr.timeToCompleteUnit ?? 0), 0) /
+      : doneTurnRequests.reduce((sum, tr) => sum + (tr.daysOffMarketUntilReady ?? 0), 0) /
         doneTurnRequests.length
 
   // ---------------------------------------------------------------------------
