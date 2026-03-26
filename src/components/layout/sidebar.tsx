@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -72,12 +73,16 @@ export function Sidebar({ activePath }: SidebarProps) {
   return (
     <aside className="flex flex-col w-[220px] h-[calc(100vh-1.5rem)] bg-white rounded-[20px] shadow-lg border border-white/30">
       {/* Logo */}
-      <div className="px-5 pt-6 pb-6">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-forest rounded-badge flex items-center justify-center">
-            <span className="text-chartreuse font-heading font-bold text-sm">UF</span>
-          </div>
-          <span className="font-heading font-bold text-lg text-text-primary">UnitFlow</span>
+      <div className="px-3 pt-4 pb-4">
+        <div className="bg-[#1a1a1a] rounded-2xl p-3">
+          <Image
+            src="/unitflow-logo.png"
+            alt="Unit Flow"
+            width={700}
+            height={290}
+            className="w-full h-auto"
+            priority
+          />
         </div>
       </div>
 
