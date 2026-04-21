@@ -52,7 +52,7 @@ export async function RMKPIs({ assignedProperties }: RMKPIsProps) {
       {/* Row 2 */}
       <KPICard
         icon={DollarSign}
-        label="Total Revenue Exposure"
+        label="Total Monthly Exposure"
         value={revenueDisplay}
         variant={kpis.revenueExposure > 0 ? 'alert-past' : 'default'}
       />

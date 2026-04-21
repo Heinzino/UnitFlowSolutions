@@ -39,7 +39,7 @@ export async function ExecutiveKPIs() {
       />
       <KPICard
         icon={DollarSign}
-        label="Total Revenue Exposure"
+        label="Total Monthly Exposure"
         value={revenueDisplay}
         variant={kpis.totalRevenueExposure > 0 ? 'alert-past' : 'default'}
       />
